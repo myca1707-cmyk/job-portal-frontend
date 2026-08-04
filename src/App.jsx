@@ -1,8 +1,38 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import logo from "./assets/coretech-logo.png";
+import introVideo from "./assets/intro.mp4";
 
 const API_BASE = "https://job-portal-backend-production-6d9d.up.railway.app";
+
+function IntroVideo({ onFinish }) {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "#000",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 10000,
+      }}
+    >
+      <video
+        src={introVideo}
+        autoPlay
+        muted
+        playsInline
+        onEnded={onFinish}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+        }}
+      />
+    </div>
+  );
+}
 
 function SplashScreen() {
   return (
@@ -228,7 +258,7 @@ function CandidateSignupForm({ onSuccess }) {
           full_name: fullName,
           email,
           password,
-          phone: phone || undefined,
+          phone,
         }),
       });
 
@@ -263,8 +293,14 @@ function CandidateSignupForm({ onSuccess }) {
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </div>
         <div className="field">
-          <label>Phone (optional)</label>
-          <input value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <label>Phone</label>
+          <input
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+            pattern="[0-9]{10}"
+            title="Enter a 10-digit mobile number"
+          />
         </div>
         <div className="field">
           <label>Password (min 8 characters)</label>
@@ -727,7 +763,10 @@ function ApplicantRow({ applicant, jobId, token, onStatusChanged }) {
   return (
     <div className="applicant-row">
       <p className="name">{applicant.name}</p>
-      <p className="meta">{applicant.email} · Skills: {applicant.skills} · Relevance: {applicant.relevance}</p>
+      <p className="meta">
+        {applicant.email}
+        {applicant.mobile_number && ` · ${applicant.mobile_number}`} · Skills: {applicant.skills} · Relevance: {applicant.relevance}
+      </p>
       <span className={`status-line ${applicant.status}`}>
         <span className={`status-dot ${applicant.status}`}></span>
         {applicant.status}
@@ -1215,7 +1254,12 @@ function CandidateProfile({ token }) {
             </div>
             <div className="field">
               <label>Mobile number</label>
-              <input value={form.mobile_number} onChange={(e) => handleFormChange("mobile_number", e.target.value)} />
+              <input
+                value={form.mobile_number}
+                onChange={(e) => handleFormChange("mobile_number", e.target.value)}
+                required
+                pattern="[0-9]{10}"
+              />
             </div>
             <div className="field">
               <label>Location</label>
@@ -1323,12 +1367,18 @@ function CandidateSearch({ token }) {
   const [error, setError] = useState("");
   const [downloadingId, setDownloadingId] = useState(null);
 
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isEmailQuery = filters.q.includes("@");
+  const isValidEmail = isEmailQuery ? EMAIL_REGEX.test(filters.q) : true;
+
   function handleChange(field, value) {
     setFilters((prev) => ({ ...prev, [field]: value }));
   }
 
   async function handleSearch(e) {
     e.preventDefault();
+    if (isEmailQuery && !isValidEmail) return;
+
     setError("");
     setLoading(true);
     setSearched(true);
@@ -1389,12 +1439,17 @@ function CandidateSearch({ token }) {
       <div className="form-card">
         <form onSubmit={handleSearch}>
           <div className="field">
-            <label>Search by name, skills, or headline</label>
+            <label>Search by name, skills, email, or mobile</label>
             <input
               value={filters.q}
               onChange={(e) => handleChange("q", e.target.value)}
-              placeholder="e.g. python, fastapi, react developer"
+              placeholder="e.g. python, name, email, or mobile number"
             />
+            {isEmailQuery && !isValidEmail && (
+              <p className="msg-error" style={{ marginTop: "0.25rem" }}>
+                That doesn't look like a valid email address
+              </p>
+            )}
           </div>
 
           <div style={{ display: "flex", gap: "0.75rem" }}>
@@ -1439,7 +1494,7 @@ function CandidateSearch({ token }) {
           </div>
 
           {error && <p className="msg-error">{error}</p>}
-          <button type="submit" className="btn-primary" disabled={loading}>
+          <button type="submit" className="btn-primary" disabled={loading || (isEmailQuery && !isValidEmail)}>
             {loading ? "Searching..." : "Search"}
           </button>
         </form>
@@ -1452,7 +1507,10 @@ function CandidateSearch({ token }) {
       {results.map((candidate) => (
         <div key={candidate.id} className="card">
           <h2>{candidate.full_name}</h2>
-          <p className="card-meta">{candidate.email}</p>
+          <p className="card-meta">
+            {candidate.email}
+            {candidate.mobile_number && ` · ${candidate.mobile_number}`}
+          </p>
           {candidate.resume_headline && <p className="card-desc">{candidate.resume_headline}</p>}
           <p className="card-meta">
             {candidate.years_of_experience != null && `${candidate.years_of_experience} yrs exp`}
@@ -1703,6 +1761,7 @@ function CandidateShell({ token, onLogout }) {
 }
 
 function App() {
+  const [introDone, setIntroDone] = useState(false);
   const [error, setError] = useState(null);
   const [showSplash, setShowSplash] = useState(false);
 
@@ -1745,6 +1804,10 @@ function App() {
     localStorage.removeItem("admin_key");
     setAdminKey(null);
     setView("jobs");
+  }
+
+  if (!introDone) {
+    return <IntroVideo onFinish={() => setIntroDone(true)} />;
   }
 
   if (error) return <p style={{ padding: "2rem", color: "red" }}>{error}</p>;
