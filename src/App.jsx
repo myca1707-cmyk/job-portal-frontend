@@ -1,3 +1,4 @@
+import introVideo from "./assets/intro.mp4";
 import { useState, useEffect } from "react";
 import "./App.css";
 import logo from "./assets/coretech-logo.png";
