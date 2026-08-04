@@ -71,7 +71,7 @@ function SplashScreen() {
   );
 }
 
-function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices }) {
+function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter }) {
   return (
     <div className="hero">
       <svg className="hero-bg" viewBox="0 0 800 240" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
@@ -100,9 +100,10 @@ function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices }) {
             <div className="brand-name">Coretech Talents</div>
           </div>
 
-          <div className="hero-nav" style={{ display: "flex", gap: "0.5rem" }}>
+          <div className="hero-nav" style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
             <button onClick={onAbout}>About</button>
             <button onClick={onServices}>Services</button>
+            <button onClick={onNewsletter}>Newsletter</button>
             <button onClick={onOpenPortal}>Login / Sign Up</button>
           </div>
         </div>
@@ -172,6 +173,51 @@ function ServicesSection() {
           >
             <h3 style={{ marginBottom: "0.5rem" }}>{service.title}</h3>
             <p className="card-meta">{service.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function NewsletterSection() {
+  const newsletters = [
+    {
+      title: "Recruitment Trends 2026",
+      desc: "Hiring is shifting toward skills-based assessments over degrees, faster interview cycles, and AI-assisted shortlisting — companies that adapt are seeing stronger candidate pipelines.",
+    },
+    {
+      title: "Understanding the GenZ Mindset",
+      desc: "GenZ candidates prioritize purpose, flexibility, and transparency. They expect quick feedback loops, honest job descriptions, and clear growth paths — not just a paycheck.",
+    },
+    {
+      title: "Evolving Recruitment Strategies",
+      desc: "Employer branding, referral-driven hiring, and community-led talent pools are replacing traditional job-board-only approaches as competition for skilled talent increases.",
+    },
+    {
+      title: "Technology in Recruitment",
+      desc: "AI-powered resume screening, automated interview scheduling, and data-driven candidate matching are reshaping how recruiters find and engage talent faster and more accurately.",
+    },
+  ];
+
+  return (
+    <div className="container" id="newsletter-section" style={{ paddingTop: "2.5rem", paddingBottom: "1rem" }}>
+      <div className="card" style={{ textAlign: "center", marginBottom: "2rem" }}>
+        <h2 className="page-title">Newsletter</h2>
+        <p className="card-desc">Insights on hiring trends, workplace shifts, and what's next in recruitment.</p>
+      </div>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2, 1fr)",
+          gap: "1.25rem",
+        }}
+      >
+        {newsletters.map((item) => (
+          <div key={item.title} className="card">
+            <h3 style={{ marginBottom: "0.5rem" }}>{item.title}</h3>
+            <p className="card-meta">{item.desc}</p>
           </div>
         ))}
       </div>
@@ -1846,12 +1892,16 @@ function App() {
         onServices={() => {
           document.getElementById("services-section")?.scrollIntoView({ behavior: "smooth" });
         }}
+        onNewsletter={() => {
+          document.getElementById("newsletter-section")?.scrollIntoView({ behavior: "smooth" });
+        }}
       />
 
       {!portalOpen && view === "jobs" && (
         <>
           <AboutSection />
           <ServicesSection />
+          <NewsletterSection />
         </>
       )}
 
