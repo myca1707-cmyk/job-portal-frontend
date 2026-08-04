@@ -4,7 +4,44 @@ import logo from "./assets/coretech-logo.png";
 
 const API_BASE = "https://job-portal-backend-production-6d9d.up.railway.app";
 
-function Hero({ onOpenPortal, onAdminAccess }) {
+function SplashScreen() {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "#0A192F",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 9999,
+      }}
+    >
+      <img
+        src={logo}
+        alt="Coretech Talents"
+        style={{
+          width: 100,
+          height: 100,
+          marginBottom: "1rem",
+          animation: "pulse 1.2s ease-in-out infinite",
+        }}
+      />
+      <h1 style={{ color: "#64FFDA", fontSize: "1.5rem", letterSpacing: "0.05em" }}>
+        Coretech Talents
+      </h1>
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.1); opacity: 0.7; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+function Hero({ onOpenPortal, onAdminAccess, onAbout }) {
   return (
     <div className="hero">
       <svg className="hero-bg" viewBox="0 0 800 240" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
@@ -33,7 +70,8 @@ function Hero({ onOpenPortal, onAdminAccess }) {
             <div className="brand-name">Coretech Talents</div>
           </div>
 
-          <div className="hero-nav">
+          <div className="hero-nav" style={{ display: "flex", gap: "0.5rem" }}>
+            <button onClick={onAbout}>About</button>
             <button onClick={onOpenPortal}>Login / Sign Up</button>
           </div>
         </div>
@@ -64,7 +102,7 @@ function AboutSection() {
   ];
 
   return (
-    <div className="container" style={{ paddingTop: "2.5rem", paddingBottom: "1rem" }}>
+    <div className="container" id="about-section" style={{ paddingTop: "2.5rem", paddingBottom: "1rem" }}>
       <div className="card" style={{ textAlign: "center", marginBottom: "2rem" }}>
         <h2 className="page-title">Our Vision & Mission</h2>
         <p className="card-desc">
@@ -340,8 +378,8 @@ function RecruiterSignupForm({ onSuccess }) {
 }
 
 function PortalAccess({ onCandidateLogin, onRecruiterLogin, onClose }) {
-  const [role, setRole] = useState(null); // null | "candidate" | "recruiter"
-  const [mode, setMode] = useState("login"); // "login" | "signup"
+  const [role, setRole] = useState(null);
+  const [mode, setMode] = useState("login");
   const [candidateSignupDone, setCandidateSignupDone] = useState(false);
   const [recruiterSignupDone, setRecruiterSignupDone] = useState(false);
 
@@ -1666,6 +1704,7 @@ function CandidateShell({ token, onLogout }) {
 
 function App() {
   const [error, setError] = useState(null);
+  const [showSplash, setShowSplash] = useState(false);
 
   const [candidateToken, setCandidateToken] = useState(() => localStorage.getItem("candidate_token"));
   const [recruiterToken, setRecruiterToken] = useState(() => localStorage.getItem("recruiter_token"));
@@ -1678,12 +1717,16 @@ function App() {
     localStorage.setItem("candidate_token", token);
     setCandidateToken(token);
     setPortalOpen(false);
+    setShowSplash(true);
+    setTimeout(() => setShowSplash(false), 3000);
   }
 
   function handleRecruiterLogin(token) {
     localStorage.setItem("recruiter_token", token);
     setRecruiterToken(token);
     setPortalOpen(false);
+    setShowSplash(true);
+    setTimeout(() => setShowSplash(false), 3000);
   }
 
   function handleCandidateLogout() {
@@ -1706,6 +1749,10 @@ function App() {
 
   if (error) return <p style={{ padding: "2rem", color: "red" }}>{error}</p>;
 
+  if (showSplash) {
+    return <SplashScreen />;
+  }
+
   if (recruiterToken) {
     return <RecruiterShell token={recruiterToken} onLogout={handleRecruiterLogout} />;
   }
@@ -1719,6 +1766,9 @@ function App() {
       <Hero
         onOpenPortal={() => { setPortalOpen(true); setView("jobs"); }}
         onAdminAccess={() => { setView("adminLogin"); setPortalOpen(false); }}
+        onAbout={() => {
+          document.getElementById("about-section")?.scrollIntoView({ behavior: "smooth" });
+        }}
       />
 
       {!portalOpen && view === "jobs" && <AboutSection />}
