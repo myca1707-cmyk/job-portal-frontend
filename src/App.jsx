@@ -1249,7 +1249,7 @@ function CandidateJobBrowser({ token }) {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${API_BASE}/jobs`)
+    fetch(`${API_BASE}/jobs/`)
       .then((res) => res.json())
       .then((data) => setJobs(data))
       .catch((err) => setError(err.message))
