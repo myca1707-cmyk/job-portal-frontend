@@ -1,7 +1,7 @@
-import introVideo from "./assets/intro.mp4";
 import { useState, useEffect } from "react";
 import "./App.css";
 import logo from "./assets/coretech-logo.png";
+import introVideo from "./assets/intro.mp4";
 
 const API_BASE = "https://job-portal-backend-production-6d9d.up.railway.app";
 
@@ -71,7 +71,7 @@ function SplashScreen() {
   );
 }
 
-function Hero({ onOpenPortal, onAdminAccess, onAbout }) {
+function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices }) {
   return (
     <div className="hero">
       <svg className="hero-bg" viewBox="0 0 800 240" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
@@ -102,6 +102,7 @@ function Hero({ onOpenPortal, onAdminAccess, onAbout }) {
 
           <div className="hero-nav" style={{ display: "flex", gap: "0.5rem" }}>
             <button onClick={onAbout}>About</button>
+            <button onClick={onServices}>Services</button>
             <button onClick={onOpenPortal}>Login / Sign Up</button>
           </div>
         </div>
@@ -112,6 +113,22 @@ function Hero({ onOpenPortal, onAdminAccess, onAbout }) {
 }
 
 function AboutSection() {
+  return (
+    <div className="container" id="about-section" style={{ paddingTop: "2.5rem", paddingBottom: "1rem" }}>
+      <div className="card" style={{ textAlign: "center" }}>
+        <h2 className="page-title">About Us</h2>
+        <p className="card-desc">
+          Coretech Talents was founded in 2023 by an individual entrepreneur with a vision to
+          bridge the gap between talent and opportunity. What began as a focused effort in
+          recruitment has since grown to include skilling and upskilling initiatives, helping
+          both job seekers and companies grow together through reliable, skill-focused support.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function ServicesSection() {
   const services = [
     {
       title: "Recruitment Support",
@@ -132,15 +149,9 @@ function AboutSection() {
   ];
 
   return (
-    <div className="container" id="about-section" style={{ paddingTop: "2.5rem", paddingBottom: "1rem" }}>
+    <div className="container" id="services-section" style={{ paddingTop: "2.5rem", paddingBottom: "1rem" }}>
       <div className="card" style={{ textAlign: "center", marginBottom: "2rem" }}>
-        <h2 className="page-title">Our Vision & Mission</h2>
-        <p className="card-desc">
-          At Coretech Talents, our vision is to bridge the gap between talent and opportunity,
-          empowering both candidates and companies to grow together. Our mission is to deliver
-          reliable, swift, and skill-focused recruitment solutions that create lasting value for
-          job seekers, employers, and educational institutions alike.
-        </p>
+        <h2 className="page-title">Our Services</h2>
       </div>
 
       <div
@@ -1832,9 +1843,17 @@ function App() {
         onAbout={() => {
           document.getElementById("about-section")?.scrollIntoView({ behavior: "smooth" });
         }}
+        onServices={() => {
+          document.getElementById("services-section")?.scrollIntoView({ behavior: "smooth" });
+        }}
       />
 
-      {!portalOpen && view === "jobs" && <AboutSection />}
+      {!portalOpen && view === "jobs" && (
+        <>
+          <AboutSection />
+          <ServicesSection />
+        </>
+      )}
 
       <div className="container">
         {portalOpen && (
