@@ -5,6 +5,129 @@ import introVideo from "./assets/intro.mp4";
 
 const API_BASE = "https://job-portal-backend-production-6d9d.up.railway.app";
 
+// ================= ABOUT SECTION (tabbed: About Us / Founder / Vision / Mission / Achievements) =================
+function AboutSection() {
+  const [activeTab, setActiveTab] = useState("about");
+
+  const tabs = [
+    { id: "about", label: "About Us" },
+    { id: "founder", label: "Founder" },
+    { id: "vision", label: "Vision" },
+    { id: "mission", label: "Mission" },
+    { id: "achievements", label: "Achievements" },
+  ];
+
+  const content = {
+    about: {
+      title: "About Us",
+      body: "CoreTech Talents is a recruitment and staffing company focused on connecting skilled talent with manufacturing and corporate organizations across India. Built on hands-on industry knowledge and a deep understanding of technical hiring needs, we specialize in sourcing candidates for machining, production, and industrial roles, as well as corporate support functions. As a lean, founder-led operation, we work closely with every client to understand their specific hiring challenges — moving fast without compromising on candidate quality.",
+    },
+    vision: {
+      title: "Vision",
+      body: "To become a trusted staffing partner of choice for manufacturing and industrial businesses across India, known for building talent pipelines that are fast, reliable, and built on genuine relationships with candidates and training communities rather than one-off transactions.",
+    },
+    mission: {
+      title: "Mission",
+      body: "To bridge the gap between skilled talent and growing manufacturing and corporate businesses by delivering fast, precise, and dependable recruitment — combining industry-specific expertise with a personal, relationship-driven approach to hiring that benefits both clients and candidates.",
+    },
+    achievements: {
+      title: "Achievements",
+      body: "PLACEHOLDER — tell me what to put here (years in business, placements made, clients served, notable partnerships, etc.) and I'll fill it in.",
+    },
+    founder: {
+      title: "Meet the Founder",
+      paragraphs: [
+        "With over 10 years of hands-on experience in the recruitment industry, our founder has spent a decade learning exactly what makes hiring work — and what holds businesses and candidates back. That depth of experience isn't just a resume line; it's the foundation this entire platform is built on.",
+        "A constant drive to evolve and do better is what led him to build CoreTech Talents' own recruitment portal — a platform designed to ease the job search for candidates and simplify hiring for recruiters. Where traditional recruitment often felt slow and disconnected, he saw an opportunity to make it faster, fairer, and more human.",
+        "Hard work, consistency, and a refusal to settle for 'good enough' define how he operates. Every improvement to this platform comes from the same relentless mindset that built his career: show up, solve real problems, and keep pushing forward.",
+        "This platform is more than a business — it's a personal commitment to India's growth. By closing the gap between skilled talent and the companies that need them, he hopes this initiative plays its part in building a stronger, more connected, and more opportunity-rich job market for the country.",
+      ],
+    },
+  };
+
+  const active = content[activeTab];
+
+  return (
+    <div className="container" id="about-section" style={{ paddingTop: "2.5rem", paddingBottom: "1rem" }}>
+      <div className="card" style={{ textAlign: "center", marginBottom: "2rem" }}>
+        <h2 className="page-title">About</h2>
+        <p className="card-desc">Who we are, what drives us, and where we're headed.</p>
+      </div>
+
+      {/* Tab buttons */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "0.75rem",
+          marginBottom: "1.5rem",
+          flexWrap: "wrap",
+        }}
+      >
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            style={{
+              padding: "0.6rem 1.4rem",
+              borderRadius: "999px",
+              border: activeTab === tab.id ? "2px solid #1a1a1a" : "1px solid #ccc",
+              background: activeTab === tab.id ? "#1a1a1a" : "#fff",
+              color: activeTab === tab.id ? "#fff" : "#333",
+              fontWeight: 600,
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Active tab content */}
+      {activeTab === "founder" ? (
+        <div className="card" style={{ maxWidth: "800px", margin: "0 auto", textAlign: "center" }}>
+          <div
+            style={{
+              width: 160,
+              height: 160,
+              borderRadius: "50%",
+              overflow: "hidden",
+              margin: "0 auto 1.5rem",
+              background: "rgba(0,0,0,0.08)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            {/* Replace this placeholder with your real photo:
+                1. Add the image file to src/assets (e.g. founder-photo.jpg)
+                2. Add this import near the top of the file:
+                   import founderPhoto from "./assets/founder-photo.jpg";
+                3. Replace the <span> below with:
+                   <img src={founderPhoto} alt="Founder" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            */}
+            <span className="hint">Founder Photo</span>
+          </div>
+
+          <h3 style={{ marginBottom: "1rem" }}>{content.founder.title}</h3>
+          {content.founder.paragraphs.map((para, i) => (
+            <p key={i} className="card-meta" style={{ marginBottom: "1rem", textAlign: "left" }}>
+              {para}
+            </p>
+          ))}
+        </div>
+      ) : (
+        <div className="card" style={{ maxWidth: "800px", margin: "0 auto" }}>
+          <h3 style={{ marginBottom: "0.75rem" }}>{active.title}</h3>
+          <p className="card-meta">{active.body}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function IntroVideo({ onFinish }) {
   return (
     <div
@@ -108,22 +231,6 @@ function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter }
           </div>
         </div>
 
-      </div>
-    </div>
-  );
-}
-
-function AboutSection() {
-  return (
-    <div className="container" id="about-section" style={{ paddingTop: "2.5rem", paddingBottom: "1rem" }}>
-      <div className="card" style={{ textAlign: "center" }}>
-        <h2 className="page-title">About Us</h2>
-        <p className="card-desc">
-          Coretech Talents was founded in 2023 by an individual entrepreneur with a vision to
-          bridge the gap between talent and opportunity. What began as a focused effort in
-          recruitment has since grown to include skilling and upskilling initiatives, helping
-          both job seekers and companies grow together through reliable, skill-focused support.
-        </p>
       </div>
     </div>
   );
@@ -1886,9 +1993,7 @@ function App() {
       <Hero
         onOpenPortal={() => { setPortalOpen(true); setView("jobs"); }}
         onAdminAccess={() => { setView("adminLogin"); setPortalOpen(false); }}
-        onAbout={() => {
-          document.getElementById("about-section")?.scrollIntoView({ behavior: "smooth" });
-        }}
+        onAbout={() => { setView("about"); setPortalOpen(false); }}
         onServices={() => {
           document.getElementById("services-section")?.scrollIntoView({ behavior: "smooth" });
         }}
@@ -1899,7 +2004,6 @@ function App() {
 
       {!portalOpen && view === "jobs" && (
         <>
-          <AboutSection />
           <ServicesSection />
           <NewsletterSection />
         </>
@@ -1912,6 +2016,13 @@ function App() {
             onRecruiterLogin={handleRecruiterLogin}
             onClose={() => setPortalOpen(false)}
           />
+        )}
+
+        {view === "about" && !portalOpen && (
+          <>
+            <button className="btn-link" onClick={() => setView("jobs")}>← Back to home</button>
+            <AboutSection />
+          </>
         )}
 
         {view === "adminLogin" && !portalOpen && (
