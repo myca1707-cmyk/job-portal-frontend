@@ -128,6 +128,79 @@ function AboutSection() {
   );
 }
 
+// ================= SERVICES PAGE (vertical list: Campus Exploration / Tech & Non Tech Hiring / Coretech Expert Solutions) =================
+function ServicesPage({ onCampusExploration }) {
+  const [expanded, setExpanded] = useState(null);
+
+  const services = [
+    {
+      id: "campus",
+      title: "Campus Exploration",
+      summary: "Direct access to fresh graduate talent through structured campus partnerships and drives.",
+      isRecruiterOnly: true,
+    },
+    {
+      id: "techNonTech",
+      title: "Tech and Non Tech Hiring",
+      summary: "Permanent placement solutions across technical and non-technical roles.",
+      body: "From engineering and IT roles to operations, admin, and support functions, we focus on permanent placement solutions — matching candidates to long-term roles rather than short-term or temporary staffing.",
+    },
+    {
+      id: "rpo",
+      title: "Coretech Expert Solutions",
+      summary: "RPO-style support with a dedicated recruitment expert working alongside your team.",
+      body: "Our Coretech Expert Solutions follow an RPO (Recruitment Process Outsourcing) model — a dedicated recruitment expert works in-office with your team, managing the entire hiring process end-to-end, giving you in-house-level support without building an internal team from scratch.",
+    },
+  ];
+
+  function handleClick(service) {
+    if (service.isRecruiterOnly) {
+      onCampusExploration();
+      return;
+    }
+    setExpanded((prev) => (prev === service.id ? null : service.id));
+  }
+
+  return (
+    <div className="container" id="services-section" style={{ paddingTop: "2.5rem", paddingBottom: "1rem" }}>
+      <div className="card" style={{ textAlign: "center", marginBottom: "2rem" }}>
+        <h2 className="page-title">Our Services</h2>
+        <p className="card-desc">What we offer, and how we help you hire.</p>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: "800px", margin: "0 auto" }}>
+        {services.map((service) => (
+          <div
+            key={service.id}
+            className="card"
+            style={{ cursor: "pointer" }}
+            onClick={() => handleClick(service)}
+          >
+            <h3 style={{ marginBottom: "0.5rem" }}>{service.title}</h3>
+            <p className="card-meta">{service.summary}</p>
+
+            {service.isRecruiterOnly && (
+              <p className="hint" style={{ marginTop: "0.5rem" }}>
+                Available to recruiters — click to log in and explore →
+              </p>
+            )}
+
+            {!service.isRecruiterOnly && expanded === service.id && (
+              <p className="card-desc" style={{ marginTop: "0.75rem" }}>{service.body}</p>
+            )}
+
+            {!service.isRecruiterOnly && (
+              <p className="hint" style={{ marginTop: "0.5rem" }}>
+                {expanded === service.id ? "Click to collapse ↑" : "Click to read more →"}
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function IntroVideo({ onFinish }) {
   return (
     <div
@@ -231,57 +304,6 @@ function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter }
           </div>
         </div>
 
-      </div>
-    </div>
-  );
-}
-
-function ServicesSection() {
-  const services = [
-    {
-      title: "Recruitment Support",
-      desc: "End-to-end hiring assistance to help companies find the right talent efficiently.",
-    },
-    {
-      title: "Swift Placements",
-      desc: "Rapid, efficient matching that connects the right candidates to the right roles — including direct access to fresh graduate talent straight from partner colleges.",
-    },
-    {
-      title: "Industrial Training",
-      desc: "Hands-on training programs that prepare candidates with real-world, job-ready skills.",
-    },
-    {
-      title: "Campus Support",
-      desc: "Partnering with institutions to connect students and freshers with career opportunities.",
-    },
-  ];
-
-  return (
-    <div className="container" id="services-section" style={{ paddingTop: "2.5rem", paddingBottom: "1rem" }}>
-      <div className="card" style={{ textAlign: "center", marginBottom: "2rem" }}>
-        <h2 className="page-title">Our Services</h2>
-      </div>
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: "1.25rem",
-        }}
-      >
-        {services.map((service, index) => (
-          <div
-            key={service.title}
-            className="card"
-            style={{
-              textAlign: "center",
-              gridColumn: index === services.length - 1 ? "1 / -1" : "auto",
-            }}
-          >
-            <h3 style={{ marginBottom: "0.5rem" }}>{service.title}</h3>
-            <p className="card-meta">{service.desc}</p>
-          </div>
-        ))}
       </div>
     </div>
   );
@@ -577,8 +599,8 @@ function RecruiterSignupForm({ onSuccess }) {
   );
 }
 
-function PortalAccess({ onCandidateLogin, onRecruiterLogin, onClose }) {
-  const [role, setRole] = useState(null);
+function PortalAccess({ onCandidateLogin, onRecruiterLogin, onClose, initialRole = null }) {
+  const [role, setRole] = useState(initialRole);
   const [mode, setMode] = useState("login");
   const [candidateSignupDone, setCandidateSignupDone] = useState(false);
   const [recruiterSignupDone, setRecruiterSignupDone] = useState(false);
@@ -860,6 +882,261 @@ function PostJobPage({ token }) {
         }}
       />
       {posted && <p className="msg-success">Job posted successfully.</p>}
+    </div>
+  );
+}
+
+// ================= CAMPUS EXPLORATION (recruiter-only) =================
+function RegisterRequirementForm() {
+  const [form, setForm] = useState({
+    date: "",
+    location: "",
+    college: "",
+    course: "",
+    candidateRequirements: "",
+  });
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  function handleChange(field, value) {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${API_BASE}/campus/requirement`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          date: form.date,
+          location: form.location,
+          college: form.college,
+          course: form.course,
+          candidate_requirements: form.candidateRequirements,
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail || "Failed to submit requirement");
+
+      setSubmitted(true);
+      setForm({ date: "", location: "", college: "", course: "", candidateRequirements: "" });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="form-card" style={{ marginTop: "1.5rem" }}>
+      <h2>Register Campus Requirement</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="field">
+          <label>Preferred date</label>
+          <input
+            type="date"
+            value={form.date}
+            onChange={(e) => handleChange("date", e.target.value)}
+            required
+          />
+        </div>
+        <div className="field">
+          <label>Location</label>
+          <input
+            value={form.location}
+            onChange={(e) => handleChange("location", e.target.value)}
+            placeholder="City / campus location"
+            required
+          />
+        </div>
+        <div className="field">
+          <label>College</label>
+          <input
+            value={form.college}
+            onChange={(e) => handleChange("college", e.target.value)}
+            required
+          />
+        </div>
+        <div className="field">
+          <label>Course</label>
+          <input
+            value={form.course}
+            onChange={(e) => handleChange("course", e.target.value)}
+            placeholder="e.g. B.E Mechanical, Diploma EEE"
+            required
+          />
+        </div>
+        <div className="field">
+          <label>Candidate requirements</label>
+          <textarea
+            value={form.candidateRequirements}
+            onChange={(e) => handleChange("candidateRequirements", e.target.value)}
+            placeholder="Number of candidates, skills, experience level, roles..."
+            rows={3}
+            required
+          />
+        </div>
+
+        {error && <p className="msg-error">{error}</p>}
+        {submitted && (
+          <p className="msg-success">
+            Requirement submitted — an email has been sent to our team to arrange the campus drive.
+          </p>
+        )}
+
+        <button type="submit" className="btn-primary" disabled={loading}>
+          {loading ? "Submitting..." : "Submit Requirement"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+function CampusArrangement({ onGoToSupport }) {
+  const [needsSupport, setNeedsSupport] = useState(null); // null | "yes" | "no"
+  const [subView, setSubView] = useState(null); // null | "registerRequirement"
+
+  function handleChoice(choice) {
+    setNeedsSupport(choice);
+    setSubView(null);
+  }
+
+  return (
+    <div>
+      <div className="card" style={{ maxWidth: 600 }}>
+        <h3 style={{ marginBottom: "0.75rem" }}>Do you need campus arrangement support?</h3>
+        <div style={{ display: "flex", gap: "0.75rem" }}>
+          <button
+            className={needsSupport === "yes" ? "btn-applied" : "btn-primary"}
+            onClick={() => handleChoice("yes")}
+          >
+            Yes
+          </button>
+          <button
+            className={needsSupport === "no" ? "btn-applied" : ""}
+            onClick={() => handleChoice("no")}
+          >
+            No
+          </button>
+        </div>
+      </div>
+
+      {needsSupport === "no" && (
+        <p className="hint" style={{ marginTop: "1rem" }}>
+          No problem — you can browse the Campus Support tab any time to see colleges in your area.
+        </p>
+      )}
+
+      {needsSupport === "yes" && !subView && (
+        <div style={{ display: "flex", gap: "1rem", marginTop: "1.5rem", flexWrap: "wrap" }}>
+          <div
+            className="card"
+            style={{ cursor: "pointer", flex: "1 1 220px" }}
+            onClick={() => setSubView("registerRequirement")}
+          >
+            <h3 style={{ marginBottom: "0.5rem" }}>Register Requirement</h3>
+            <p className="card-meta">
+              Tell us your campus hiring requirement — date, location, college, course, and candidate needs.
+            </p>
+            <p className="hint" style={{ marginTop: "0.5rem" }}>Click to fill the form →</p>
+          </div>
+
+          <div
+            className="card"
+            style={{ cursor: "pointer", flex: "1 1 220px" }}
+            onClick={onGoToSupport}
+          >
+            <h3 style={{ marginBottom: "0.5rem" }}>Campus Support</h3>
+            <p className="card-meta">Browse colleges in your area and their websites.</p>
+            <p className="hint" style={{ marginTop: "0.5rem" }}>Click to view →</p>
+          </div>
+        </div>
+      )}
+
+      {needsSupport === "yes" && subView === "registerRequirement" && (
+        <>
+          <button className="btn-link" style={{ marginTop: "1rem" }} onClick={() => setSubView(null)}>
+            ← Back to options
+          </button>
+          <RegisterRequirementForm />
+        </>
+      )}
+    </div>
+  );
+}
+
+function CampusSupport() {
+  // PLACEHOLDER — replace with the actual colleges you want to list, and their real websites.
+  const colleges = [
+    { name: "PLACEHOLDER College 1", location: "Add city/area", website: "https://example.edu" },
+    { name: "PLACEHOLDER College 2", location: "Add city/area", website: "https://example.edu" },
+    { name: "PLACEHOLDER College 3", location: "Add city/area", website: "https://example.edu" },
+  ];
+
+  return (
+    <div>
+      <div className="card" style={{ marginBottom: "1.25rem" }}>
+        <h3 style={{ marginBottom: "0.5rem" }}>Colleges in your area</h3>
+        <p className="card-meta">
+          Reach out directly to plan campus drives. Let me know the real colleges you work with and I'll fill this list in.
+        </p>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        {colleges.map((college) => (
+          <div key={college.name} className="card">
+            <h3 style={{ marginBottom: "0.25rem" }}>{college.name}</h3>
+            <p className="card-meta" style={{ marginBottom: "0.5rem" }}>{college.location}</p>
+            <a
+              href={college.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-link"
+            >
+              Visit website →
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CampusExplorationPage() {
+  const [activeTab, setActiveTab] = useState("arrangement");
+
+  return (
+    <div>
+      <h2 className="page-title">Campus Exploration</h2>
+      <p className="card-desc" style={{ marginBottom: "1.5rem" }}>
+        Explore campus hiring support and nearby college partnerships.
+      </p>
+
+      <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1.5rem" }}>
+        <button
+          className={activeTab === "arrangement" ? "btn-primary" : ""}
+          onClick={() => setActiveTab("arrangement")}
+        >
+          Campus Arrangement
+        </button>
+        <button
+          className={activeTab === "support" ? "btn-primary" : ""}
+          onClick={() => setActiveTab("support")}
+        >
+          Campus Support
+        </button>
+      </div>
+
+      {activeTab === "arrangement" && (
+        <CampusArrangement onGoToSupport={() => setActiveTab("support")} />
+      )}
+      {activeTab === "support" && <CampusSupport />}
     </div>
   );
 }
@@ -1809,6 +2086,7 @@ function RecruiterShell({ token, onLogout }) {
     { key: "dashboard", label: "My Dashboard" },
     { key: "searchCandidates", label: "Search Candidates" },
     { key: "postJob", label: "Post a Job" },
+    { key: "campusExploration", label: "Campus Exploration" },
   ];
 
   return (
@@ -1866,6 +2144,7 @@ function RecruiterShell({ token, onLogout }) {
         {view === "dashboard" && <RecruiterDashboard token={token} />}
         {view === "searchCandidates" && <CandidateSearch token={token} />}
         {view === "postJob" && <PostJobPage token={token} />}
+        {view === "campusExploration" && <CampusExplorationPage />}
       </div>
     </div>
   );
@@ -1934,6 +2213,7 @@ function App() {
   const [adminKey, setAdminKey] = useState(() => localStorage.getItem("admin_key"));
 
   const [portalOpen, setPortalOpen] = useState(false);
+  const [portalInitialRole, setPortalInitialRole] = useState(null);
   const [view, setView] = useState("jobs");
 
   function handleCandidateLogin(token) {
@@ -1970,6 +2250,12 @@ function App() {
     setView("jobs");
   }
 
+  function openRecruiterPortalForCampus() {
+    setPortalInitialRole("recruiter");
+    setPortalOpen(true);
+    setView("jobs");
+  }
+
   if (!introDone) {
     return <IntroVideo onFinish={() => setIntroDone(true)} />;
   }
@@ -1994,19 +2280,14 @@ function App() {
         onOpenPortal={() => { setPortalOpen(true); setView("jobs"); }}
         onAdminAccess={() => { setView("adminLogin"); setPortalOpen(false); }}
         onAbout={() => { setView("about"); setPortalOpen(false); }}
-        onServices={() => {
-          document.getElementById("services-section")?.scrollIntoView({ behavior: "smooth" });
-        }}
+        onServices={() => { setView("services"); setPortalOpen(false); }}
         onNewsletter={() => {
           document.getElementById("newsletter-section")?.scrollIntoView({ behavior: "smooth" });
         }}
       />
 
       {!portalOpen && view === "jobs" && (
-        <>
-          <ServicesSection />
-          <NewsletterSection />
-        </>
+        <NewsletterSection />
       )}
 
       <div className="container">
@@ -2014,7 +2295,8 @@ function App() {
           <PortalAccess
             onCandidateLogin={handleCandidateLogin}
             onRecruiterLogin={handleRecruiterLogin}
-            onClose={() => setPortalOpen(false)}
+            initialRole={portalInitialRole}
+            onClose={() => { setPortalOpen(false); setPortalInitialRole(null); }}
           />
         )}
 
@@ -2022,6 +2304,13 @@ function App() {
           <>
             <button className="btn-link" onClick={() => setView("jobs")}>← Back to home</button>
             <AboutSection />
+          </>
+        )}
+
+        {view === "services" && !portalOpen && (
+          <>
+            <button className="btn-link" onClick={() => setView("jobs")}>← Back to home</button>
+            <ServicesPage onCampusExploration={openRecruiterPortalForCampus} />
           </>
         )}
 
