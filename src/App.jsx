@@ -1251,8 +1251,8 @@ function MyResume({ token, onBack }) {
         <form onSubmit={handleUpload}>
           <div className="field">
             <label>PDF file (max 5MB)</label>
-            
-          </div><input type="file" accept=".pdf,.doc,.docx" onChange={(e) => setFile(e.target.files[0] || null)} required />
+            <input type="file" accept="application/pdf" onChange={(e) => setFile(e.target.files[0] || null)} required />
+          </div>
           {error && <p className="msg-error">{error}</p>}
           {message && <p className="msg-success">{message}</p>}
           <button type="submit" className="btn-primary" disabled={uploading || !file}>
@@ -1706,7 +1706,7 @@ function CandidateProfileDetail({ candidateId, token, onBack }) {
           )}
 
           <div style={{ marginTop: "1.5rem" }}>
-            {profile.resume_file ? (
+            {profile.has_resume ? (
               <button className="btn-primary" onClick={handleDownloadResume} disabled={downloading}>
                 {downloading ? "Downloading..." : "Download Resume"}
               </button>
@@ -1933,7 +1933,7 @@ function CandidateSearch({ token }) {
               <h2>{candidate.full_name}</h2>
               <p className="card-meta">
                 {candidate.email}
-                {candidate.mobile_number && ` · ${candidate.mobile_number}`}
+
               </p>
               {candidate.resume_headline && <p className="card-desc">{candidate.resume_headline}</p>}
               <p className="card-meta">
@@ -1950,14 +1950,7 @@ function CandidateSearch({ token }) {
                   ))}
                 </div>
               )}
-              <button
-                className="btn-primary"
-                style={{ marginTop: "0.5rem" }}
-                onClick={(e) => handleDownloadResume(candidate, e)}
-                disabled={downloadingId === candidate.id}
-              >
-                {downloadingId === candidate.id ? "Downloading..." : "Download Resume"}
-              </button>
+              
               <p className="hint" style={{ marginTop: "0.5rem" }}>Click card to view full profile →</p>
             </div>
           </div>
