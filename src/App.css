@@ -1,25 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap');
 
 :root {
   --white: #FFFFFF;
-  --charcoal: #1E293B;
-  --charcoal-muted: #64748B;
-  --border: #DCE6F0;
+  --ink: #16202E;
+  --ink-muted: #5B6B7F;
+  --line: #E4EAF2;
+  --mist: #F6F9FC;
 
-  --blue-deep: #1D4ED8;      /* primary buttons, links, active states */
-  --blue-deep-hover: #1741B0;
-  --blue-dark: #0B1F3E;      /* header / footer / hero background */
-  --blue-medium: #2563EB;    /* secondary accents, hover highlights */
-  --blue-soft-bg: #EFF5FC;   /* section / page-tint backgrounds */
-  --blue-light-card: #F4F8FD; /* card fills, icon backgrounds, tags */
+  --navy-950: #0A1628;      /* hero / footer background */
+  --navy-800: #12274A;
+  --blue-600: #2554E8;      /* primary buttons, links, active states */
+  --blue-700: #1C3FB8;      /* hover state for primary */
+  --blue-100: #E8EFFE;      /* tag / badge fills */
+  --blue-50:  #F3F7FE;      /* card + section tint */
 
   --bg: var(--white);
   --surface: var(--white);
-  --surface-hover: var(--blue-light-card);
-  --text: var(--charcoal);
-  --text-muted: var(--charcoal-muted);
-  --accent: var(--blue-deep);
-  --accent-dark: var(--blue-deep-hover);
+  --surface-hover: var(--blue-50);
+  --text: var(--ink);
+  --text-muted: var(--ink-muted);
+  --accent: var(--blue-600);
+  --accent-dark: var(--blue-700);
   --success: #1E8E5A;
   --danger: #C0392B;
   --pending: #B8860B;
@@ -35,18 +36,32 @@ body {
 }
 
 .container {
-  max-width: 780px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 0 1.5rem 4rem;
 }
 
+/* ---------- HERO ---------- */
 .hero {
   position: relative;
   width: 100%;
-  height: 240px;
+  height: 260px;
   overflow: hidden;
-  margin-bottom: 2rem;
-  background: var(--blue-dark);
+  margin-bottom: 2.5rem;
+  background:
+    radial-gradient(ellipse 900px 420px at 12% -10%, rgba(37,84,232,0.35), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 100% 120%, rgba(37,84,232,0.22), transparent 55%),
+    linear-gradient(160deg, var(--navy-950) 0%, #0D1D38 55%, var(--navy-800) 100%);
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 100% 28px;
+  opacity: 0.35;
+  pointer-events: none;
 }
 
 .hero svg.hero-bg {
@@ -56,12 +71,13 @@ body {
 }
 
 .hero-content {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  z-index: 1;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 1.25rem 1.75rem;
+  padding: 1.4rem 1.85rem;
 }
 
 .brand {
@@ -71,55 +87,100 @@ body {
 }
 
 .brand-mark {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
   display: block;
-  border-radius: 6px;
+  border-radius: 9px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
 }
 
 .brand-name {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 800;
-  font-size: 1.35rem;
-  letter-spacing: 0.01em;
+  font-size: 1.3rem;
+  letter-spacing: -0.01em;
   color: var(--white);
 }
 
 .hero-nav {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.4rem;
   flex-wrap: wrap;
 }
 
-.hero-headline {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 700;
-  font-size: 1.6rem;
+.hero-nav button {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  backdrop-filter: blur(6px);
   color: var(--white);
-  margin: 0;
+  font-weight: 600;
+}
+.hero-nav button:hover:not(:disabled) {
+  background: rgba(255,255,255,0.16);
+  border-color: rgba(255,255,255,0.24);
+}
+.hero-nav button.btn-primary,
+.hero-nav button.active-nav {
+  background: var(--blue-600);
+  border-color: var(--blue-600);
+}
+.hero-nav button.btn-primary:hover:not(:disabled) {
+  background: var(--blue-700);
+  border-color: var(--blue-700);
 }
 
+.hero-headline {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.7rem;
+  letter-spacing: -0.01em;
+  color: var(--white);
+  margin: 0;
+  max-width: 26ch;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9DB6F5;
+  margin: 0 0 0.5rem;
+}
+.hero-eyebrow::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #5B8CFA;
+  box-shadow: 0 0 0 4px rgba(91,140,250,0.25);
+}
+
+/* ---------- BUTTONS (general) ---------- */
 button {
   font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   background: var(--white);
   color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 7px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
   padding: 0.55rem 1.05rem;
   cursor: pointer;
   transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease, border-color 0.12s ease;
 }
 
 button:hover:not(:disabled) {
-  border-color: var(--blue-deep);
+  border-color: var(--blue-600);
   transform: translateY(-1px);
 }
 
 button:focus-visible {
-  outline: 2px solid var(--blue-deep);
+  outline: 2px solid var(--blue-600);
   outline-offset: 2px;
 }
 
@@ -129,30 +190,30 @@ button:disabled {
   transform: none;
 }
 
-.btn-primary,
-.hero-nav button {
-  background: var(--blue-deep);
+.btn-primary {
+  background: var(--blue-600);
   color: var(--white);
-  border-color: var(--blue-deep);
+  border-color: var(--blue-600);
   font-weight: 700;
+  box-shadow: 0 6px 16px rgba(37,84,232,0.25);
 }
-.btn-primary:hover:not(:disabled),
-.hero-nav button:hover:not(:disabled) {
-  background: var(--blue-deep-hover);
-  border-color: var(--blue-deep-hover);
+.btn-primary:hover:not(:disabled) {
+  background: var(--blue-700);
+  border-color: var(--blue-700);
+  box-shadow: 0 8px 20px rgba(37,84,232,0.32);
 }
 
 .btn-applied {
-  background: var(--blue-light-card);
-  color: var(--blue-deep);
-  border-color: var(--blue-deep);
+  background: var(--blue-100);
+  color: var(--blue-600);
+  border-color: var(--blue-100);
 }
-.btn-applied:hover:not(:disabled) { background: var(--blue-soft-bg); }
+.btn-applied:hover:not(:disabled) { background: var(--blue-50); }
 
 .btn-link {
   background: none;
   border: none;
-  color: var(--blue-deep);
+  color: var(--blue-600);
   padding: 0;
   margin-bottom: 1.25rem;
   font-weight: 600;
@@ -160,26 +221,35 @@ button:disabled {
 .btn-link:hover { background: none; text-decoration: underline; transform: none; border: none; }
 .btn-link::before { content: "← "; }
 
+/* ---------- CARDS ---------- */
 .card {
+  position: relative;
   background: var(--white);
-  border: 1px solid var(--border);
-  border-top: 3px solid var(--blue-deep);
-  border-radius: 10px;
-  padding: 1.25rem 1.5rem;
-  margin-bottom: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1.5rem 1.65rem;
+  margin-bottom: 1.1rem;
   text-align: left;
+  box-shadow: 0 1px 2px rgba(16,32,64,0.04);
+  transition: box-shadow 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+}
+.card:hover {
+  box-shadow: 0 12px 28px rgba(16,32,64,0.09);
+  transform: translateY(-2px);
+  border-color: #D3E0F7;
 }
 
 .card h2, .card h3 {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 600;
-  font-size: 1.15rem;
-  margin: 0 0 0.35rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.12rem;
+  letter-spacing: -0.005em;
+  margin: 0 0 0.4rem;
   color: var(--text);
 }
 
 .card-meta {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
   margin: 0 0 0.75rem;
   font-weight: 500;
@@ -188,9 +258,26 @@ button:disabled {
 .card-desc {
   font-size: 0.92rem;
   color: var(--text);
-  opacity: 0.85;
-  line-height: 1.55;
+  opacity: 0.78;
+  line-height: 1.6;
   margin: 0 0 0.85rem;
+}
+
+/* Featured card (e.g. newsletter signup) — distinct from the article grid */
+.card.featured {
+  background: linear-gradient(155deg, var(--navy-950) 0%, var(--navy-800) 100%);
+  border: none;
+  color: var(--white);
+  text-align: center;
+  padding: 2.25rem 1.75rem;
+}
+.card.featured h2 {
+  color: var(--white);
+  font-size: 1.4rem;
+}
+.card.featured .card-desc {
+  color: #C7D4EA;
+  opacity: 1;
 }
 
 .tags {
@@ -201,13 +288,14 @@ button:disabled {
 }
 
 .tag {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--blue-deep);
-  background: var(--blue-light-card);
-  border: 1px solid var(--blue-medium);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--blue-600);
+  background: var(--blue-100);
+  border: none;
   border-radius: 5px;
-  padding: 0.2rem 0.55rem;
+  padding: 0.25rem 0.6rem;
 }
 
 .status-line {
@@ -233,6 +321,7 @@ button:disabled {
 .msg-success { color: var(--success); }
 .msg-error { color: var(--danger); }
 
+/* ---------- FORMS ---------- */
 .field { margin-bottom: 0.9rem; }
 
 .field label {
@@ -247,8 +336,8 @@ input, textarea, select {
   width: 100%;
   background: var(--white);
   color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 7px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
   padding: 0.6rem 0.75rem;
   font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
@@ -256,21 +345,21 @@ input, textarea, select {
 
 input:focus, textarea:focus, select:focus {
   outline: none;
-  border-color: var(--blue-deep);
-  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12);
+  border-color: var(--blue-600);
+  box-shadow: 0 0 0 3px rgba(37,84,232,0.12);
 }
 
 .form-card {
   background: var(--white);
-  border: 1px solid var(--border);
-  border-top: 3px solid var(--blue-deep);
-  border-radius: 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+  box-shadow: 0 1px 2px rgba(16,32,64,0.04);
 }
 
 .form-card h2 {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   color: var(--text);
   margin-top: 0;
 }
@@ -288,8 +377,8 @@ input:focus, textarea:focus, select:focus {
 }
 
 .applicant-row {
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
   padding: 0.85rem 1rem;
   margin-bottom: 0.5rem;
   background: var(--white);
@@ -310,7 +399,7 @@ input:focus, textarea:focus, select:focus {
 }
 
 .job-pick { cursor: pointer; }
-.job-pick:hover { border-top-color: var(--blue-medium); background: var(--blue-soft-bg); }
+.job-pick:hover { border-color: #D3E0F7; }
 
 .hint {
   font-size: 0.78rem;
@@ -319,17 +408,26 @@ input:focus, textarea:focus, select:focus {
 }
 
 .page-title {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--text);
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   margin: 0 0 1rem;
 }
+
+/* Two-column article grid, used when cards aren't the single-column featured type */
+.card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.1rem;
+}
+.card-grid .card { margin-bottom: 0; }
 
 /* ---------- SIDEBAR (recruiter / candidate shells) ---------- */
 .recruiter-sidebar,
 .candidate-sidebar {
-  background: var(--blue-dark);
+  background: var(--navy-950);
 }
 
 .recruiter-sidebar .brand-name,
@@ -340,7 +438,7 @@ input:focus, textarea:focus, select:focus {
 .recruiter-sidebar button,
 .candidate-sidebar button {
   background: transparent;
-  color: var(--blue-light-card);
+  color: #C7D4EA;
   border: 1px solid transparent;
   text-align: left;
 }
@@ -354,27 +452,28 @@ input:focus, textarea:focus, select:focus {
 
 .recruiter-sidebar button.btn-primary,
 .candidate-sidebar button.btn-primary {
-  background: var(--blue-deep);
+  background: var(--blue-600);
   color: var(--white);
 }
 
 .recruiter-main,
 .candidate-main {
-  background: var(--blue-soft-bg);
+  background: var(--mist);
 }
 
 /* ---------- MOBILE RESPONSIVENESS ---------- */
 @media (max-width: 600px) {
-  .hero { height: auto; min-height: 190px; }
-  .hero-content { padding: 1rem 1.1rem; }
+  .hero { height: auto; min-height: 200px; }
+  .hero-content { padding: 1.1rem 1.15rem; }
   .brand-name { font-size: 1.1rem; }
   .brand-mark { width: 32px; height: 32px; }
   .hero-nav { gap: 0.4rem; }
   .hero-nav button { font-size: 0.75rem; padding: 0.45rem 0.7rem; }
-  .hero-headline { font-size: 1.25rem; }
+  .hero-headline { font-size: 1.3rem; }
   .container { padding: 0 1rem 3rem; }
-  .card, .form-card { padding: 1rem; }
+  .card, .form-card { padding: 1.15rem; }
   .card h2 { font-size: 1rem; }
+  .card-grid { grid-template-columns: 1fr; }
   .applicant-actions { flex-wrap: wrap; }
   .applicant-actions button { flex: 1 1 auto; font-size: 0.78rem; padding: 0.5rem 0.6rem; }
   button { font-size: 0.8rem; }
