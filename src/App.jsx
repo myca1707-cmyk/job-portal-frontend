@@ -54,7 +54,6 @@ function AboutSection() {
         <p className="card-desc">Who we are, what drives us, and where we're headed.</p>
       </div>
 
-      {/* Tab buttons */}
       <div
         style={{
           display: "flex",
@@ -84,7 +83,6 @@ function AboutSection() {
         ))}
       </div>
 
-      {/* Active tab content */}
       {activeTab === "founder" ? (
         <div className="card" style={{ maxWidth: "800px", margin: "0 auto", textAlign: "center" }}>
           <div
@@ -101,13 +99,6 @@ function AboutSection() {
               flexShrink: 0,
             }}
           >
-            {/* Replace this placeholder with your real photo:
-                1. Add the image file to src/assets (e.g. founder-photo.jpg)
-                2. Add this import near the top of the file:
-                   import founderPhoto from "./assets/founder-photo.jpg";
-                3. Replace the <span> below with:
-                   <img src={founderPhoto} alt="Founder" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            */}
             <span className="hint">Founder Photo</span>
           </div>
 
@@ -128,7 +119,7 @@ function AboutSection() {
   );
 }
 
-// ================= SERVICES PAGE (vertical list: Campus Exploration / Tech & Non Tech Hiring / Coretech Expert Solutions) =================
+// ================= SERVICES PAGE =================
 function ServicesPage({ onCampusExploration }) {
   const [expanded, setExpanded] = useState(null);
 
@@ -220,11 +211,7 @@ function IntroVideo({ onFinish }) {
         muted
         playsInline
         onEnded={onFinish}
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-        }}
+        style={{ width: "100%", height: "100%", objectFit: "cover" }}
       />
     </div>
   );
@@ -247,16 +234,9 @@ function SplashScreen() {
       <img
         src={logo}
         alt="Coretech Talents"
-        style={{
-          width: 100,
-          height: 100,
-          marginBottom: "1rem",
-          animation: "pulse 1.2s ease-in-out infinite",
-        }}
+        style={{ width: 100, height: 100, marginBottom: "1rem", animation: "pulse 1.2s ease-in-out infinite" }}
       />
-      <h1 style={{ color: "#64FFDA", fontSize: "1.5rem", letterSpacing: "0.05em" }}>
-        Coretech Talents
-      </h1>
+      <h1 style={{ color: "#64FFDA", fontSize: "1.5rem", letterSpacing: "0.05em" }}>Coretech Talents</h1>
       <style>{`
         @keyframes pulse {
           0%, 100% { transform: scale(1); opacity: 1; }
@@ -303,7 +283,6 @@ function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter }
             <button onClick={onOpenPortal}>Login / Sign Up</button>
           </div>
         </div>
-
       </div>
     </div>
   );
@@ -311,22 +290,10 @@ function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter }
 
 function NewsletterSection() {
   const newsletters = [
-    {
-      title: "Recruitment Trends 2026",
-      desc: "Hiring is shifting toward skills-based assessments over degrees, faster interview cycles, and AI-assisted shortlisting — companies that adapt are seeing stronger candidate pipelines.",
-    },
-    {
-      title: "Understanding the GenZ Mindset",
-      desc: "GenZ candidates prioritize purpose, flexibility, and transparency. They expect quick feedback loops, honest job descriptions, and clear growth paths — not just a paycheck.",
-    },
-    {
-      title: "Evolving Recruitment Strategies",
-      desc: "Employer branding, referral-driven hiring, and community-led talent pools are replacing traditional job-board-only approaches as competition for skilled talent increases.",
-    },
-    {
-      title: "Technology in Recruitment",
-      desc: "AI-powered resume screening, automated interview scheduling, and data-driven candidate matching are reshaping how recruiters find and engage talent faster and more accurately.",
-    },
+    { title: "Recruitment Trends 2026", desc: "Hiring is shifting toward skills-based assessments over degrees, faster interview cycles, and AI-assisted shortlisting — companies that adapt are seeing stronger candidate pipelines." },
+    { title: "Understanding the GenZ Mindset", desc: "GenZ candidates prioritize purpose, flexibility, and transparency. They expect quick feedback loops, honest job descriptions, and clear growth paths — not just a paycheck." },
+    { title: "Evolving Recruitment Strategies", desc: "Employer branding, referral-driven hiring, and community-led talent pools are replacing traditional job-board-only approaches as competition for skilled talent increases." },
+    { title: "Technology in Recruitment", desc: "AI-powered resume screening, automated interview scheduling, and data-driven candidate matching are reshaping how recruiters find and engage talent faster and more accurately." },
   ];
 
   return (
@@ -336,13 +303,7 @@ function NewsletterSection() {
         <p className="card-desc">Insights on hiring trends, workplace shifts, and what's next in recruitment.</p>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(2, 1fr)",
-          gap: "1.25rem",
-        }}
-      >
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1.25rem" }}>
         {newsletters.map((item) => (
           <div key={item.title} className="card">
             <h3 style={{ marginBottom: "0.5rem" }}>{item.title}</h3>
@@ -440,21 +401,14 @@ function CandidateSignupForm({ onSuccess }) {
       const res = await fetch(`${API_BASE}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          full_name: fullName,
-          email,
-          password,
-          phone,
-        }),
+        body: JSON.stringify({ full_name: fullName, email, password, phone }),
       });
 
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
         const detail = data.detail;
-        const message = Array.isArray(detail)
-          ? detail.map((d) => d.msg).join(", ")
-          : detail || "Registration failed";
+        const message = Array.isArray(detail) ? detail.map((d) => d.msg).join(", ") : detail || "Registration failed";
         throw new Error(message);
       }
 
@@ -480,13 +434,7 @@ function CandidateSignupForm({ onSuccess }) {
         </div>
         <div className="field">
           <label>Phone</label>
-          <input
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            required
-            pattern="[0-9]{10}"
-            title="Enter a 10-digit mobile number"
-          />
+          <input value={phone} onChange={(e) => setPhone(e.target.value)} required pattern="[0-9]{10}" title="Enter a 10-digit mobile number" />
         </div>
         <div className="field">
           <label>Password (min 8 characters)</label>
@@ -548,9 +496,7 @@ function RecruiterSignupForm({ onSuccess }) {
 
       if (!res.ok) {
         const detail = data.detail;
-        const message = Array.isArray(detail)
-          ? detail.map((d) => d.msg).join(", ")
-          : detail || "Registration failed";
+        const message = Array.isArray(detail) ? detail.map((d) => d.msg).join(", ") : detail || "Registration failed";
         throw new Error(message);
       }
 
@@ -622,12 +568,8 @@ function PortalAccess({ onCandidateLogin, onRecruiterLogin, onClose, initialRole
     <div className="container" style={{ maxWidth: 480 }}>
       {!role && (
         <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}>
-          <button style={{ flex: 1 }} onClick={() => chooseRole("candidate")}>
-            Candidate
-          </button>
-          <button style={{ flex: 1 }} onClick={() => chooseRole("recruiter")}>
-            Recruiter
-          </button>
+          <button style={{ flex: 1 }} onClick={() => chooseRole("candidate")}>Candidate</button>
+          <button style={{ flex: 1 }} onClick={() => chooseRole("recruiter")}>Recruiter</button>
         </div>
       )}
 
@@ -638,60 +580,30 @@ function PortalAccess({ onCandidateLogin, onRecruiterLogin, onClose, initialRole
           </h3>
 
           <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.5rem" }}>
-            <button
-              className={mode === "login" ? "btn-applied" : ""}
-              style={{ flex: 1 }}
-              onClick={() => switchMode("login")}
-            >
-              Login
-            </button>
-            <button
-              className={mode === "signup" ? "btn-applied" : ""}
-              style={{ flex: 1 }}
-              onClick={() => switchMode("signup")}
-            >
-              Sign Up
-            </button>
+            <button className={mode === "login" ? "btn-applied" : ""} style={{ flex: 1 }} onClick={() => switchMode("login")}>Login</button>
+            <button className={mode === "signup" ? "btn-applied" : ""} style={{ flex: 1 }} onClick={() => switchMode("signup")}>Sign Up</button>
           </div>
 
           {role === "candidate" && mode === "login" && (
             <>
-              {candidateSignupDone && (
-                <p className="msg-success" style={{ marginBottom: "1rem" }}>
-                  Account created successfully — please log in.
-                </p>
-              )}
+              {candidateSignupDone && <p className="msg-success" style={{ marginBottom: "1rem" }}>Account created successfully — please log in.</p>}
               <LoginForm endpoint="/auth/login" label="Candidate Login" onLogin={onCandidateLogin} />
             </>
           )}
 
           {role === "candidate" && mode === "signup" && (
-            <CandidateSignupForm
-              onSuccess={() => {
-                setCandidateSignupDone(true);
-                setMode("login");
-              }}
-            />
+            <CandidateSignupForm onSuccess={() => { setCandidateSignupDone(true); setMode("login"); }} />
           )}
 
           {role === "recruiter" && mode === "login" && (
             <>
-              {recruiterSignupDone && (
-                <p className="msg-success" style={{ marginBottom: "1rem" }}>
-                  Account created successfully — please log in.
-                </p>
-              )}
+              {recruiterSignupDone && <p className="msg-success" style={{ marginBottom: "1rem" }}>Account created successfully — please log in.</p>}
               <LoginForm endpoint="/recruiter-auth/login" label="Recruiter Login" onLogin={onRecruiterLogin} />
             </>
           )}
 
           {role === "recruiter" && mode === "signup" && (
-            <RecruiterSignupForm
-              onSuccess={() => {
-                setRecruiterSignupDone(true);
-                setMode("login");
-              }}
-            />
+            <RecruiterSignupForm onSuccess={() => { setRecruiterSignupDone(true); setMode("login"); }} />
           )}
         </>
       )}
@@ -755,11 +667,7 @@ function JobCard({ job, token, onRequireLogin }) {
         ))}
       </div>
 
-      <button
-        className={isApplied ? "btn-applied" : "btn-primary"}
-        onClick={handleApply}
-        disabled={status === "applying" || isApplied}
-      >
+      <button className={isApplied ? "btn-applied" : "btn-primary"} onClick={handleApply} disabled={status === "applying" || isApplied}>
         {status === "applying" ? "Applying..." : isApplied ? "Applied ✓" : "Apply"}
       </button>
       {message && (
@@ -790,10 +698,7 @@ function PostJobForm({ token, onPosted }) {
     try {
       const res = await fetch(`${API_BASE}/jobs/`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({
           title,
           description,
@@ -851,12 +756,7 @@ function PostJobForm({ token, onPosted }) {
         </div>
         <div className="field">
           <label>Skills required (comma-separated)</label>
-          <input
-            value={skillsRequired}
-            onChange={(e) => setSkillsRequired(e.target.value)}
-            placeholder="python, fastapi, postgresql"
-            required
-          />
+          <input value={skillsRequired} onChange={(e) => setSkillsRequired(e.target.value)} placeholder="python, fastapi, postgresql" required />
         </div>
 
         {error && <p className="msg-error">{error}</p>}
@@ -874,13 +774,7 @@ function PostJobPage({ token }) {
   return (
     <div>
       <h2 className="page-title">Post a Job</h2>
-      <PostJobForm
-        token={token}
-        onPosted={() => {
-          setPosted(true);
-          setTimeout(() => setPosted(false), 3000);
-        }}
-      />
+      <PostJobForm token={token} onPosted={() => { setPosted(true); setTimeout(() => setPosted(false), 3000); }} />
       {posted && <p className="msg-success">Job posted successfully.</p>}
     </div>
   );
@@ -888,13 +782,7 @@ function PostJobPage({ token }) {
 
 // ================= CAMPUS EXPLORATION (recruiter-only) =================
 function RegisterRequirementForm() {
-  const [form, setForm] = useState({
-    date: "",
-    location: "",
-    college: "",
-    course: "",
-    candidateRequirements: "",
-  });
+  const [form, setForm] = useState({ date: "", location: "", college: "", course: "", candidateRequirements: "" });
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -939,56 +827,27 @@ function RegisterRequirementForm() {
       <form onSubmit={handleSubmit}>
         <div className="field">
           <label>Preferred date</label>
-          <input
-            type="date"
-            value={form.date}
-            onChange={(e) => handleChange("date", e.target.value)}
-            required
-          />
+          <input type="date" value={form.date} onChange={(e) => handleChange("date", e.target.value)} required />
         </div>
         <div className="field">
           <label>Location</label>
-          <input
-            value={form.location}
-            onChange={(e) => handleChange("location", e.target.value)}
-            placeholder="City / campus location"
-            required
-          />
+          <input value={form.location} onChange={(e) => handleChange("location", e.target.value)} placeholder="City / campus location" required />
         </div>
         <div className="field">
           <label>College</label>
-          <input
-            value={form.college}
-            onChange={(e) => handleChange("college", e.target.value)}
-            required
-          />
+          <input value={form.college} onChange={(e) => handleChange("college", e.target.value)} required />
         </div>
         <div className="field">
           <label>Course</label>
-          <input
-            value={form.course}
-            onChange={(e) => handleChange("course", e.target.value)}
-            placeholder="e.g. B.E Mechanical, Diploma EEE"
-            required
-          />
+          <input value={form.course} onChange={(e) => handleChange("course", e.target.value)} placeholder="e.g. B.E Mechanical, Diploma EEE" required />
         </div>
         <div className="field">
           <label>Candidate requirements</label>
-          <textarea
-            value={form.candidateRequirements}
-            onChange={(e) => handleChange("candidateRequirements", e.target.value)}
-            placeholder="Number of candidates, skills, experience level, roles..."
-            rows={3}
-            required
-          />
+          <textarea value={form.candidateRequirements} onChange={(e) => handleChange("candidateRequirements", e.target.value)} placeholder="Number of candidates, skills, experience level, roles..." rows={3} required />
         </div>
 
         {error && <p className="msg-error">{error}</p>}
-        {submitted && (
-          <p className="msg-success">
-            Requirement submitted — an email has been sent to our team to arrange the campus drive.
-          </p>
-        )}
+        {submitted && <p className="msg-success">Requirement submitted — an email has been sent to our team to arrange the campus drive.</p>}
 
         <button type="submit" className="btn-primary" disabled={loading}>
           {loading ? "Submitting..." : "Submit Requirement"}
@@ -999,8 +858,8 @@ function RegisterRequirementForm() {
 }
 
 function CampusArrangement({ onGoToSupport }) {
-  const [needsSupport, setNeedsSupport] = useState(null); // null | "yes" | "no"
-  const [subView, setSubView] = useState(null); // null | "registerRequirement"
+  const [needsSupport, setNeedsSupport] = useState(null);
+  const [subView, setSubView] = useState(null);
 
   function handleChoice(choice) {
     setNeedsSupport(choice);
@@ -1012,46 +871,24 @@ function CampusArrangement({ onGoToSupport }) {
       <div className="card" style={{ maxWidth: 600 }}>
         <h3 style={{ marginBottom: "0.75rem" }}>Do you need campus arrangement support?</h3>
         <div style={{ display: "flex", gap: "0.75rem" }}>
-          <button
-            className={needsSupport === "yes" ? "btn-applied" : "btn-primary"}
-            onClick={() => handleChoice("yes")}
-          >
-            Yes
-          </button>
-          <button
-            className={needsSupport === "no" ? "btn-applied" : ""}
-            onClick={() => handleChoice("no")}
-          >
-            No
-          </button>
+          <button className={needsSupport === "yes" ? "btn-applied" : "btn-primary"} onClick={() => handleChoice("yes")}>Yes</button>
+          <button className={needsSupport === "no" ? "btn-applied" : ""} onClick={() => handleChoice("no")}>No</button>
         </div>
       </div>
 
       {needsSupport === "no" && (
-        <p className="hint" style={{ marginTop: "1rem" }}>
-          No problem — you can browse the Campus Support tab any time to see colleges in your area.
-        </p>
+        <p className="hint" style={{ marginTop: "1rem" }}>No problem — you can browse the Campus Support tab any time to see colleges in your area.</p>
       )}
 
       {needsSupport === "yes" && !subView && (
         <div style={{ display: "flex", gap: "1rem", marginTop: "1.5rem", flexWrap: "wrap" }}>
-          <div
-            className="card"
-            style={{ cursor: "pointer", flex: "1 1 220px" }}
-            onClick={() => setSubView("registerRequirement")}
-          >
+          <div className="card" style={{ cursor: "pointer", flex: "1 1 220px" }} onClick={() => setSubView("registerRequirement")}>
             <h3 style={{ marginBottom: "0.5rem" }}>Register Requirement</h3>
-            <p className="card-meta">
-              Tell us your campus hiring requirement — date, location, college, course, and candidate needs.
-            </p>
+            <p className="card-meta">Tell us your campus hiring requirement — date, location, college, course, and candidate needs.</p>
             <p className="hint" style={{ marginTop: "0.5rem" }}>Click to fill the form →</p>
           </div>
 
-          <div
-            className="card"
-            style={{ cursor: "pointer", flex: "1 1 220px" }}
-            onClick={onGoToSupport}
-          >
+          <div className="card" style={{ cursor: "pointer", flex: "1 1 220px" }} onClick={onGoToSupport}>
             <h3 style={{ marginBottom: "0.5rem" }}>Campus Support</h3>
             <p className="card-meta">Browse colleges in your area and their websites.</p>
             <p className="hint" style={{ marginTop: "0.5rem" }}>Click to view →</p>
@@ -1061,9 +898,7 @@ function CampusArrangement({ onGoToSupport }) {
 
       {needsSupport === "yes" && subView === "registerRequirement" && (
         <>
-          <button className="btn-link" style={{ marginTop: "1rem" }} onClick={() => setSubView(null)}>
-            ← Back to options
-          </button>
+          <button className="btn-link" style={{ marginTop: "1rem" }} onClick={() => setSubView(null)}>← Back to options</button>
           <RegisterRequirementForm />
         </>
       )}
@@ -1072,7 +907,6 @@ function CampusArrangement({ onGoToSupport }) {
 }
 
 function CampusSupport() {
-  // PLACEHOLDER — replace with the actual colleges you want to list, and their real websites.
   const colleges = [
     { name: "PLACEHOLDER College 1", location: "Add city/area", website: "https://example.edu" },
     { name: "PLACEHOLDER College 2", location: "Add city/area", website: "https://example.edu" },
@@ -1083,9 +917,7 @@ function CampusSupport() {
     <div>
       <div className="card" style={{ marginBottom: "1.25rem" }}>
         <h3 style={{ marginBottom: "0.5rem" }}>Colleges in your area</h3>
-        <p className="card-meta">
-          Reach out directly to plan campus drives. Let me know the real colleges you work with and I'll fill this list in.
-        </p>
+        <p className="card-meta">Reach out directly to plan campus drives. Let me know the real colleges you work with and I'll fill this list in.</p>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -1093,14 +925,7 @@ function CampusSupport() {
           <div key={college.name} className="card">
             <h3 style={{ marginBottom: "0.25rem" }}>{college.name}</h3>
             <p className="card-meta" style={{ marginBottom: "0.5rem" }}>{college.location}</p>
-            <a
-              href={college.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-link"
-            >
-              Visit website →
-            </a>
+            <a href={college.website} target="_blank" rel="noopener noreferrer" className="btn-link">Visit website →</a>
           </div>
         ))}
       </div>
@@ -1114,28 +939,14 @@ function CampusExplorationPage() {
   return (
     <div>
       <h2 className="page-title">Campus Exploration</h2>
-      <p className="card-desc" style={{ marginBottom: "1.5rem" }}>
-        Explore campus hiring support and nearby college partnerships.
-      </p>
+      <p className="card-desc" style={{ marginBottom: "1.5rem" }}>Explore campus hiring support and nearby college partnerships.</p>
 
       <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1.5rem" }}>
-        <button
-          className={activeTab === "arrangement" ? "btn-primary" : ""}
-          onClick={() => setActiveTab("arrangement")}
-        >
-          Campus Arrangement
-        </button>
-        <button
-          className={activeTab === "support" ? "btn-primary" : ""}
-          onClick={() => setActiveTab("support")}
-        >
-          Campus Support
-        </button>
+        <button className={activeTab === "arrangement" ? "btn-primary" : ""} onClick={() => setActiveTab("arrangement")}>Campus Arrangement</button>
+        <button className={activeTab === "support" ? "btn-primary" : ""} onClick={() => setActiveTab("support")}>Campus Support</button>
       </div>
 
-      {activeTab === "arrangement" && (
-        <CampusArrangement onGoToSupport={() => setActiveTab("support")} />
-      )}
+      {activeTab === "arrangement" && <CampusArrangement onGoToSupport={() => setActiveTab("support")} />}
       {activeTab === "support" && <CampusSupport />}
     </div>
   );
@@ -1150,17 +961,11 @@ function ApplicantRow({ applicant, jobId, token, onStatusChanged }) {
     setUpdating(true);
     setError("");
     try {
-      const res = await fetch(
-        `${API_BASE}/jobs/${jobId}/applicants/${applicant.application_id}/status`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ status: newStatus }),
-        }
-      );
+      const res = await fetch(`${API_BASE}/jobs/${jobId}/applicants/${applicant.application_id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ status: newStatus }),
+      });
 
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.detail || "Failed to update status");
@@ -1177,10 +982,9 @@ function ApplicantRow({ applicant, jobId, token, onStatusChanged }) {
     setError("");
     setDownloading(true);
     try {
-      const res = await fetch(
-        `${API_BASE}/jobs/${jobId}/applicants/${applicant.application_id}/resume`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await fetch(`${API_BASE}/jobs/${jobId}/applicants/${applicant.application_id}/resume`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.detail || "Failed to download resume");
@@ -1214,19 +1018,11 @@ function ApplicantRow({ applicant, jobId, token, onStatusChanged }) {
       </span>
 
       <div className="applicant-actions">
-        <button
-          className={applicant.status === "accepted" ? "btn-applied" : "btn-primary"}
-          disabled={updating || applicant.status === "accepted"}
-          onClick={() => updateStatus("accepted")}
-        >
+        <button className={applicant.status === "accepted" ? "btn-applied" : "btn-primary"} disabled={updating || applicant.status === "accepted"} onClick={() => updateStatus("accepted")}>
           {applicant.status === "accepted" ? "Accepted ✓" : "Accept"}
         </button>
-        <button disabled={updating || applicant.status === "rejected"} onClick={() => updateStatus("rejected")}>
-          Reject
-        </button>
-        <button disabled={updating || applicant.status === "pending"} onClick={() => updateStatus("pending")}>
-          Reset to Pending
-        </button>
+        <button disabled={updating || applicant.status === "rejected"} onClick={() => updateStatus("rejected")}>Reject</button>
+        <button disabled={updating || applicant.status === "pending"} onClick={() => updateStatus("pending")}>Reset to Pending</button>
         <button onClick={handleDownloadResume} disabled={downloading}>
           {downloading ? "Downloading..." : "Download Resume"}
         </button>
@@ -1243,9 +1039,7 @@ function JobApplicantsPanel({ job, token, onBack }) {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${API_BASE}/jobs/${job.id}/applicants`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch(`${API_BASE}/jobs/${job.id}/applicants`, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => res.json())
       .then((data) => setApplicants(data.applicants || []))
       .catch((err) => setError(err.message))
@@ -1253,9 +1047,7 @@ function JobApplicantsPanel({ job, token, onBack }) {
   }, [job.id, token]);
 
   function handleStatusChanged(applicationId, newStatus) {
-    setApplicants((prev) =>
-      prev.map((a) => (a.application_id === applicationId ? { ...a, status: newStatus } : a))
-    );
+    setApplicants((prev) => prev.map((a) => (a.application_id === applicationId ? { ...a, status: newStatus } : a)));
   }
 
   return (
@@ -1282,9 +1074,7 @@ function RecruiterDashboard({ token }) {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${API_BASE}/jobs/mine/list`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch(`${API_BASE}/jobs/mine/list`, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => res.json())
       .then((data) => setMyJobs(data))
       .catch((err) => setError(err.message))
@@ -1324,9 +1114,7 @@ function MyApplications({ token, onBack }) {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${API_BASE}/candidates/my-applications`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch(`${API_BASE}/candidates/my-applications`, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => res.json())
       .then((data) => setApplications(data.applications || []))
       .catch((err) => setError(err.message))
@@ -1371,13 +1159,8 @@ function MyResume({ token, onBack }) {
 
   function checkResumeExists() {
     setChecking(true);
-    fetch(`${API_BASE}/candidates/me/resume`, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => {
-        setHasResume(res.ok);
-      })
+    fetch(`${API_BASE}/candidates/me/resume`, { method: "GET", headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => { setHasResume(res.ok); })
       .catch(() => setHasResume(false))
       .finally(() => setChecking(false));
   }
@@ -1422,9 +1205,7 @@ function MyResume({ token, onBack }) {
     setError("");
     setDownloading(true);
     try {
-      const res = await fetch(`${API_BASE}/candidates/me/resume`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(`${API_BASE}/candidates/me/resume`, { headers: { Authorization: `Bearer ${token}` } });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.detail || "Failed to download resume");
@@ -1470,12 +1251,7 @@ function MyResume({ token, onBack }) {
         <form onSubmit={handleUpload}>
           <div className="field">
             <label>PDF file (max 5MB)</label>
-            <input
-              type="file"
-              accept="application/pdf"
-              onChange={(e) => setFile(e.target.files[0] || null)}
-              required
-            />
+            <input type="file" accept="application/pdf" onChange={(e) => setFile(e.target.files[0] || null)} required />
           </div>
           {error && <p className="msg-error">{error}</p>}
           {message && <p className="msg-success">{message}</p>}
@@ -1517,9 +1293,7 @@ function CandidateProfile({ token }) {
 
   function loadProfile() {
     setLoading(true);
-    fetch(`${API_BASE}/candidates/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch(`${API_BASE}/candidates/me`, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => res.json())
       .then((data) => {
         setProfile(data);
@@ -1546,9 +1320,7 @@ function CandidateProfile({ token }) {
 
   function loadPicture() {
     setPictureLoading(true);
-    fetch(`${API_BASE}/candidates/me/profile-picture`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch(`${API_BASE}/candidates/me/profile-picture`, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => (res.ok ? res.blob() : null))
       .then((blob) => setPictureUrl(blob ? URL.createObjectURL(blob) : null))
       .catch(() => setPictureUrl(null))
@@ -1604,10 +1376,7 @@ function CandidateProfile({ token }) {
     try {
       const res = await fetch(`${API_BASE}/candidates/me`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(form),
       });
 
@@ -1629,19 +1398,7 @@ function CandidateProfile({ token }) {
       <h2 className="page-title">My Profile</h2>
 
       <div className="card" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
-        <div
-          style={{
-            width: 120,
-            height: 120,
-            borderRadius: "50%",
-            overflow: "hidden",
-            background: "rgba(255,255,255,0.08)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-          }}
-        >
+        <div style={{ width: 120, height: 120, borderRadius: "50%", overflow: "hidden", background: "rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
           {pictureLoading ? (
             <span className="hint">...</span>
           ) : pictureUrl ? (
@@ -1674,9 +1431,7 @@ function CandidateProfile({ token }) {
                 ))}
               </div>
             )}
-            <button className="btn-primary" style={{ marginTop: "1rem" }} onClick={() => setEditing(true)}>
-              Edit Profile
-            </button>
+            <button className="btn-primary" style={{ marginTop: "1rem" }} onClick={() => setEditing(true)}>Edit Profile</button>
           </div>
         )}
       </div>
@@ -1695,12 +1450,7 @@ function CandidateProfile({ token }) {
             </div>
             <div className="field">
               <label>Mobile number</label>
-              <input
-                value={form.mobile_number}
-                onChange={(e) => handleFormChange("mobile_number", e.target.value)}
-                required
-                pattern="[0-9]{10}"
-              />
+              <input value={form.mobile_number} onChange={(e) => handleFormChange("mobile_number", e.target.value)} required pattern="[0-9]{10}" />
             </div>
             <div className="field">
               <label>Location</label>
@@ -1731,12 +1481,8 @@ function CandidateProfile({ token }) {
             {saveMessage && <p className="msg-success">{saveMessage}</p>}
 
             <div style={{ display: "flex", gap: "0.75rem" }}>
-              <button type="submit" className="btn-primary" disabled={saving}>
-                {saving ? "Saving..." : "Save"}
-              </button>
-              <button type="button" onClick={() => { setEditing(false); loadProfile(); }} disabled={saving}>
-                Cancel
-              </button>
+              <button type="submit" className="btn-primary" disabled={saving}>{saving ? "Saving..." : "Save"}</button>
+              <button type="button" onClick={() => { setEditing(false); loadProfile(); }} disabled={saving}>Cancel</button>
             </div>
           </form>
         </div>
@@ -1747,12 +1493,7 @@ function CandidateProfile({ token }) {
         <form onSubmit={handleUploadPicture}>
           <div className="field">
             <label>JPG or PNG (max 5MB)</label>
-            <input
-              type="file"
-              accept="image/jpeg,image/png"
-              onChange={(e) => setFile(e.target.files[0] || null)}
-              required
-            />
+            <input type="file" accept="image/jpeg,image/png" onChange={(e) => setFile(e.target.files[0] || null)} required />
           </div>
           {uploadError && <p className="msg-error">{uploadError}</p>}
           {uploadMessage && <p className="msg-success">{uploadMessage}</p>}
@@ -1792,6 +1533,194 @@ function CandidateJobBrowser({ token }) {
   );
 }
 
+// ============ small helper: profile picture thumbnail for a card ============
+function CandidatePictureThumb({ candidateId, token, size = 56 }) {
+  const [url, setUrl] = useState(null);
+
+  useEffect(() => {
+    let objectUrl = null;
+    fetch(`${API_BASE}/candidates/${candidateId}/profile-picture`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => (res.ok ? res.blob() : null))
+      .then((blob) => {
+        if (blob) {
+          objectUrl = URL.createObjectURL(blob);
+          setUrl(objectUrl);
+        }
+      })
+      .catch(() => setUrl(null));
+
+    return () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [candidateId, token]);
+
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        borderRadius: "50%",
+        overflow: "hidden",
+        background: "rgba(0,0,0,0.08)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+      }}
+    >
+      {url ? (
+        <img src={url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      ) : (
+        <span className="hint" style={{ fontSize: "0.65rem" }}>No photo</span>
+      )}
+    </div>
+  );
+}
+
+// ============ recruiter's full-profile view of one candidate ============
+function CandidateProfileDetail({ candidateId, token, onBack }) {
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [pictureUrl, setPictureUrl] = useState(null);
+  const [downloading, setDownloading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(`${API_BASE}/candidates/${candidateId}`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => res.json())
+      .then((data) => setProfile(data))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [candidateId, token]);
+
+  useEffect(() => {
+    let objectUrl = null;
+    fetch(`${API_BASE}/candidates/${candidateId}/profile-picture`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => (res.ok ? res.blob() : null))
+      .then((blob) => {
+        if (blob) {
+          objectUrl = URL.createObjectURL(blob);
+          setPictureUrl(objectUrl);
+        }
+      })
+      .catch(() => setPictureUrl(null));
+
+    return () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [candidateId, token]);
+
+  async function handleDownloadResume() {
+    setError("");
+    setDownloading(true);
+    try {
+      const res = await fetch(`${API_BASE}/candidates/${candidateId}/resume`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.detail || "Failed to download resume");
+      }
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${profile?.full_name || "candidate"}_resume.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDownloading(false);
+    }
+  }
+
+  return (
+    <div>
+      <button className="btn-link" onClick={onBack}>← Back to search results</button>
+
+      {loading && <p className="empty-state">Loading candidate profile...</p>}
+      {error && <p className="msg-error">{error}</p>}
+
+      {profile && (
+        <div className="card" style={{ maxWidth: 700, margin: "0 auto" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "0.75rem" }}>
+            <div
+              style={{
+                width: 140,
+                height: 140,
+                borderRadius: "50%",
+                overflow: "hidden",
+                background: "rgba(0,0,0,0.08)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              {pictureUrl ? (
+                <img src={pictureUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              ) : (
+                <span className="hint">No photo</span>
+              )}
+            </div>
+
+            <h2>{profile.full_name}</h2>
+            {profile.designation && <p className="card-meta">{profile.designation}</p>}
+
+            {/* Profile summary, shown right below the picture */}
+            {profile.resume_headline && (
+              <p className="card-desc" style={{ maxWidth: 500 }}>{profile.resume_headline}</p>
+            )}
+          </div>
+
+          <div style={{ marginTop: "1.5rem", display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.75rem" }}>
+            <p className="card-meta"><strong>Email:</strong> {profile.email}</p>
+            {profile.mobile_number && <p className="card-meta"><strong>Mobile:</strong> {profile.mobile_number}</p>}
+            {profile.location && <p className="card-meta"><strong>Location:</strong> {profile.location}</p>}
+            {profile.years_of_experience && <p className="card-meta"><strong>Experience:</strong> {profile.years_of_experience} yrs</p>}
+            {profile.current_ctc && <p className="card-meta"><strong>Current CTC:</strong> {profile.current_ctc}</p>}
+            {profile.expected_ctc && <p className="card-meta"><strong>Expected CTC:</strong> {profile.expected_ctc}</p>}
+            {profile.notice_period && <p className="card-meta"><strong>Notice period:</strong> {profile.notice_period}</p>}
+            {profile.education_level && (
+              <p className="card-meta">
+                <strong>Education:</strong> {profile.education_level}
+                {profile.field_of_study && ` - ${profile.field_of_study}`}
+              </p>
+            )}
+          </div>
+
+          {profile.skills && (
+            <div className="tags" style={{ marginTop: "1rem" }}>
+              {profile.skills.split(",").map((s) => s.trim()).filter(Boolean).map((s) => (
+                <span className="tag" key={s}>{s}</span>
+              ))}
+            </div>
+          )}
+
+          <div style={{ marginTop: "1.5rem" }}>
+            {profile.has_resume ? (
+              <button className="btn-primary" onClick={handleDownloadResume} disabled={downloading}>
+                {downloading ? "Downloading..." : "Download Resume"}
+              </button>
+            ) : (
+              <p className="hint">No resume on file</p>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============ CandidateSearch — recruiter's candidate search page ============
 function CandidateSearch({ token }) {
   const [filters, setFilters] = useState({
     q: "",
@@ -1803,10 +1732,10 @@ function CandidateSearch({ token }) {
     field_of_study: "",
   });
   const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [searched, setSearched] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [downloadingId, setDownloadingId] = useState(null);
+  const [selectedCandidateId, setSelectedCandidateId] = useState(null);
 
   const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const isEmailQuery = filters.q.includes("@");
@@ -1816,17 +1745,13 @@ function CandidateSearch({ token }) {
     setFilters((prev) => ({ ...prev, [field]: value }));
   }
 
-  async function handleSearch(e) {
-    e.preventDefault();
-    if (isEmailQuery && !isValidEmail) return;
-
+  async function fetchCandidates(filterValues) {
     setError("");
     setLoading(true);
-    setSearched(true);
 
     try {
       const params = new URLSearchParams();
-      Object.entries(filters).forEach(([key, value]) => {
+      Object.entries(filterValues).forEach(([key, value]) => {
         if (value !== "") params.append(key, value);
       });
 
@@ -1846,13 +1771,47 @@ function CandidateSearch({ token }) {
     }
   }
 
-  async function handleDownloadResume(candidate) {
+  useEffect(() => {
+    fetchCandidates({
+      q: "",
+      min_experience: "",
+      max_experience: "",
+      min_salary: "",
+      max_salary: "",
+      education_level: "",
+      field_of_study: "",
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+
+  async function handleSearch(e) {
+    e.preventDefault();
+    if (isEmailQuery && !isValidEmail) return;
+    fetchCandidates(filters);
+  }
+
+  function handleClearFilters() {
+    const cleared = {
+      q: "",
+      min_experience: "",
+      max_experience: "",
+      min_salary: "",
+      max_salary: "",
+      education_level: "",
+      field_of_study: "",
+    };
+    setFilters(cleared);
+    fetchCandidates(cleared);
+  }
+
+  const hasActiveFilters = Object.values(filters).some((v) => v !== "");
+
+  async function handleDownloadResume(candidate, e) {
+    e.stopPropagation();
     setError("");
     setDownloadingId(candidate.id);
     try {
-      const res = await fetch(`${API_BASE}/candidates/${candidate.id}/resume`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(`${API_BASE}/candidates/${candidate.id}/resume`, { headers: { Authorization: `Bearer ${token}` } });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.detail || "Failed to download resume");
@@ -1873,6 +1832,16 @@ function CandidateSearch({ token }) {
     }
   }
 
+  if (selectedCandidateId) {
+    return (
+      <CandidateProfileDetail
+        candidateId={selectedCandidateId}
+        token={token}
+        onBack={() => setSelectedCandidateId(null)}
+      />
+    );
+  }
+
   return (
     <div>
       <h2 className="page-title">Search Candidates</h2>
@@ -1881,15 +1850,9 @@ function CandidateSearch({ token }) {
         <form onSubmit={handleSearch}>
           <div className="field">
             <label>Search by name, skills, email, or mobile</label>
-            <input
-              value={filters.q}
-              onChange={(e) => handleChange("q", e.target.value)}
-              placeholder="e.g. python, name, email, or mobile number"
-            />
+            <input value={filters.q} onChange={(e) => handleChange("q", e.target.value)} placeholder="e.g. python, name, email, or mobile number" />
             {isEmailQuery && !isValidEmail && (
-              <p className="msg-error" style={{ marginTop: "0.25rem" }}>
-                That doesn't look like a valid email address
-              </p>
+              <p className="msg-error" style={{ marginTop: "0.25rem" }}>That doesn't look like a valid email address</p>
             )}
           </div>
 
@@ -1926,55 +1889,80 @@ function CandidateSearch({ token }) {
             </div>
             <div className="field" style={{ flex: 1 }}>
               <label>Field of Study</label>
-              <input
-                value={filters.field_of_study}
-                onChange={(e) => handleChange("field_of_study", e.target.value)}
-                placeholder="e.g. Computer Science"
-              />
+              <input value={filters.field_of_study} onChange={(e) => handleChange("field_of_study", e.target.value)} placeholder="e.g. Computer Science" />
             </div>
           </div>
 
           {error && <p className="msg-error">{error}</p>}
-          <button type="submit" className="btn-primary" disabled={loading || (isEmailQuery && !isValidEmail)}>
-            {loading ? "Searching..." : "Search"}
-          </button>
+          <div style={{ display: "flex", gap: "0.75rem" }}>
+            <button type="submit" className="btn-primary" disabled={loading || (isEmailQuery && !isValidEmail)}>
+              {loading ? "Searching..." : "Search"}
+            </button>
+            {hasActiveFilters && (
+              <button type="button" onClick={handleClearFilters} disabled={loading}>Clear Filters</button>
+            )}
+          </div>
         </form>
       </div>
 
-      {searched && !loading && results.length === 0 && !error && (
-        <p className="empty-state">No candidates found matching your filters.</p>
-      )}
+      <div style={{ marginTop: "1.5rem" }}>
+        <p className="card-meta" style={{ marginBottom: "1rem" }}>
+          {loading
+            ? "Loading candidates..."
+            : hasActiveFilters
+            ? `${results.length} candidate${results.length === 1 ? "" : "s"} match your filters`
+            : `${results.length} candidate${results.length === 1 ? "" : "s"} total`}
+        </p>
 
-      {results.map((candidate) => (
-        <div key={candidate.id} className="card">
-          <h2>{candidate.full_name}</h2>
-          <p className="card-meta">
-            {candidate.email}
-            {candidate.mobile_number && ` · ${candidate.mobile_number}`}
+        {!loading && results.length === 0 && !error && (
+          <p className="empty-state">
+            {hasActiveFilters ? "No candidates found matching your filters." : "No candidates registered yet."}
           </p>
-          {candidate.resume_headline && <p className="card-desc">{candidate.resume_headline}</p>}
-          <p className="card-meta">
-            {candidate.years_of_experience != null && `${candidate.years_of_experience} yrs exp`}
-            {candidate.expected_ctc != null && ` · Expected CTC: ${candidate.expected_ctc}`}
-            {candidate.education_level && ` · ${candidate.education_level}`}
-            {candidate.field_of_study && ` - ${candidate.field_of_study}`}
-          </p>
-          {candidate.skills && (
-            <div className="tags">
-              {candidate.skills.split(",").map((s) => s.trim()).filter(Boolean).map((s) => (
-                <span className="tag" key={s}>{s}</span>
-              ))}
-            </div>
-          )}
-          <button
-            className="btn-primary"
-            onClick={() => handleDownloadResume(candidate)}
-            disabled={downloadingId === candidate.id}
+        )}
+
+        {results.map((candidate) => (
+          <div
+            key={candidate.id}
+            className="card job-pick"
+            style={{ cursor: "pointer", display: "flex", gap: "1rem", alignItems: "flex-start" }}
+            onClick={() => setSelectedCandidateId(candidate.id)}
           >
-            {downloadingId === candidate.id ? "Downloading..." : "Download Resume"}
-          </button>
-        </div>
-      ))}
+            <CandidatePictureThumb candidateId={candidate.id} token={token} />
+
+            <div style={{ flex: 1 }}>
+              <h2>{candidate.full_name}</h2>
+              <p className="card-meta">
+                {candidate.email}
+                {candidate.mobile_number && ` · ${candidate.mobile_number}`}
+              </p>
+              {candidate.resume_headline && <p className="card-desc">{candidate.resume_headline}</p>}
+              <p className="card-meta">
+                {candidate.years_of_experience != null && `${candidate.years_of_experience} yrs exp`}
+                {candidate.expected_ctc != null && ` · Expected CTC: ${candidate.expected_ctc}`}
+                {candidate.notice_period && ` · Notice: ${candidate.notice_period}`}
+                {candidate.education_level && ` · ${candidate.education_level}`}
+                {candidate.field_of_study && ` - ${candidate.field_of_study}`}
+              </p>
+              {candidate.skills && (
+                <div className="tags">
+                  {candidate.skills.split(",").map((s) => s.trim()).filter(Boolean).map((s) => (
+                    <span className="tag" key={s}>{s}</span>
+                  ))}
+                </div>
+              )}
+              <button
+                className="btn-primary"
+                style={{ marginTop: "0.5rem" }}
+                onClick={(e) => handleDownloadResume(candidate, e)}
+                disabled={downloadingId === candidate.id}
+              >
+                {downloadingId === candidate.id ? "Downloading..." : "Download Resume"}
+              </button>
+              <p className="hint" style={{ marginTop: "0.5rem" }}>Click card to view full profile →</p>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -1990,9 +1978,7 @@ function AdminLogin({ onLogin }) {
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE}/admin/dashboard`, {
-        headers: { "X-Admin-Key": key },
-      });
+      const res = await fetch(`${API_BASE}/admin/dashboard`, { headers: { "X-Admin-Key": key } });
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -2013,12 +1999,7 @@ function AdminLogin({ onLogin }) {
       <form onSubmit={handleSubmit}>
         <div className="field">
           <label>Admin Passkey</label>
-          <input
-            type="password"
-            value={key}
-            onChange={(e) => setKey(e.target.value)}
-            required
-          />
+          <input type="password" value={key} onChange={(e) => setKey(e.target.value)} required />
         </div>
         {error && <p className="msg-error">{error}</p>}
         <button type="submit" className="btn-primary" disabled={loading}>
@@ -2036,9 +2017,7 @@ function AdminDashboard({ adminKey, onBack }) {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${API_BASE}/admin/dashboard`, {
-      headers: { "X-Admin-Key": adminKey },
-    })
+    fetch(`${API_BASE}/admin/dashboard`, { headers: { "X-Admin-Key": adminKey } })
       .then((res) => res.json())
       .then((data) => setStats(data))
       .catch((err) => setError(err.message))
@@ -2091,50 +2070,24 @@ function RecruiterShell({ token, onLogout }) {
 
   return (
     <div className="recruiter-shell" style={{ display: "flex", minHeight: "100vh" }}>
-      <div
-        className="recruiter-sidebar"
-        style={{
-          width: 240,
-          borderRight: "1px solid rgba(255,255,255,0.12)",
-          padding: "2rem 1.25rem",
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.6rem",
-        }}
-      >
+      <div className="recruiter-sidebar" style={{ width: 240, borderRight: "1px solid rgba(255,255,255,0.12)", padding: "2rem 1.25rem", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
         <div className="brand" style={{ marginBottom: "1rem" }}>
           <img src={logo} alt="Coretech Talents" className="brand-mark" style={{ width: 32, height: 32 }} />
           <div className="brand-name" style={{ fontSize: "1rem" }}>Coretech Talents</div>
         </div>
 
         {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            className={view === tab.key ? "btn-primary" : ""}
-            onClick={() => setView(tab.key)}
-          >
+          <button key={tab.key} className={view === tab.key ? "btn-primary" : ""} onClick={() => setView(tab.key)}>
             {tab.label}
           </button>
         ))}
 
-        <button onClick={onLogout} style={{ marginTop: "auto" }}>
-          Recruiter Log out
-        </button>
+        <button onClick={onLogout} style={{ marginTop: "auto" }}>Recruiter Log out</button>
       </div>
 
       <div className="recruiter-main" style={{ flex: 1, padding: "2.5rem" }}>
         {view === "home" && (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              height: "100%",
-              minHeight: "70vh",
-              textAlign: "center",
-            }}
-          >
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "70vh", textAlign: "center" }}>
             <img src={logo} alt="Coretech Talents" style={{ width: 110, height: 110, marginBottom: "1.25rem" }} />
             <h1 className="brand-name" style={{ fontSize: "1.8rem" }}>Coretech Talents</h1>
             <p className="hint">Choose an option from the panel to get started.</p>
@@ -2162,35 +2115,19 @@ function CandidateShell({ token, onLogout }) {
 
   return (
     <div className="candidate-shell" style={{ display: "flex", minHeight: "100vh" }}>
-      <div
-        className="candidate-sidebar"
-        style={{
-          width: 240,
-          borderRight: "1px solid rgba(255,255,255,0.12)",
-          padding: "2rem 1.25rem",
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.6rem",
-        }}
-      >
+      <div className="candidate-sidebar" style={{ width: 240, borderRight: "1px solid rgba(255,255,255,0.12)", padding: "2rem 1.25rem", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
         <div className="brand" style={{ marginBottom: "1rem" }}>
           <img src={logo} alt="Coretech Talents" className="brand-mark" style={{ width: 32, height: 32 }} />
           <div className="brand-name" style={{ fontSize: "1rem" }}>Coretech Talents</div>
         </div>
 
         {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            className={view === tab.key ? "btn-primary" : ""}
-            onClick={() => setView(tab.key)}
-          >
+          <button key={tab.key} className={view === tab.key ? "btn-primary" : ""} onClick={() => setView(tab.key)}>
             {tab.label}
           </button>
         ))}
 
-        <button onClick={onLogout} style={{ marginTop: "auto" }}>
-          Candidate Log out
-        </button>
+        <button onClick={onLogout} style={{ marginTop: "auto" }}>Candidate Log out</button>
       </div>
 
       <div className="candidate-main" style={{ flex: 1, padding: "2.5rem" }}>
@@ -2286,9 +2223,7 @@ function App() {
         }}
       />
 
-      {!portalOpen && view === "jobs" && (
-        <NewsletterSection />
-      )}
+      {!portalOpen && view === "jobs" && <NewsletterSection />}
 
       <div className="container">
         {portalOpen && (
