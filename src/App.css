@@ -2,25 +2,25 @@
 
 :root {
   --white: #FFFFFF;
-  --charcoal: #2B2E2B;
-  --charcoal-muted: #6B7268;
-  --border: #DCE3DC;
+  --charcoal: #1E293B;
+  --charcoal-muted: #64748B;
+  --border: #DCE6F0;
 
-  --green-deep: #1B5E20;    /* primary buttons, links, active states */
-  --green-deep-hover: #164A19;
-  --green-dark: #0D2B12;    /* header / footer / hero background */
-  --green-medium: #2E7D32;  /* secondary accents, hover highlights */
-  --green-soft-bg: #EAF6EC; /* section / page-tint backgrounds */
-  --green-light-card: #F3FBF4; /* card fills, icon backgrounds, tags */
+  --blue-deep: #1D4ED8;      /* primary buttons, links, active states */
+  --blue-deep-hover: #1741B0;
+  --blue-dark: #0B1F3E;      /* header / footer / hero background */
+  --blue-medium: #2563EB;    /* secondary accents, hover highlights */
+  --blue-soft-bg: #EFF5FC;   /* section / page-tint backgrounds */
+  --blue-light-card: #F4F8FD; /* card fills, icon backgrounds, tags */
 
   --bg: var(--white);
   --surface: var(--white);
-  --surface-hover: var(--green-light-card);
+  --surface-hover: var(--blue-light-card);
   --text: var(--charcoal);
   --text-muted: var(--charcoal-muted);
-  --accent: var(--green-deep);
-  --accent-dark: var(--green-deep-hover);
-  --success: var(--green-medium);
+  --accent: var(--blue-deep);
+  --accent-dark: var(--blue-deep-hover);
+  --success: #1E8E5A;
   --danger: #C0392B;
   --pending: #B8860B;
 }
@@ -46,7 +46,7 @@ body {
   height: 240px;
   overflow: hidden;
   margin-bottom: 2rem;
-  background: var(--green-dark);
+  background: var(--blue-dark);
 }
 
 .hero svg.hero-bg {
@@ -114,12 +114,12 @@ button {
 }
 
 button:hover:not(:disabled) {
-  border-color: var(--green-deep);
+  border-color: var(--blue-deep);
   transform: translateY(-1px);
 }
 
 button:focus-visible {
-  outline: 2px solid var(--green-deep);
+  outline: 2px solid var(--blue-deep);
   outline-offset: 2px;
 }
 
@@ -131,28 +131,28 @@ button:disabled {
 
 .btn-primary,
 .hero-nav button {
-  background: var(--green-deep);
+  background: var(--blue-deep);
   color: var(--white);
-  border-color: var(--green-deep);
+  border-color: var(--blue-deep);
   font-weight: 700;
 }
 .btn-primary:hover:not(:disabled),
 .hero-nav button:hover:not(:disabled) {
-  background: var(--green-deep-hover);
-  border-color: var(--green-deep-hover);
+  background: var(--blue-deep-hover);
+  border-color: var(--blue-deep-hover);
 }
 
 .btn-applied {
-  background: var(--green-light-card);
-  color: var(--green-deep);
-  border-color: var(--green-deep);
+  background: var(--blue-light-card);
+  color: var(--blue-deep);
+  border-color: var(--blue-deep);
 }
-.btn-applied:hover:not(:disabled) { background: var(--green-soft-bg); }
+.btn-applied:hover:not(:disabled) { background: var(--blue-soft-bg); }
 
 .btn-link {
   background: none;
   border: none;
-  color: var(--green-deep);
+  color: var(--blue-deep);
   padding: 0;
   margin-bottom: 1.25rem;
   font-weight: 600;
@@ -163,7 +163,7 @@ button:disabled {
 .card {
   background: var(--white);
   border: 1px solid var(--border);
-  border-top: 3px solid var(--green-deep);
+  border-top: 3px solid var(--blue-deep);
   border-radius: 10px;
   padding: 1.25rem 1.5rem;
   margin-bottom: 1rem;
@@ -203,9 +203,9 @@ button:disabled {
 .tag {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--green-deep);
-  background: var(--green-light-card);
-  border: 1px solid var(--green-medium);
+  color: var(--blue-deep);
+  background: var(--blue-light-card);
+  border: 1px solid var(--blue-medium);
   border-radius: 5px;
   padding: 0.2rem 0.55rem;
 }
@@ -230,7 +230,7 @@ button:disabled {
 .status-dot.error, .status-dot.rejected { background: var(--danger); }
 .status-dot.pending { background: var(--pending); }
 
-.msg-success { color: var(--green-medium); }
+.msg-success { color: var(--success); }
 .msg-error { color: var(--danger); }
 
 .field { margin-bottom: 0.9rem; }
@@ -256,14 +256,14 @@ input, textarea, select {
 
 input:focus, textarea:focus, select:focus {
   outline: none;
-  border-color: var(--green-deep);
-  box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.12);
+  border-color: var(--blue-deep);
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12);
 }
 
 .form-card {
   background: var(--white);
   border: 1px solid var(--border);
-  border-top: 3px solid var(--green-deep);
+  border-top: 3px solid var(--blue-deep);
   border-radius: 10px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
@@ -310,7 +310,7 @@ input:focus, textarea:focus, select:focus {
 }
 
 .job-pick { cursor: pointer; }
-.job-pick:hover { border-top-color: var(--green-medium); background: var(--green-soft-bg); }
+.job-pick:hover { border-top-color: var(--blue-medium); background: var(--blue-soft-bg); }
 
 .hint {
   font-size: 0.78rem;
@@ -329,7 +329,7 @@ input:focus, textarea:focus, select:focus {
 /* ---------- SIDEBAR (recruiter / candidate shells) ---------- */
 .recruiter-sidebar,
 .candidate-sidebar {
-  background: var(--green-dark);
+  background: var(--blue-dark);
 }
 
 .recruiter-sidebar .brand-name,
@@ -340,7 +340,7 @@ input:focus, textarea:focus, select:focus {
 .recruiter-sidebar button,
 .candidate-sidebar button {
   background: transparent;
-  color: var(--green-light-card);
+  color: var(--blue-light-card);
   border: 1px solid transparent;
   text-align: left;
 }
@@ -354,13 +354,13 @@ input:focus, textarea:focus, select:focus {
 
 .recruiter-sidebar button.btn-primary,
 .candidate-sidebar button.btn-primary {
-  background: var(--green-deep);
+  background: var(--blue-deep);
   color: var(--white);
 }
 
 .recruiter-main,
 .candidate-main {
-  background: var(--green-soft-bg);
+  background: var(--blue-soft-bg);
 }
 
 /* ---------- MOBILE RESPONSIVENESS ---------- */
