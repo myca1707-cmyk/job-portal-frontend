@@ -1251,8 +1251,8 @@ function MyResume({ token, onBack }) {
         <form onSubmit={handleUpload}>
           <div className="field">
             <label>PDF file (max 5MB)</label>
-            <input type="file" accept="application/pdf" onChange={(e) => setFile(e.target.files[0] || null)} required />
-          </div>
+            
+          </div><input type="file" accept=".pdf,.doc,.docx" onChange={(e) => setFile(e.target.files[0] || null)} required />
           {error && <p className="msg-error">{error}</p>}
           {message && <p className="msg-success">{message}</p>}
           <button type="submit" className="btn-primary" disabled={uploading || !file}>
@@ -1706,7 +1706,7 @@ function CandidateProfileDetail({ candidateId, token, onBack }) {
           )}
 
           <div style={{ marginTop: "1.5rem" }}>
-            {profile.has_resume ? (
+            {profile.resume_file ? (
               <button className="btn-primary" onClick={handleDownloadResume} disabled={downloading}>
                 {downloading ? "Downloading..." : "Download Resume"}
               </button>
