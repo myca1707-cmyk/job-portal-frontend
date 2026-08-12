@@ -247,7 +247,7 @@ function SplashScreen() {
   );
 }
 
-function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter }) {
+function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter, onHome }) {
   return (
     <div className="hero">
       <svg className="hero-bg" viewBox="0 0 800 240" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
@@ -277,12 +277,127 @@ function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter }
           </div>
 
           <div className="hero-nav" style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+            <button onClick={onHome}>Home</button>
             <button onClick={onAbout}>About</button>
             <button onClick={onServices}>Services</button>
             <button onClick={onNewsletter}>Newsletter</button>
             <button onClick={onOpenPortal}>Login / Sign Up</button>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ================= HOME SECTION (showcase: stats, general info, copyright) =================
+function HomeIllustration() {
+  return (
+    <svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "auto", display: "block" }}>
+      <defs>
+        <linearGradient id="homeIllusBg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#F3F7FE" />
+          <stop offset="100%" stopColor="#E8EFFE" />
+        </linearGradient>
+      </defs>
+      <rect width="700" height="260" rx="16" fill="url(#homeIllusBg)" />
+
+      <rect x="60" y="180" width="180" height="10" rx="3" fill="#2554E8" opacity="0.15" />
+      <circle cx="120" cy="120" r="22" fill="#2554E8" />
+      <rect x="95" y="145" width="50" height="45" rx="14" fill="#12274A" />
+      <rect x="90" y="170" width="60" height="14" rx="4" fill="#0A1628" />
+
+      <rect x="290" y="190" width="180" height="10" rx="3" fill="#2554E8" opacity="0.15" />
+      <circle cx="350" cy="110" r="22" fill="#1C3FB8" />
+      <rect x="325" y="135" width="50" height="55" rx="14" fill="#2554E8" />
+      <rect x="365" y="150" width="40" height="12" rx="6" fill="#2554E8" transform="rotate(20 365 150)" />
+
+      <circle cx="530" cy="105" r="22" fill="#12274A" />
+      <rect x="505" y="130" width="50" height="55" rx="14" fill="#1C3FB8" />
+      <rect x="500" y="115" width="14" height="35" rx="6" fill="#1C3FB8" transform="rotate(-30 500 115)" />
+      <rect x="546" y="115" width="14" height="35" rx="6" fill="#1C3FB8" transform="rotate(30 546 115)" />
+
+      <circle cx="600" cy="70" r="26" fill="#1E8E5A" opacity="0.15" />
+      <circle cx="600" cy="70" r="18" fill="#1E8E5A" />
+      <path d="M591 70 L597 76 L610 62" stroke="#FFFFFF" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+
+      <rect x="40" y="45" width="34" height="42" rx="4" fill="#FFFFFF" stroke="#2554E8" strokeWidth="2" />
+      <line x1="47" y1="58" x2="67" y2="58" stroke="#2554E8" strokeWidth="2" />
+      <line x1="47" y1="66" x2="67" y2="66" stroke="#2554E8" strokeWidth="2" />
+      <line x1="47" y1="74" x2="60" y2="74" stroke="#2554E8" strokeWidth="2" />
+    </svg>
+  );
+}
+
+function StatsRow() {
+  const [jobCount, setJobCount] = useState(null);
+  const [companyCount, setCompanyCount] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/jobs/`)
+      .then((res) => res.json())
+      .then((data) => {
+        const jobs = Array.isArray(data) ? data : [];
+        setJobCount(jobs.length);
+        const uniqueCompanies = new Set(jobs.map((j) => j.company_name).filter(Boolean));
+        setCompanyCount(uniqueCompanies.size);
+      })
+      .catch(() => {
+        setJobCount(null);
+        setCompanyCount(null);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const stats = [
+    { label: "Active Job Openings", value: loading ? "…" : jobCount ?? "—" },
+    { label: "Companies Hiring With Us", value: loading ? "…" : companyCount ?? "—" },
+    { label: "Candidates", value: "Growing every day" },
+  ];
+
+  return (
+    <div className="card-grid" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+      {stats.map((s) => (
+        <div className="card" key={s.label} style={{ textAlign: "center" }}>
+          <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "2rem", color: "var(--blue-600)" }}>
+            {s.value}
+          </div>
+          <p className="card-meta" style={{ marginTop: "0.4rem", marginBottom: 0 }}>{s.label}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function HomeSection() {
+  return (
+    <div className="container" style={{ paddingTop: "2.5rem", paddingBottom: "1rem" }}>
+      <div className="card" style={{ textAlign: "center", marginBottom: "2rem" }}>
+        <h2 className="page-title">Welcome to Coretech Talents</h2>
+        <p className="card-desc">
+          Connecting skilled candidates with manufacturing, industrial, and corporate employers across India —
+          fast, reliable, and built on real relationships.
+        </p>
+      </div>
+
+      <div className="card" style={{ marginBottom: "2rem", padding: 0, overflow: "hidden" }}>
+        <HomeIllustration />
+      </div>
+
+      <StatsRow />
+
+      <div className="card" style={{ marginTop: "1.1rem" }}>
+        <h3 style={{ marginBottom: "0.6rem" }}>What we do</h3>
+        <p className="card-meta">
+          We specialize in sourcing candidates for machining, production, and industrial roles, as well as corporate
+          support functions — moving fast without compromising on candidate quality. Whether you're a recruiter
+          looking for the right hire or a candidate looking for your next opportunity, our portal brings both sides
+          together in one place.
+        </p>
+      </div>
+
+      <div style={{ textAlign: "center", marginTop: "2.5rem", paddingTop: "1.5rem", borderTop: "1px solid var(--line)" }}>
+        <p className="hint">© {new Date().getFullYear()} Coretech Talents. All rights reserved.</p>
       </div>
     </div>
   );
@@ -1675,7 +1790,6 @@ function CandidateProfileDetail({ candidateId, token, onBack }) {
             <h2>{profile.full_name}</h2>
             {profile.designation && <p className="card-meta">{profile.designation}</p>}
 
-            {/* Profile summary, shown right below the picture */}
             {profile.resume_headline && (
               <p className="card-desc" style={{ maxWidth: 500 }}>{profile.resume_headline}</p>
             )}
@@ -1933,7 +2047,6 @@ function CandidateSearch({ token }) {
               <h2>{candidate.full_name}</h2>
               <p className="card-meta">
                 {candidate.email}
-
               </p>
               {candidate.resume_headline && <p className="card-desc">{candidate.resume_headline}</p>}
               <p className="card-meta">
@@ -1950,7 +2063,7 @@ function CandidateSearch({ token }) {
                   ))}
                 </div>
               )}
-              
+
               <p className="hint" style={{ marginTop: "0.5rem" }}>Click card to view full profile →</p>
             </div>
           </div>
@@ -2211,6 +2324,7 @@ function App() {
         onAdminAccess={() => { setView("adminLogin"); setPortalOpen(false); }}
         onAbout={() => { setView("about"); setPortalOpen(false); }}
         onServices={() => { setView("services"); setPortalOpen(false); }}
+        onHome={() => { setView("home"); setPortalOpen(false); }}
         onNewsletter={() => {
           document.getElementById("newsletter-section")?.scrollIntoView({ behavior: "smooth" });
         }}
@@ -2227,6 +2341,8 @@ function App() {
             onClose={() => { setPortalOpen(false); setPortalInitialRole(null); }}
           />
         )}
+
+        {view === "home" && !portalOpen && <HomeSection />}
 
         {view === "about" && !portalOpen && (
           <>
