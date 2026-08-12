@@ -7,12 +7,12 @@
   --line: #E4EAF2;
   --mist: #F6F9FC;
 
-  --navy-950: #0A1628;      /* hero / footer background */
+  --navy-950: #0A1628;
   --navy-800: #12274A;
-  --blue-600: #2554E8;      /* primary buttons, links, active states */
-  --blue-700: #1C3FB8;      /* hover state for primary */
-  --blue-100: #E8EFFE;      /* tag / badge fills */
-  --blue-50:  #F3F7FE;      /* card + section tint */
+  --blue-600: #2554E8;
+  --blue-700: #1C3FB8;
+  --blue-100: #E8EFFE;
+  --blue-50:  #F3F7FE;
 
   --bg: var(--white);
   --surface: var(--white);
@@ -263,7 +263,6 @@ button:disabled {
   margin: 0 0 0.85rem;
 }
 
-/* Featured card (e.g. newsletter signup) — distinct from the article grid */
 .card.featured {
   background: linear-gradient(155deg, var(--navy-950) 0%, var(--navy-800) 100%);
   border: none;
@@ -416,7 +415,6 @@ input:focus, textarea:focus, select:focus {
   margin: 0 0 1rem;
 }
 
-/* Two-column article grid, used when cards aren't the single-column featured type */
 .card-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
