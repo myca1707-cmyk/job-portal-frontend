@@ -2305,6 +2305,7 @@ function AdminDashboard({ adminKey, onBack }) {
       )}
 
       <PendingRecruiters adminKey={adminKey} />
+      <ContactQueries adminKey={adminKey} />
     </div>
   );
 }
@@ -2373,6 +2374,147 @@ function IntroAnimation({ onFinish }) {
           100% { transform: translateY(0); opacity: 1; }
         }
       `}</style>
+    </div>
+  );
+}
+
+function ContactUsModal({ onClose }) {
+  const [form, setForm] = useState({ name: "", email: "", mobile_number: "", query: "" });
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
+    setSubmitting(true);
+
+    try {
+      const res = await fetch(`${API_BASE}/contact/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail || "Failed to submit query");
+
+      setSubmitted(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.6)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1000,
+      }}
+      onClick={onClose}
+    >
+      <div className="form-card" style={{ maxWidth: 420, width: "90%" }} onClick={(e) => e.stopPropagation()}>
+        <button className="btn-link" style={{ float: "right" }} onClick={onClose}>✕</button>
+        <h2>Contact Us</h2>
+
+        {submitted ? (
+          <>
+            <p className="msg-success" style={{ marginTop: "1rem" }}>
+              Thanks, {form.name.split(" ")[0]}! We've received your query and will get back to you soon.
+            </p>
+            <button className="btn-primary" style={{ marginTop: "1rem" }} onClick={onClose}>Close</button>
+          </>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <div className="field">
+              <label>Name</label>
+              <input type="text" name="name" value={form.name} onChange={handleChange} required />
+            </div>
+            <div className="field">
+              <label>Email</label>
+              <input type="email" name="email" value={form.email} onChange={handleChange} required />
+            </div>
+            <div className="field">
+              <label>Mobile Number</label>
+              <input type="tel" name="mobile_number" value={form.mobile_number} onChange={handleChange} required />
+            </div>
+            <div className="field">
+              <label>Your Query</label>
+              <textarea name="query" rows={4} value={form.query} onChange={handleChange} required />
+            </div>
+            {error && <p className="msg-error">{error}</p>}
+            <button type="submit" className="btn-primary" disabled={submitting}>
+              {submitting ? "Submitting..." : "Submit"}
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ContactQueries({ adminKey }) {
+  const [queries, setQueries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  function loadQueries() {
+    setLoading(true);
+    fetch(`${API_BASE}/contact/`, { headers: { "X-Admin-Key": adminKey } })
+      .then((res) => res.json())
+      .then((data) => setQueries(data))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }
+
+  useEffect(() => {
+    loadQueries();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [adminKey]);
+
+  async function handleResolve(id) {
+    try {
+      await fetch(`${API_BASE}/contact/${id}/resolve`, {
+        method: "PATCH",
+        headers: { "X-Admin-Key": adminKey },
+      });
+      setQueries((prev) => prev.map((q) => (q.id === id ? { ...q, is_resolved: true } : q)));
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  return (
+    <div className="card" style={{ marginTop: "1.5rem" }}>
+      <h3 style={{ marginBottom: "0.75rem" }}>Contact Queries</h3>
+
+      {loading && <p className="hint">Loading queries...</p>}
+      {error && <p className="msg-error">{error}</p>}
+      {!loading && queries.length === 0 && <p className="empty-state">No queries yet.</p>}
+
+      {queries.map((q) => (
+        <div key={q.id} className="applicant-row">
+          <p className="name">{q.name} {q.is_resolved && <span style={{ color: "#7fe0c9", fontSize: "0.8rem" }}>(Resolved)</span>}</p>
+          <p className="meta">{q.email} · {q.mobile_number}</p>
+          <p style={{ margin: "0.5rem 0" }}>{q.query}</p>
+          {!q.is_resolved && (
+            <div className="applicant-actions">
+              <button className="btn-primary" onClick={() => handleResolve(q.id)}>Mark Resolved</button>
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 }
