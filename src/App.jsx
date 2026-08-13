@@ -2311,6 +2311,102 @@ function AdminDashboard({ adminKey, onBack }) {
   );
 }
 
+function PendingRecruiters({ adminKey }) {
+  const [pending, setPending] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [approvingId, setApprovingId] = useState(null);
+  const [rejectingId, setRejectingId] = useState(null);
+
+  function loadPending() {
+    setLoading(true);
+    fetch(`${API_BASE}/admin/recruiters/pending`, { headers: { "X-Admin-Key": adminKey } })
+      .then((res) => res.json())
+      .then((data) => setPending(data))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }
+
+  useEffect(() => {
+    loadPending();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [adminKey]);
+
+  async function handleApprove(recruiterId) {
+    setApprovingId(recruiterId);
+    setError("");
+    try {
+      const res = await fetch(`${API_BASE}/admin/recruiters/${recruiterId}/approve`, {
+        method: "POST",
+        headers: { "X-Admin-Key": adminKey },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail || "Failed to approve recruiter");
+
+      setPending((prev) => prev.filter((r) => r.id !== recruiterId));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setApprovingId(null);
+    }
+  }
+
+  async function handleReject(recruiterId) {
+    if (!window.confirm("Reject this recruiter? This cannot be undone.")) return;
+
+    setRejectingId(recruiterId);
+    setError("");
+    try {
+      const res = await fetch(`${API_BASE}/admin/recruiters/${recruiterId}/reject`, {
+        method: "POST",
+        headers: { "X-Admin-Key": adminKey },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail || "Failed to reject recruiter");
+
+      setPending((prev) => prev.filter((r) => r.id !== recruiterId));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setRejectingId(null);
+    }
+  }
+
+  return (
+    <div className="card">
+      <h3 style={{ marginBottom: "0.75rem" }}>Pending Recruiter Approvals</h3>
+
+      {loading && <p className="hint">Loading pending recruiters...</p>}
+      {error && <p className="msg-error">{error}</p>}
+      {!loading && pending.length === 0 && <p className="empty-state">No recruiters awaiting approval.</p>}
+
+      {pending.map((r) => (
+        <div key={r.id} className="applicant-row">
+          <p className="name">{r.full_name}</p>
+          <p className="meta">
+            {r.email} · {r.company_name} · {r.designation}
+          </p>
+          <div className="applicant-actions">
+            <button
+              className="btn-primary"
+              onClick={() => handleApprove(r.id)}
+              disabled={approvingId === r.id || rejectingId === r.id}
+            >
+              {approvingId === r.id ? "Approving..." : "Approve"}
+            </button>
+            <button
+              onClick={() => handleReject(r.id)}
+              disabled={approvingId === r.id || rejectingId === r.id}
+            >
+              {rejectingId === r.id ? "Rejecting..." : "Reject"}
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function IntroAnimation({ onFinish }) {
   useEffect(() => {
     const timer = setTimeout(() => {
