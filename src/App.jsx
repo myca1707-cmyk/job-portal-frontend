@@ -602,8 +602,8 @@ function RecruiterSignupForm({ onSuccess }) {
           full_name: fullName,
           email,
           password,
-          company_name: companyName || undefined,
-          designation: designation || undefined,
+          company_name: companyName,
+          designation: designation,
         }),
       });
 
@@ -636,12 +636,12 @@ function RecruiterSignupForm({ onSuccess }) {
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </div>
         <div className="field">
-          <label>Company name (optional)</label>
-          <input value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
+          <label>Company name</label>
+          <input value={companyName} onChange={(e) => setCompanyName(e.target.value)} required />
         </div>
         <div className="field">
-          <label>Designation (optional)</label>
-          <input value={designation} onChange={(e) => setDesignation(e.target.value)} />
+          <label>Designation</label>
+          <input value={designation} onChange={(e) => setDesignation(e.target.value)} required />
         </div>
         <div className="field">
           <label>Password (min 8 characters)</label>
@@ -712,7 +712,11 @@ function PortalAccess({ onCandidateLogin, onRecruiterLogin, onClose, initialRole
 
           {role === "recruiter" && mode === "login" && (
             <>
-              {recruiterSignupDone && <p className="msg-success" style={{ marginBottom: "1rem" }}>Account created successfully — please log in.</p>}
+              {recruiterSignupDone && (
+                <p className="msg-success" style={{ marginBottom: "1rem" }}>
+                  Account created. It's pending admin approval — you'll get an email once you're approved and can log in.
+                </p>
+              )}
               <LoginForm endpoint="/recruiter-auth/login" label="Recruiter Login" onLogin={onRecruiterLogin} />
             </>
           )}
@@ -2116,50 +2120,70 @@ function AdminLogin({ onLogin }) {
   );
 }
 
-function AdminDashboard({ adminKey, onBack }) {
-  const [stats, setStats] = useState(null);
+function PendingRecruiters({ adminKey }) {
+  const [pending, setPending] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [approvingId, setApprovingId] = useState(null);
 
-  useEffect(() => {
+  function loadPending() {
     setLoading(true);
-    fetch(`${API_BASE}/admin/dashboard`, { headers: { "X-Admin-Key": adminKey } })
+    fetch(`${API_BASE}/admin/recruiters/pending`, { headers: { "X-Admin-Key": adminKey } })
       .then((res) => res.json())
-      .then((data) => setStats(data))
+      .then((data) => setPending(data))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
+  }
+
+  useEffect(() => {
+    loadPending();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [adminKey]);
 
+  async function handleApprove(recruiterId) {
+    setApprovingId(recruiterId);
+    setError("");
+    try {
+      const res = await fetch(`${API_BASE}/admin/recruiters/${recruiterId}/approve`, {
+        method: "POST",
+        headers: { "X-Admin-Key": adminKey },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail || "Failed to approve recruiter");
+
+      setPending((prev) => prev.filter((r) => r.id !== recruiterId));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setApprovingId(null);
+    }
+  }
+
   return (
-    <div>
-      <button className="btn-link" onClick={onBack}>Back to jobs</button>
-      <h2 className="page-title">Super Admin Dashboard</h2>
+    <div className="card">
+      <h3 style={{ marginBottom: "0.75rem" }}>Pending Recruiter Approvals</h3>
 
-      {loading && <p className="empty-state">Loading stats...</p>}
+      {loading && <p className="hint">Loading pending recruiters...</p>}
       {error && <p className="msg-error">{error}</p>}
+      {!loading && pending.length === 0 && <p className="empty-state">No recruiters awaiting approval.</p>}
 
-      {stats && (
-        <>
-          <div className="card">
-            <h3>Overview</h3>
-            <p className="card-meta">
-              Total jobs: {stats.total_jobs} · Active jobs: {stats.active_jobs} · Total views: {stats.total_views}
-            </p>
-            <p className="card-meta">
-              Recruiters: {stats.total_recruiters} · Candidates: {stats.total_candidates} · Applications: {stats.total_applications}
-            </p>
+      {pending.map((r) => (
+        <div key={r.id} className="applicant-row">
+          <p className="name">{r.full_name}</p>
+          <p className="meta">
+            {r.email} · {r.company_name} · {r.designation}
+          </p>
+          <div className="applicant-actions">
+            <button
+              className="btn-primary"
+              onClick={() => handleApprove(r.id)}
+              disabled={approvingId === r.id}
+            >
+              {approvingId === r.id ? "Approving..." : "Approve"}
+            </button>
           </div>
-
-          <div className="card">
-            <h3>Applications by status</h3>
-            <div className="tags">
-              {Object.entries(stats.applications_by_status || {}).map(([status, count]) => (
-                <span className="tag" key={status}>{status}: {count}</span>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
+        </div>
+      ))}
     </div>
   );
 }
@@ -2242,6 +2266,44 @@ function CandidateShell({ token, onLogout }) {
         {view === "myApplications" && <MyApplications token={token} onBack={() => setView("profile")} />}
         {view === "myResume" && <MyResume token={token} onBack={() => setView("profile")} />}
       </div>
+    </div>
+  );
+}
+function AdminDashboard({ adminKey, onBack }) {
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetch(`${API_BASE}/admin/dashboard`, { headers: { "X-Admin-Key": adminKey } })
+      .then((res) => res.json())
+      .then((data) => setStats(data))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [adminKey]);
+
+  return (
+    <div style={{ padding: "2rem" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+        <h2>Super Admin Dashboard</h2>
+        <button onClick={onBack}>Log out</button>
+      </div>
+
+      {loading && <p className="hint">Loading dashboard...</p>}
+      {error && <p className="msg-error">{error}</p>}
+
+      {stats && (
+        <div className="stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "1rem", marginBottom: "2rem" }}>
+          <div className="card"><p className="meta">Total Jobs</p><h3>{stats.total_jobs}</h3></div>
+          <div className="card"><p className="meta">Active Jobs</p><h3>{stats.active_jobs}</h3></div>
+          <div className="card"><p className="meta">Total Applications</p><h3>{stats.total_applications}</h3></div>
+          <div className="card"><p className="meta">Total Recruiters</p><h3>{stats.total_recruiters}</h3></div>
+          <div className="card"><p className="meta">Total Candidates</p><h3>{stats.total_candidates}</h3></div>
+          <div className="card"><p className="meta">Total Views</p><h3>{stats.total_views}</h3></div>
+        </div>
+      )}
+
+      <PendingRecruiters adminKey={adminKey} />
     </div>
   );
 }
