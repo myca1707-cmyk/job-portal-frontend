@@ -2269,6 +2269,7 @@ function CandidateShell({ token, onLogout }) {
     </div>
   );
 }
+
 function AdminDashboard({ adminKey, onBack }) {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -2304,6 +2305,74 @@ function AdminDashboard({ adminKey, onBack }) {
       )}
 
       <PendingRecruiters adminKey={adminKey} />
+    </div>
+  );
+}
+
+function IntroAnimation({ onFinish }) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onFinish();
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, [onFinish]);
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "linear-gradient(135deg, #0a1a3c 0%, #0f2557 100%)",
+        zIndex: 9999,
+      }}
+    >
+      <img
+        src={logo}
+        alt="Coretech Talents"
+        style={{
+          width: 120,
+          height: 120,
+          animation: "introPop 1s ease-out forwards",
+        }}
+      />
+      <h1
+        style={{
+          color: "#fff",
+          fontSize: "1.8rem",
+          marginTop: "1.25rem",
+          opacity: 0,
+          animation: "introFadeUp 0.8s ease-out 0.5s forwards",
+        }}
+      >
+        Coretech Talents
+      </h1>
+      <p
+        style={{
+          color: "#7fe0c9",
+          fontSize: "0.95rem",
+          marginTop: "0.5rem",
+          opacity: 0,
+          animation: "introFadeUp 0.8s ease-out 0.9s forwards",
+        }}
+      >
+        Connecting talent with opportunity
+      </p>
+
+      <style>{`
+        @keyframes introPop {
+          0% { transform: scale(0.6); opacity: 0; }
+          60% { transform: scale(1.08); opacity: 1; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes introFadeUp {
+          0% { transform: translateY(10px); opacity: 0; }
+          100% { transform: translateY(0); opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }
@@ -2362,8 +2431,8 @@ function App() {
   }
 
   if (!introDone) {
-    return <IntroVideo onFinish={() => setIntroDone(true)} />;
-  }
+    return <IntroAnimation onFinish={() => setIntroDone(true)} />;
+}
 
   if (error) return <p style={{ padding: "2rem", color: "red" }}>{error}</p>;
 
