@@ -2531,6 +2531,7 @@ function App() {
   const [portalOpen, setPortalOpen] = useState(false);
   const [portalInitialRole, setPortalInitialRole] = useState(null);
   const [view, setView] = useState("jobs");
+  const [contactOpen, setContactOpen] = useState(false);
 
   function handleCandidateLogin(token) {
     localStorage.setItem("candidate_token", token);
@@ -2647,7 +2648,15 @@ function App() {
         {view === "admin" && !portalOpen && adminKey && (
           <AdminDashboard adminKey={adminKey} onBack={handleAdminLogout} />
         )}
+
+        {!portalOpen && (
+          <button className="btn-primary" onClick={() => setContactOpen(true)} style={{ margin: "2rem auto", display: "block" }}>
+            Contact Us
+          </button>
+        )}
       </div>
+
+      {contactOpen && <ContactUsModal onClose={() => setContactOpen(false)} />}
     </>
   );
 }
