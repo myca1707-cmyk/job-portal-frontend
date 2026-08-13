@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import logo from "./assets/coretech-logo.png";
 import introVideo from "./assets/intro.mp4";
+import CookieConsent from "./CookieConsent";
 
 const API_BASE = "https://job-portal-backend-production-6d9d.up.railway.app";
 
