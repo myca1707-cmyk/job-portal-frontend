@@ -2599,12 +2599,12 @@ function App() {
         onAdminAccess={() => { setView("adminLogin"); setPortalOpen(false); }}
         onAbout={() => { setView("about"); setPortalOpen(false); }}
         onServices={() => { setView("services"); setPortalOpen(false); }}
-        onHome={() => { setView("home"); setPortalOpen(false); }}
+       onHome={() => { setView("home"); setPortalOpen(false); }}
         onNewsletter={() => {
           document.getElementById("newsletter-section")?.scrollIntoView({ behavior: "smooth" });
         }}
-        <CookieConsent />
       />
+      <CookieConsent />
 
       {!portalOpen && view === "jobs" && <NewsletterSection />}
 
