@@ -37,7 +37,7 @@ function AboutSection() {
     founder: {
       title: "Meet the Founder",
       paragraphs: [
-        "With over 10 years of hands-on experience in the recruitment industry, our founder has spent a decade learning exactly what makes hiring work — and what holds businesses and candidates back. That depth of experience isn't just a resume line; it's the foundation this entire platform is built on.",
+        "The founder has spent a decade learning exactly what makes hiring work — and what holds businesses and candidates back. That depth of experience isn't just a resume line; it's the foundation this entire platform is built on.",
         "A constant drive to evolve and do better is what led him to build CoreTech Talents' own recruitment portal — a platform designed to ease the job search for candidates and simplify hiring for recruiters. Where traditional recruitment often felt slow and disconnected, he saw an opportunity to make it faster, fairer, and more human.",
         "Hard work, consistency, and a refusal to settle for 'good enough' define how he operates. Every improvement to this platform comes from the same relentless mindset that built his career: show up, solve real problems, and keep pushing forward.",
         "This platform is more than a business — it's a personal commitment to India's growth. By closing the gap between skilled talent and the companies that need them, he hopes this initiative plays its part in building a stronger, more connected, and more opportunity-rich job market for the country.",
