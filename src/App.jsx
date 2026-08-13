@@ -1384,12 +1384,40 @@ function MyResume({ token, onBack }) {
   );
 }
 
+function calculateProfileCompletion(profile) {
+  if (!profile) return 0;
+  const fields = [
+    profile.full_name,
+    profile.email,
+    profile.mobile_number,
+    profile.location,
+    profile.designation,
+    profile.current_company,
+    profile.years_of_experience,
+    profile.current_ctc,
+    profile.expected_ctc,
+    profile.notice_period,
+    profile.resume_headline,
+    profile.skills,
+    profile.education_level,
+    profile.field_of_study,
+    profile.has_resume,
+  ];
+  const filled = fields.filter((f) => f !== null && f !== undefined && f !== "").length;
+  return Math.round((filled / fields.length) * 100);
+}
+
+function getInitials(name) {
+  if (!name) return "?";
+  const parts = name.trim().split(" ").filter(Boolean);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 function CandidateProfile({ token }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [pictureUrl, setPictureUrl] = useState(null);
-  const [pictureLoading, setPictureLoading] = useState(true);
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
@@ -1402,6 +1430,7 @@ function CandidateProfile({ token }) {
     mobile_number: "",
     location: "",
     designation: "",
+    current_company: "",
     years_of_experience: "",
     current_ctc: "",
     expected_ctc: "",
@@ -1423,6 +1452,7 @@ function CandidateProfile({ token }) {
           mobile_number: data.mobile_number || "",
           location: data.location || "",
           designation: data.designation || "",
+          current_company: data.current_company || "",
           years_of_experience: data.years_of_experience || "",
           current_ctc: data.current_ctc || "",
           expected_ctc: data.expected_ctc || "",
@@ -1432,6 +1462,242 @@ function CandidateProfile({ token }) {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }
+
+  useEffect(() => {
+    loadProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+
+  async function handleUploadPicture(e) {
+    e.preventDefault();
+    if (!file) return;
+
+    setUploadError("");
+    setUploadMessage("");
+    setUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(`${API_BASE}/candidates/me/profile-picture`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail || "Failed to upload profile picture");
+
+      setUploadMessage("Profile picture updated");
+      setFile(null);
+    } catch (err) {
+      setUploadError(err.message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  function handleFormChange(field, value) {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function handleSaveProfile(e) {
+    e.preventDefault();
+    setSaveError("");
+    setSaveMessage("");
+    setSaving(true);
+
+    try {
+      const res = await fetch(`${API_BASE}/candidates/me`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail || "Failed to update profile");
+
+      setProfile(data);
+      setSaveMessage("Profile updated successfully");
+      setEditing(false);
+    } catch (err) {
+      setSaveError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) return <p className="hint">Loading profile...</p>;
+  if (error) return <p className="msg-error">{error}</p>;
+  if (!profile) return null;
+
+  const completion = calculateProfileCompletion(profile);
+  const initials = getInitials(profile.full_name);
+
+  return (
+    <div style={{ maxWidth: 600, margin: "0 auto" }}>
+      <h2 className="page-title">My Profile</h2>
+
+      {!editing && (
+        <>
+          <div className="card" style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: "1.25rem" }}>
+            <div
+              style={{
+                width: 64,
+                height: 64,
+                borderRadius: "50%",
+                background: "rgba(37, 84, 232, 0.12)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <span style={{ fontSize: 20, fontWeight: 700, color: "var(--blue-600)" }}>{initials}</span>
+            </div>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>{profile.full_name}</p>
+              <p className="card-meta" style={{ margin: "2px 0 0" }}>
+                {profile.designation}
+                {profile.current_company && ` at ${profile.current_company}`}
+              </p>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <p style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{completion}%</p>
+              <p className="hint" style={{ margin: 0 }}>complete</p>
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: "1.25rem" }}>
+            <div className="card" style={{ padding: "0.75rem 1rem" }}>
+              <p className="hint" style={{ margin: "0 0 2px" }}>Experience</p>
+              <p style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>
+                {profile.years_of_experience ? `${profile.years_of_experience} yrs` : "—"}
+              </p>
+            </div>
+            <div className="card" style={{ padding: "0.75rem 1rem" }}>
+              <p className="hint" style={{ margin: "0 0 2px" }}>Current CTC</p>
+              <p style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>{profile.current_ctc || "—"}</p>
+            </div>
+            <div className="card" style={{ padding: "0.75rem 1rem" }}>
+              <p className="hint" style={{ margin: "0 0 2px" }}>Notice</p>
+              <p style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>{profile.notice_period || "—"}</p>
+            </div>
+          </div>
+
+          <div className="card" style={{ padding: 0 }}>
+            <div style={{ padding: "1rem 1.25rem", borderBottom: "1px solid var(--line)", display: "flex", justifyContent: "space-between" }}>
+              <span className="card-meta">Email</span>
+              <span className="card-meta" style={{ color: "var(--text-primary)" }}>{profile.email}</span>
+            </div>
+            {profile.mobile_number && (
+              <div style={{ padding: "1rem 1.25rem", borderBottom: "1px solid var(--line)", display: "flex", justifyContent: "space-between" }}>
+                <span className="card-meta">Mobile</span>
+                <span className="card-meta" style={{ color: "var(--text-primary)" }}>{profile.mobile_number}</span>
+              </div>
+            )}
+            {profile.current_company && (
+              <div style={{ padding: "1rem 1.25rem", borderBottom: "1px solid var(--line)", display: "flex", justifyContent: "space-between" }}>
+                <span className="card-meta">Current company</span>
+                <span className="card-meta" style={{ color: "var(--text-primary)" }}>{profile.current_company}</span>
+              </div>
+            )}
+            {profile.location && (
+              <div style={{ padding: "1rem 1.25rem", display: "flex", justifyContent: "space-between" }}>
+                <span className="card-meta">Location</span>
+                <span className="card-meta" style={{ color: "var(--text-primary)" }}>{profile.location}</span>
+              </div>
+            )}
+          </div>
+
+          {profile.skills && (
+            <div className="tags" style={{ margin: "1rem 0" }}>
+              {profile.skills.split(",").map((s) => s.trim()).filter(Boolean).map((s) => (
+                <span className="tag" key={s}>{s}</span>
+              ))}
+            </div>
+          )}
+
+          <button className="btn-primary" style={{ width: "100%" }} onClick={() => setEditing(true)}>
+            Edit Profile
+          </button>
+        </>
+      )}
+
+      {editing && (
+        <div className="form-card">
+          <h2>Edit Profile</h2>
+          <form onSubmit={handleSaveProfile}>
+            <div className="field">
+              <label>Full name</label>
+              <input value={form.full_name} onChange={(e) => handleFormChange("full_name", e.target.value)} required />
+            </div>
+            <div className="field">
+              <label>Email</label>
+              <input type="email" value={form.email} onChange={(e) => handleFormChange("email", e.target.value)} required />
+            </div>
+            <div className="field">
+              <label>Mobile number</label>
+              <input value={form.mobile_number} onChange={(e) => handleFormChange("mobile_number", e.target.value)} required pattern="[0-9]{10}" />
+            </div>
+            <div className="field">
+              <label>Location</label>
+              <input value={form.location} onChange={(e) => handleFormChange("location", e.target.value)} />
+            </div>
+            <div className="field">
+              <label>Designation</label>
+              <input value={form.designation} onChange={(e) => handleFormChange("designation", e.target.value)} />
+            </div>
+            <div className="field">
+              <label>Current company</label>
+              <input value={form.current_company} onChange={(e) => handleFormChange("current_company", e.target.value)} placeholder="e.g. Tata Motors" />
+            </div>
+            <div className="field">
+              <label>Years of experience</label>
+              <input value={form.years_of_experience} onChange={(e) => handleFormChange("years_of_experience", e.target.value)} />
+            </div>
+            <div className="field">
+              <label>Current CTC</label>
+              <input value={form.current_ctc} onChange={(e) => handleFormChange("current_ctc", e.target.value)} />
+            </div>
+            <div className="field">
+              <label>Expected CTC</label>
+              <input value={form.expected_ctc} onChange={(e) => handleFormChange("expected_ctc", e.target.value)} />
+            </div>
+            <div className="field">
+              <label>Notice period</label>
+              <input value={form.notice_period} onChange={(e) => handleFormChange("notice_period", e.target.value)} />
+            </div>
+
+            {saveError && <p className="msg-error">{saveError}</p>}
+            {saveMessage && <p className="msg-success">{saveMessage}</p>}
+
+            <div style={{ display: "flex", gap: "0.75rem" }}>
+              <button type="submit" className="btn-primary" disabled={saving}>{saving ? "Saving..." : "Save"}</button>
+              <button type="button" onClick={() => { setEditing(false); loadProfile(); }} disabled={saving}>Cancel</button>
+            </div>
+          </form>
+
+          <div style={{ marginTop: "1.5rem", borderTop: "1px solid var(--line)", paddingTop: "1.25rem" }}>
+            <h3 style={{ marginBottom: "0.75rem" }}>Update Profile Picture</h3>
+            <form onSubmit={handleUploadPicture}>
+              <div className="field">
+                <label>JPG or PNG (max 5MB)</label>
+                <input type="file" accept="image/jpeg,image/png" onChange={(e) => setFile(e.target.files[0] || null)} required />
+              </div>
+              {uploadError && <p className="msg-error">{uploadError}</p>}
+              {uploadMessage && <p className="msg-success">{uploadMessage}</p>}
+              <button type="submit" className="btn-primary" disabled={uploading || !file}>
+                {uploading ? "Uploading..." : "Upload"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
   useEffect(() => {
     loadProfile();
