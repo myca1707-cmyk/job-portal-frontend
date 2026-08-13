@@ -247,7 +247,7 @@ function SplashScreen() {
   );
 }
 
-function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter, onHome, onContactUs }) {
+function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter, onHome }) {
   return (
     <div className="hero">
       <svg className="hero-bg" viewBox="0 0 800 240" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
@@ -270,19 +270,18 @@ function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter, 
       </svg>
 
       <div className="hero-content">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "nowrap", gap: "0.75rem" }}>
-  <div className="brand" onClick={onAdminAccess} style={{ cursor: "pointer", flexShrink: 0 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.75rem" }}>
+          <div className="brand" onClick={onAdminAccess} style={{ cursor: "pointer" }}>
             <img src={logo} alt="Coretech Talents" className="brand-mark" />
             <div className="brand-name">Coretech Talents</div>
           </div>
 
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.75rem" }}>
+          <div className="hero-nav" style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
             <button onClick={onHome}>Home</button>
             <button onClick={onAbout}>About</button>
             <button onClick={onServices}>Services</button>
             <button onClick={onNewsletter}>Newsletter</button>
             <button onClick={onOpenPortal}>Login / Sign Up</button>
-            <button onClick={onContactUs}>Contact Us</button>
           </div>
         </div>
       </div>
@@ -2603,7 +2602,6 @@ function App() {
         onNewsletter={() => {
           document.getElementById("newsletter-section")?.scrollIntoView({ behavior: "smooth" });
         }}
-        onContactUs={() => setContactOpen(true)}
       />
 
       {!portalOpen && view === "jobs" && <NewsletterSection />}
@@ -2651,7 +2649,11 @@ function App() {
           <AdminDashboard adminKey={adminKey} onBack={handleAdminLogout} />
         )}
 
-        
+        {!portalOpen && view === "home" && (
+          <button className="btn-primary" onClick={() => setContactOpen(true)} style={{ margin: "2rem auto", display: "block" }}>
+            Contact Us
+          </button>
+        )}
       </div>
 
       {contactOpen && <ContactUsModal onClose={() => setContactOpen(false)} />}
