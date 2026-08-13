@@ -276,7 +276,7 @@ function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter, 
             <div className="brand-name">Coretech Talents</div>
           </div>
 
-          <div className="hero-nav" style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.75rem" }}>
             <button onClick={onHome}>Home</button>
             <button onClick={onAbout}>About</button>
             <button onClick={onServices}>Services</button>
