@@ -247,7 +247,7 @@ function SplashScreen() {
   );
 }
 
-function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter, onHome }) {
+function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter, onHome, onContactUs }) {
   return (
     <div className="hero">
       <svg className="hero-bg" viewBox="0 0 800 240" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
@@ -282,6 +282,7 @@ function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter, 
             <button onClick={onServices}>Services</button>
             <button onClick={onNewsletter}>Newsletter</button>
             <button onClick={onOpenPortal}>Login / Sign Up</button>
+            <button onClick={onContactUs}>Contact Us</button>
           </div>
         </div>
       </div>
@@ -2602,6 +2603,7 @@ function App() {
         onNewsletter={() => {
           document.getElementById("newsletter-section")?.scrollIntoView({ behavior: "smooth" });
         }}
+        onContactUs={() => setContactOpen(true)}
       />
 
       {!portalOpen && view === "jobs" && <NewsletterSection />}
@@ -2649,11 +2651,7 @@ function App() {
           <AdminDashboard adminKey={adminKey} onBack={handleAdminLogout} />
         )}
 
-        {!portalOpen && (
-          <button className="btn-primary" onClick={() => setContactOpen(true)} style={{ margin: "2rem auto", display: "block" }}>
-            Contact Us
-          </button>
-        )}
+        
       </div>
 
       {contactOpen && <ContactUsModal onClose={() => setContactOpen(false)} />}
