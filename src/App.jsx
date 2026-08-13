@@ -270,8 +270,8 @@ function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter, 
       </svg>
 
       <div className="hero-content">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.75rem" }}>
-          <div className="brand" onClick={onAdminAccess} style={{ cursor: "pointer" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "nowrap", gap: "0.75rem" }}>
+  <div className="brand" onClick={onAdminAccess} style={{ cursor: "pointer", flexShrink: 0 }}>
             <img src={logo} alt="Coretech Talents" className="brand-mark" />
             <div className="brand-name">Coretech Talents</div>
           </div>
