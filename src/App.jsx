@@ -2603,6 +2603,7 @@ function App() {
         onNewsletter={() => {
           document.getElementById("newsletter-section")?.scrollIntoView({ behavior: "smooth" });
         }}
+        <CookieConsent />
       />
 
       {!portalOpen && view === "jobs" && <NewsletterSection />}
