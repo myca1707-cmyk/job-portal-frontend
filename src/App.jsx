@@ -1401,7 +1401,7 @@ function calculateProfileCompletion(profile) {
     profile.skills,
     profile.education_level,
     profile.field_of_study,
-    profile.has_resume,
+    profile.resume_file,
   ];
   const filled = fields.filter((f) => f !== null && f !== undefined && f !== "").length;
   return Math.round((filled / fields.length) * 100);
@@ -1435,7 +1435,10 @@ function CandidateProfile({ token }) {
     current_ctc: "",
     expected_ctc: "",
     notice_period: "",
+    education_level: "",
+    field_of_study: "",
   });
+
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [saveMessage, setSaveMessage] = useState("");
@@ -1457,6 +1460,8 @@ function CandidateProfile({ token }) {
           current_ctc: data.current_ctc || "",
           expected_ctc: data.expected_ctc || "",
           notice_period: data.notice_period || "",
+          education_level: data.education_level || "",
+          field_of_study: data.field_of_study || "",
         });
       })
       .catch((err) => setError(err.message))
@@ -1637,6 +1642,7 @@ function CandidateProfile({ token }) {
               <label>Email</label>
               <input type="email" value={form.email} onChange={(e) => handleFormChange("email", e.target.value)} required />
             </div>
+
             <div className="field">
               <label>Mobile number</label>
               <input value={form.mobile_number} onChange={(e) => handleFormChange("mobile_number", e.target.value)} required pattern="[0-9]{10}" />
@@ -1652,6 +1658,20 @@ function CandidateProfile({ token }) {
             <div className="field">
               <label>Current company</label>
               <input value={form.current_company} onChange={(e) => handleFormChange("current_company", e.target.value)} placeholder="e.g. Tata Motors" />
+            </div>
+            <div className="field">
+              <label>Education level</label>
+              <select value={form.education_level} onChange={(e) => handleFormChange("education_level", e.target.value)}>
+                <option value="">Select</option>
+                <option value="Graduate">Graduate</option>
+                <option value="Postgraduate">Postgraduate</option>
+                <option value="Diploma">Diploma</option>
+                <option value="PhD">PhD</option>
+              </select>
+            </div>
+            <div className="field">
+              <label>Field of study</label>
+              <input value={form.field_of_study} onChange={(e) => handleFormChange("field_of_study", e.target.value)} placeholder="e.g. Computer Science" />
             </div>
             <div className="field">
               <label>Years of experience</label>
