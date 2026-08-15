@@ -1948,6 +1948,8 @@ function CandidateSearch({ token }) {
   const [error, setError] = useState("");
   const [downloadingId, setDownloadingId] = useState(null);
   const [selectedCandidateId, setSelectedCandidateId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 10;
 
   const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const isEmailQuery = filters.q.includes("@");
@@ -1960,6 +1962,7 @@ function CandidateSearch({ token }) {
   async function fetchCandidates(filterValues) {
     setError("");
     setLoading(true);
+    setCurrentPage(1);
 
     try {
       const params = new URLSearchParams();
@@ -2043,6 +2046,9 @@ function CandidateSearch({ token }) {
       setDownloadingId(null);
     }
   }
+
+  const totalPages = Math.ceil(results.length / PAGE_SIZE);
+  const paginatedResults = results.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   if (selectedCandidateId) {
     return (
@@ -2132,7 +2138,7 @@ function CandidateSearch({ token }) {
           </p>
         )}
 
-        {results.map((candidate) => (
+        {paginatedResults.map((candidate) => (
           <div
             key={candidate.id}
             className="card job-pick"
@@ -2166,6 +2172,18 @@ function CandidateSearch({ token }) {
             </div>
           </div>
         ))}
+
+        {totalPages > 1 && (
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "1rem", marginTop: "1.5rem" }}>
+            <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>
+              ← Previous
+            </button>
+            <span className="hint">Page {currentPage} of {totalPages}</span>
+            <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
+              Next →
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
