@@ -2144,8 +2144,7 @@ function CandidateSearch({ token }) {
             <div style={{ flex: 1 }}>
               <h2>{candidate.full_name}</h2>
               <p className="card-meta">
-                {candidate.designation}
-                {candidate.current_company && ` at ${candidate.current_company}`}
+                {candidate.email}
               </p>
               {candidate.resume_headline && <p className="card-desc">{candidate.resume_headline}</p>}
               <p className="card-meta">
@@ -2215,10 +2214,169 @@ function AdminLogin({ onLogin }) {
   );
 }
 
+function RecruiterProfile({ token }) {
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState({
+    full_name: "",
+    company_name: "",
+    designation: "",
+    mobile_number: "",
+    location: "",
+  });
+
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const [saveMessage, setSaveMessage] = useState("");
+
+  function loadProfile() {
+    setLoading(true);
+    fetch(`${API_BASE}/recruiters/me`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => res.json())
+      .then((data) => {
+        setProfile(data);
+        setForm({
+          full_name: data.full_name || "",
+          company_name: data.company_name || "",
+          designation: data.designation || "",
+          mobile_number: data.mobile_number || "",
+          location: data.location || "",
+        });
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }
+
+  useEffect(() => {
+    loadProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+
+  function handleFormChange(field, value) {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function handleSaveProfile(e) {
+    e.preventDefault();
+    setSaveError("");
+    setSaveMessage("");
+    setSaving(true);
+
+    try {
+      const res = await fetch(`${API_BASE}/recruiters/me`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail || "Failed to update profile");
+
+      setProfile(data);
+      setSaveMessage("Profile updated successfully");
+      setEditing(false);
+    } catch (err) {
+      setSaveError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) return <p className="hint">Loading profile...</p>;
+  if (error) return <p className="msg-error">{error}</p>;
+  if (!profile) return null;
+
+  return (
+    <div style={{ maxWidth: 600, margin: "0 auto" }}>
+      <h2 className="page-title">My Profile</h2>
+
+      {!editing && (
+        <>
+          <div className="card" style={{ padding: 0, marginBottom: "1.25rem" }}>
+            <div style={{ padding: "1.25rem", borderBottom: "1px solid var(--line)" }}>
+              <p style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>{profile.full_name}</p>
+              <p className="card-meta" style={{ margin: "4px 0 0" }}>
+                {profile.designation}
+                {profile.company_name && ` at ${profile.company_name}`}
+              </p>
+            </div>
+            <div style={{ padding: "1rem 1.25rem", borderBottom: "1px solid var(--line)", display: "flex", justifyContent: "space-between" }}>
+              <span className="card-meta">Email</span>
+              <span className="card-meta" style={{ color: "var(--text-primary)" }}>{profile.email}</span>
+            </div>
+            {profile.mobile_number && (
+              <div style={{ padding: "1rem 1.25rem", borderBottom: "1px solid var(--line)", display: "flex", justifyContent: "space-between" }}>
+                <span className="card-meta">Mobile</span>
+                <span className="card-meta" style={{ color: "var(--text-primary)" }}>{profile.mobile_number}</span>
+              </div>
+            )}
+            {profile.company_name && (
+              <div style={{ padding: "1rem 1.25rem", borderBottom: "1px solid var(--line)", display: "flex", justifyContent: "space-between" }}>
+                <span className="card-meta">Company</span>
+                <span className="card-meta" style={{ color: "var(--text-primary)" }}>{profile.company_name}</span>
+              </div>
+            )}
+            {profile.location && (
+              <div style={{ padding: "1rem 1.25rem", display: "flex", justifyContent: "space-between" }}>
+                <span className="card-meta">Location</span>
+                <span className="card-meta" style={{ color: "var(--text-primary)" }}>{profile.location}</span>
+              </div>
+            )}
+          </div>
+
+          <button className="btn-primary" style={{ width: "100%" }} onClick={() => setEditing(true)}>
+            Edit Profile
+          </button>
+        </>
+      )}
+
+      {editing && (
+        <div className="form-card">
+          <h2>Edit Profile</h2>
+          <form onSubmit={handleSaveProfile}>
+            <div className="field">
+              <label>Full name</label>
+              <input value={form.full_name} onChange={(e) => handleFormChange("full_name", e.target.value)} required />
+            </div>
+            <div className="field">
+              <label>Company name</label>
+              <input value={form.company_name} onChange={(e) => handleFormChange("company_name", e.target.value)} />
+            </div>
+            <div className="field">
+              <label>Designation</label>
+              <input value={form.designation} onChange={(e) => handleFormChange("designation", e.target.value)} />
+            </div>
+            <div className="field">
+              <label>Mobile number</label>
+              <input value={form.mobile_number} onChange={(e) => handleFormChange("mobile_number", e.target.value)} pattern="[0-9]{10}" />
+            </div>
+            <div className="field">
+              <label>Location</label>
+              <input value={form.location} onChange={(e) => handleFormChange("location", e.target.value)} />
+            </div>
+
+            {saveError && <p className="msg-error">{saveError}</p>}
+            {saveMessage && <p className="msg-success">{saveMessage}</p>}
+
+            <div style={{ display: "flex", gap: "0.75rem" }}>
+              <button type="submit" className="btn-primary" disabled={saving}>{saving ? "Saving..." : "Save"}</button>
+              <button type="button" onClick={() => { setEditing(false); loadProfile(); }} disabled={saving}>Cancel</button>
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function RecruiterShell({ token, onLogout }) {
   const [view, setView] = useState("home");
 
   const tabs = [
+    { key: "profile", label: "My Profile" },
     { key: "dashboard", label: "My Dashboard" },
     { key: "searchCandidates", label: "Search Candidates" },
     { key: "postJob", label: "Post a Job" },
@@ -2251,6 +2409,7 @@ function RecruiterShell({ token, onLogout }) {
           </div>
         )}
 
+        {view === "profile" && <RecruiterProfile token={token} />}
         {view === "dashboard" && <RecruiterDashboard token={token} />}
         {view === "searchCandidates" && <CandidateSearch token={token} />}
         {view === "postJob" && <PostJobPage token={token} />}
