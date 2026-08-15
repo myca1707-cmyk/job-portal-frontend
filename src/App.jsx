@@ -2144,7 +2144,8 @@ function CandidateSearch({ token }) {
             <div style={{ flex: 1 }}>
               <h2>{candidate.full_name}</h2>
               <p className="card-meta">
-                {candidate.email}
+                {candidate.designation}
+                {candidate.current_company && ` at ${candidate.current_company}`}
               </p>
               {candidate.resume_headline && <p className="card-desc">{candidate.resume_headline}</p>}
               <p className="card-meta">
