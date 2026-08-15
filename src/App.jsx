@@ -780,6 +780,17 @@ function JobCard({ job, token, onRequireLogin }) {
     <div className="card">
       <h2>{job.title}</h2>
       <p className="card-meta">{job.company_name} · {job.location} · {job.employment_type}</p>
+
+      {(job.experience_required || job.salary || job.domain) && (
+        <p className="card-meta card-meta-secondary">
+          {job.experience_required && <span>{job.experience_required}</span>}
+          {job.experience_required && (job.salary || job.domain) && " · "}
+          {job.salary && <span>{job.salary}</span>}
+          {job.salary && job.domain && " · "}
+          {job.domain && <span>{job.domain}</span>}
+        </p>
+      )}
+
       <p className="card-desc">{job.description}</p>
       <div className="tags">
         {skills.map((s) => (
@@ -807,6 +818,9 @@ function PostJobForm({ token, onPosted }) {
   const [location, setLocation] = useState("");
   const [employmentType, setEmploymentType] = useState("Full-time");
   const [skillsRequired, setSkillsRequired] = useState("");
+  const [experienceRequired, setExperienceRequired] = useState("");
+  const [salary, setSalary] = useState("");
+  const [domain, setDomain] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -826,6 +840,9 @@ function PostJobForm({ token, onPosted }) {
           location,
           employment_type: employmentType,
           skills_required: skillsRequired,
+          experience_required: experienceRequired || undefined,
+          salary: salary || undefined,
+          domain: domain || undefined,
         }),
       });
 
@@ -837,6 +854,9 @@ function PostJobForm({ token, onPosted }) {
       setCompanyName("");
       setLocation("");
       setSkillsRequired("");
+      setExperienceRequired("");
+      setSalary("");
+      setDomain("");
       onPosted();
     } catch (err) {
       setError(err.message);
@@ -877,6 +897,18 @@ function PostJobForm({ token, onPosted }) {
         <div className="field">
           <label>Skills required (comma-separated)</label>
           <input value={skillsRequired} onChange={(e) => setSkillsRequired(e.target.value)} placeholder="python, fastapi, postgresql" required />
+        </div>
+        <div className="field">
+          <label>Experience required</label>
+          <input value={experienceRequired} onChange={(e) => setExperienceRequired(e.target.value)} placeholder="e.g. 2-4 years" />
+        </div>
+        <div className="field">
+          <label>Salary</label>
+          <input value={salary} onChange={(e) => setSalary(e.target.value)} placeholder="e.g. 6-8 LPA" />
+        </div>
+        <div className="field">
+          <label>Domain</label>
+          <input value={domain} onChange={(e) => setDomain(e.target.value)} placeholder="e.g. IT, Manufacturing" />
         </div>
 
         {error && <p className="msg-error">{error}</p>}
