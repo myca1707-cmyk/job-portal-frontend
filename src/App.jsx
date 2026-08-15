@@ -738,8 +738,10 @@ function PortalAccess({ onCandidateLogin, onRecruiterLogin, onClose, initialRole
 function JobCard({ job, token, onRequireLogin }) {
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
+  const [expanded, setExpanded] = useState(false);
 
-  async function handleApply() {
+  async function handleApply(e) {
+    e.stopPropagation();
     if (!token) {
       onRequireLogin();
       return;
@@ -773,39 +775,54 @@ function JobCard({ job, token, onRequireLogin }) {
     }
   }
 
-  const skills = (job.skills_required || "").split(",").map((s) => s.trim()).filter(Boolean);
+  const skills = (job.skills_required || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => Boolean(s) && s.toLowerCase() !== "none");
   const isApplied = status === "applied";
 
   return (
-    <div className="card">
+    <div className="card" onClick={() => setExpanded((v) => !v)} style={{ cursor: "pointer" }}>
       <h2>{job.title}</h2>
-      <p className="card-meta">{job.company_name} · {job.location} · {job.employment_type}</p>
 
-      {(job.experience_required || job.salary || job.domain) && (
-        <p className="card-meta card-meta-secondary">
-          {job.experience_required && <span>{job.experience_required}</span>}
-          {job.experience_required && (job.salary || job.domain) && " · "}
-          {job.salary && <span>{job.salary}</span>}
-          {job.salary && job.domain && " · "}
-          {job.domain && <span>{job.domain}</span>}
-        </p>
-      )}
+      {expanded && (
+        <>
+          <p className="card-meta">{job.company_name} · {job.location} · {job.employment_type}</p>
 
-      <p className="card-desc">{job.description}</p>
-      <div className="tags">
-        {skills.map((s) => (
-          <span className="tag" key={s}>{s}</span>
-        ))}
-      </div>
+          {(job.experience_required || job.salary || job.domain) && (
+            <p className="card-meta card-meta-secondary">
+              {job.experience_required && <span>{job.experience_required}</span>}
+              {job.experience_required && (job.salary || job.domain) && " · "}
+              {job.salary && <span>{job.salary}</span>}
+              {job.salary && job.domain && " · "}
+              {job.domain && <span>{job.domain}</span>}
+            </p>
+          )}
 
-      <button className={isApplied ? "btn-applied" : "btn-primary"} onClick={handleApply} disabled={status === "applying" || isApplied}>
-        {status === "applying" ? "Applying..." : isApplied ? "Applied ✓" : "Apply"}
-      </button>
-      {message && (
-        <span className={`status-line ${status === "error" ? "msg-error" : "msg-success"}`}>
-          <span className={`status-dot ${status}`}></span>
-          {message}
-        </span>
+          <p className="card-desc">{job.description}</p>
+
+          {skills.length > 0 && (
+            <div className="tags">
+              {skills.map((s) => (
+                <span className="tag" key={s}>{s}</span>
+              ))}
+            </div>
+          )}
+
+          <button
+            className={isApplied ? "btn-applied" : "btn-primary"}
+            onClick={handleApply}
+            disabled={status === "applying" || isApplied}
+          >
+            {status === "applying" ? "Applying..." : isApplied ? "Applied ✓" : "Apply"}
+          </button>
+          {message && (
+            <span className={`status-line ${status === "error" ? "msg-error" : "msg-success"}`}>
+              <span className={`status-dot ${status}`}></span>
+              {message}
+            </span>
+          )}
+        </>
       )}
     </div>
   );
