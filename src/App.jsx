@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route, useParams, useNavigate, Link } from "react-router-dom";
 import "./App.css";
 import logo from "./assets/coretech-logo.png";
 import introVideo from "./assets/intro.mp4";
@@ -752,6 +753,74 @@ function PortalAccess({ onCandidateLogin, onRecruiterLogin, onClose, initialRole
   );
 }
 
+// ================= SHARE JOB BUTTON (WhatsApp / LinkedIn / SMS / copy link) =================
+function ShareJobButton({ job }) {
+  const [copied, setCopied] = useState(false);
+  const jobUrl = `${window.location.origin}/jobs/${job.id}`;
+  const shareText = `Check out this job: ${job.title}${job.company_name ? ` at ${job.company_name}` : ""}`;
+
+  function handleCopy(e) {
+    e.stopPropagation();
+    navigator.clipboard
+      .writeText(jobUrl)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch(() => {});
+  }
+
+  const shareBtnStyle = {
+    padding: "0.4rem 0.85rem",
+    borderRadius: "8px",
+    border: "1px solid var(--line, #ccc)",
+    background: "#fff",
+    color: "var(--text-primary, #1a1a1a)",
+    fontSize: "0.85rem",
+    fontWeight: 600,
+    cursor: "pointer",
+    textDecoration: "none",
+    display: "inline-flex",
+    alignItems: "center",
+  };
+
+  return (
+    <div
+      style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "0.75rem" }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <a
+        href={`https://wa.me/?text=${encodeURIComponent(`${shareText} ${jobUrl}`)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={shareBtnStyle}
+        title="Share on WhatsApp"
+      >
+        WhatsApp
+      </a>
+      <a
+        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(jobUrl)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={shareBtnStyle}
+        title="Share on LinkedIn"
+      >
+        LinkedIn
+      </a>
+      <a
+        href={`sms:?body=${encodeURIComponent(`${shareText} ${jobUrl}`)}`}
+        style={shareBtnStyle}
+        title="Share via SMS"
+      >
+        SMS
+      </a>
+      <button type="button" onClick={handleCopy} style={shareBtnStyle}>
+        {copied ? "Copied!" : "Copy Link"}
+      </button>
+    </div>
+  );
+}
+
 function JobCard({ job, token, onRequireLogin }) {
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
@@ -839,6 +908,8 @@ function JobCard({ job, token, onRequireLogin }) {
               {message}
             </span>
           )}
+
+          <ShareJobButton job={job} />
         </>
       )}
     </div>
@@ -2885,7 +2956,198 @@ function ContactQueries({ adminKey }) {
   );
 }
 
-function App() {
+// ================= JOB DETAIL PAGE (per-job URL, SEO meta + JSON-LD) =================
+function JobDetailPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [job, setJob] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [applyStatus, setApplyStatus] = useState("idle");
+  const [applyMessage, setApplyMessage] = useState("");
+
+  const candidateToken = localStorage.getItem("candidate_token");
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(`${API_BASE}/jobs/${id}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Job not found");
+        return res.json();
+      })
+      .then((data) => setJob(data))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  useEffect(() => {
+    if (!job) return;
+
+    const previousTitle = document.title;
+    document.title = `${job.title}${job.company_name ? ` at ${job.company_name}` : ""} | Coretech Talents`;
+
+    let metaDesc = document.querySelector('meta[name="description"]');
+    let createdMetaDesc = false;
+    if (!metaDesc) {
+      metaDesc = document.createElement("meta");
+      metaDesc.setAttribute("name", "description");
+      document.head.appendChild(metaDesc);
+      createdMetaDesc = true;
+    }
+    const previousDesc = metaDesc.getAttribute("content");
+    metaDesc.setAttribute(
+      "content",
+      job.description ? job.description.slice(0, 155) : `${job.title} - ${job.location} - Apply now on Coretech Talents.`
+    );
+
+    const scriptId = "job-jsonld";
+    let script = document.getElementById(scriptId);
+    let createdScript = false;
+    if (!script) {
+      script = document.createElement("script");
+      script.id = scriptId;
+      script.type = "application/ld+json";
+      document.head.appendChild(script);
+      createdScript = true;
+    }
+    script.textContent = JSON.stringify({
+      "@context": "https://schema.org/",
+      "@type": "JobPosting",
+      title: job.title,
+      description: job.description,
+      datePosted: job.created_at,
+      employmentType: job.employment_type,
+      hiringOrganization: {
+        "@type": "Organization",
+        name: job.company_name || "Coretech Talents",
+      },
+      jobLocation: {
+        "@type": "Place",
+        address: { "@type": "PostalAddress", addressLocality: job.location, addressCountry: "IN" },
+      },
+    });
+
+    return () => {
+      document.title = previousTitle;
+      if (createdMetaDesc) {
+        metaDesc.remove();
+      } else if (previousDesc !== null) {
+        metaDesc.setAttribute("content", previousDesc);
+      }
+      if (createdScript) {
+        script.remove();
+      } else {
+        script.textContent = "";
+      }
+    };
+  }, [job]);
+
+  async function handleApply() {
+    if (!candidateToken) {
+      navigate("/");
+      return;
+    }
+
+    setApplyStatus("applying");
+    setApplyMessage("");
+
+    try {
+      const res = await fetch(`${API_BASE}/candidates/jobs/${job.id}/apply`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${candidateToken}` },
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        if (res.status === 400 && data.detail?.toLowerCase().includes("already applied")) {
+          setApplyStatus("applied");
+          setApplyMessage("Already applied");
+          return;
+        }
+        throw new Error(data.detail || "Failed to apply");
+      }
+
+      setApplyStatus("applied");
+      setApplyMessage("Applied successfully");
+    } catch (err) {
+      setApplyStatus("error");
+      setApplyMessage(err.message);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="container" style={{ paddingTop: "2.5rem" }}>
+        <p className="empty-state">Loading job...</p>
+      </div>
+    );
+  }
+
+  if (error || !job) {
+    return (
+      <div className="container" style={{ paddingTop: "2.5rem" }}>
+        <p className="msg-error">{error || "Job not found"}</p>
+        <Link to="/" className="btn-link">← Back to home</Link>
+      </div>
+    );
+  }
+
+  const skills = (job.skills_required || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => Boolean(s) && s.toLowerCase() !== "none");
+  const isApplied = applyStatus === "applied";
+
+  return (
+    <div className="container" style={{ paddingTop: "2.5rem", paddingBottom: "2rem" }}>
+      <Link to="/" className="btn-link">← Back to home</Link>
+
+      <div className="card" style={{ maxWidth: 700, margin: "1.5rem auto" }}>
+        <h2>{job.title}</h2>
+        <p className="card-meta">{job.company_name} · {job.location} · {job.employment_type}</p>
+
+        {(job.experience_required || job.salary || job.domain) && (
+          <p className="card-meta card-meta-secondary">
+            {job.experience_required && <span>{job.experience_required}</span>}
+            {job.experience_required && (job.salary || job.domain) && " · "}
+            {job.salary && <span>{job.salary}</span>}
+            {job.salary && job.domain && " · "}
+            {job.domain && <span>{job.domain}</span>}
+          </p>
+        )}
+
+        <p className="card-desc">{job.description}</p>
+
+        {skills.length > 0 && (
+          <div className="tags">
+            {skills.map((s) => (
+              <span className="tag" key={s}>{s}</span>
+            ))}
+          </div>
+        )}
+
+        <button
+          className={isApplied ? "btn-applied" : "btn-primary"}
+          onClick={handleApply}
+          disabled={applyStatus === "applying" || isApplied}
+        >
+          {applyStatus === "applying" ? "Applying..." : isApplied ? "Applied ✓" : "Apply"}
+        </button>
+        {applyMessage && (
+          <span className={`status-line ${applyStatus === "error" ? "msg-error" : "msg-success"}`}>
+            <span className={`status-dot ${applyStatus}`}></span>
+            {applyMessage}
+          </span>
+        )}
+
+        <ShareJobButton job={job} />
+      </div>
+    </div>
+  );
+}
+
+function MainApp() {
   const [introDone, setIntroDone] = useState(false);
   const [error, setError] = useState(null);
   const [showSplash, setShowSplash] = useState(false);
@@ -3025,6 +3287,17 @@ function App() {
 
       {contactOpen && <ContactUsModal onClose={() => setContactOpen(false)} />}
     </>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/jobs/:id" element={<JobDetailPage />} />
+        <Route path="*" element={<MainApp />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
