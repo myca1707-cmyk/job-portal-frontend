@@ -1358,6 +1358,7 @@ function RecruiterDashboard({ token }) {
             {job.is_active === false && " · inactive"}
           </p>
           <p className="hint">Click to view applicants →</p>
+          <ShareJobButton job={job} />
         </div>
       ))}
     </div>
