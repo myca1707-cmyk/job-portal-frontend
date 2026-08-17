@@ -1209,6 +1209,15 @@ function CampusExplorationPage() {
   );
 }
 
+const PIPELINE_STAGES = ["applied", "shortlisted", "interview", "offer", "hired"];
+
+function stageLabel(status) {
+  if (status === "pending") return "Applied";
+  if (status === "accepted") return "Hired";
+  if (status === "rejected") return "Rejected";
+  return status.charAt(0).toUpperCase() + status.slice(1);
+}
+
 function ApplicantRow({ applicant, jobId, token, onStatusChanged }) {
   const [updating, setUpdating] = useState(false);
   const [downloading, setDownloading] = useState(false);
@@ -1262,6 +1271,14 @@ function ApplicantRow({ applicant, jobId, token, onStatusChanged }) {
     }
   }
 
+  const isRejected = applicant.status === "rejected";
+  // Treat legacy "pending"/"accepted" values as "applied"/"hired" for stepper position.
+  const normalizedStatus =
+    applicant.status === "pending" ? "applied" :
+    applicant.status === "accepted" ? "hired" :
+    applicant.status;
+  const currentIndex = PIPELINE_STAGES.indexOf(normalizedStatus);
+
   return (
     <div className="applicant-row">
       <p className="name">{applicant.name}</p>
@@ -1271,15 +1288,45 @@ function ApplicantRow({ applicant, jobId, token, onStatusChanged }) {
       </p>
       <span className={`status-line ${applicant.status}`}>
         <span className={`status-dot ${applicant.status}`}></span>
-        {applicant.status}
+        {stageLabel(applicant.status)}
       </span>
 
+      {!isRejected && (
+        <div className="pipeline-stepper" style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap", margin: "0.6rem 0" }}>
+          {PIPELINE_STAGES.map((stage, i) => (
+            <button
+              key={stage}
+              type="button"
+              disabled={updating}
+              onClick={() => updateStatus(stage)}
+              className={i === currentIndex ? "btn-applied" : ""}
+              style={{
+                padding: "0.35rem 0.7rem",
+                borderRadius: "6px",
+                fontSize: "0.8rem",
+                fontWeight: i === currentIndex ? 700 : 500,
+                border: "1px solid var(--line, #ccc)",
+                background: i === currentIndex ? undefined : "#fff",
+                cursor: updating ? "default" : "pointer",
+                opacity: i < currentIndex ? 0.6 : 1,
+              }}
+              title={i < currentIndex ? "Move back to this stage" : i > currentIndex ? "Move forward to this stage" : "Current stage"}
+            >
+              {stageLabel(stage)}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="applicant-actions">
-        <button className={applicant.status === "accepted" ? "btn-applied" : "btn-primary"} disabled={updating || applicant.status === "accepted"} onClick={() => updateStatus("accepted")}>
-          {applicant.status === "accepted" ? "Accepted ✓" : "Accept"}
+        <button
+          disabled={updating || isRejected}
+          onClick={() => updateStatus("rejected")}
+          style={{ color: isRejected ? undefined : "#B3261E" }}
+          className={isRejected ? "btn-applied" : ""}
+        >
+          {isRejected ? "Rejected" : "Reject"}
         </button>
-        <button disabled={updating || applicant.status === "rejected"} onClick={() => updateStatus("rejected")}>Reject</button>
-        <button disabled={updating || applicant.status === "pending"} onClick={() => updateStatus("pending")}>Reset to Pending</button>
         <button onClick={handleDownloadResume} disabled={downloading}>
           {downloading ? "Downloading..." : "Download Resume"}
         </button>
