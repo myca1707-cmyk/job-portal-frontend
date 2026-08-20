@@ -123,8 +123,38 @@ function AboutSection() {
 }
 
 // ================= SERVICES PAGE =================
+// ================= SERVICES PAGE =================
+function ResumeConsentModal({ onConfirm, onCancel }) {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.6)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1000,
+      }}
+      onClick={onCancel}
+    >
+      <div className="form-card" style={{ maxWidth: 420, width: "90%" }} onClick={(e) => e.stopPropagation()}>
+        <h2>Leaving to Resume Builder</h2>
+        <p className="card-meta" style={{ marginTop: "0.75rem" }}>
+          This will open our Resume Building tool in a new tab. Do you want to continue?
+        </p>
+        <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.25rem" }}>
+          <button className="btn-primary" onClick={onConfirm}>Yes, continue</button>
+          <button onClick={onCancel}>Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ServicesPage({ onCampusExploration }) {
   const [expanded, setExpanded] = useState(null);
+  const [showResumeConsent, setShowResumeConsent] = useState(false);
 
   const services = [
     {
@@ -145,6 +175,12 @@ function ServicesPage({ onCampusExploration }) {
       summary: "RPO-style support with a dedicated recruitment expert working alongside your team.",
       body: "Our Coretech Expert Solutions follow an RPO (Recruitment Process Outsourcing) model — a dedicated recruitment expert works in-office with your team, managing the entire hiring process end-to-end, giving you in-house-level support without building an internal team from scratch.",
     },
+    {
+      id: "resumeBuilding",
+      title: "Resume Building",
+      summary: "Build a professional resume with our guided templates and live preview.",
+      isExternalTool: true,
+    },
   ];
 
   function handleClick(service) {
@@ -152,7 +188,16 @@ function ServicesPage({ onCampusExploration }) {
       onCampusExploration();
       return;
     }
+    if (service.isExternalTool) {
+      setShowResumeConsent(true);
+      return;
+    }
     setExpanded((prev) => (prev === service.id ? null : service.id));
+  }
+
+  function handleResumeConfirm() {
+    setShowResumeConsent(false);
+    window.open("/services/resume-building", "_blank", "noopener,noreferrer");
   }
 
   return (
@@ -179,11 +224,17 @@ function ServicesPage({ onCampusExploration }) {
               </p>
             )}
 
-            {!service.isRecruiterOnly && expanded === service.id && (
+            {service.isExternalTool && (
+              <p className="hint" style={{ marginTop: "0.5rem" }}>
+                Click to open the Resume Builder →
+              </p>
+            )}
+
+            {!service.isRecruiterOnly && !service.isExternalTool && expanded === service.id && (
               <p className="card-desc" style={{ marginTop: "0.75rem" }}>{service.body}</p>
             )}
 
-            {!service.isRecruiterOnly && (
+            {!service.isRecruiterOnly && !service.isExternalTool && (
               <p className="hint" style={{ marginTop: "0.5rem" }}>
                 {expanded === service.id ? "Click to collapse ↑" : "Click to read more →"}
               </p>
@@ -191,6 +242,13 @@ function ServicesPage({ onCampusExploration }) {
           </div>
         ))}
       </div>
+
+      {showResumeConsent && (
+        <ResumeConsentModal
+          onConfirm={handleResumeConfirm}
+          onCancel={() => setShowResumeConsent(false)}
+        />
+      )}
     </div>
   );
 }
