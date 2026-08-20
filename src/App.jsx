@@ -3345,9 +3345,7 @@ function App() {
      <Route path="/" element={<MainApp />} />
      <Route path="/jobs/:id" element={<JobDetailPage />} />
      <Route path="/services/resume-building" element={<ResumeServices />} />
-     {/* ...your other existing routes... */}
     </Routes>
-    </BrowserRouter>
   );
 }
 
