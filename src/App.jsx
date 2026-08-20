@@ -4,7 +4,7 @@ import "./App.css";
 import logo from "./assets/coretech-logo.png";
 import introVideo from "./assets/intro.mp4";
 import CookieConsent from "./CookieConsent";
-import ResumeServices from "./ResumeServices";
+import ResumeServices from "./Resumeservices";
 
 const API_BASE = "https://job-portal-backend-production-6d9d.up.railway.app";
 
@@ -3341,11 +3341,12 @@ function MainApp() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/jobs/:id" element={<JobDetailPage />} />
-        <Route path="*" element={<MainApp />} />
-      </Routes>
+    <Routes>
+     <Route path="/" element={<MainApp />} />
+     <Route path="/jobs/:id" element={<JobDetailPage />} />
+     <Route path="/services/resume-building" element={<ResumeServices />} />
+     {/* ...your other existing routes... */}
+    </Routes>
     </BrowserRouter>
   );
 }
