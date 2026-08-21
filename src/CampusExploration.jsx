@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const API_BASE = 'https://job-portal-backend-production-xxxx.up.railway.app';
+const API_BASE = 'https://job-portal-backend-production-6d9d.up.railway.app';
 
 const TYPES = ['all', 'Engineering', 'Polytechnic', 'Arts and Science', 'ITI'];
 
