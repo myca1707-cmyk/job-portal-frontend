@@ -2130,7 +2130,7 @@ function CandidateProfileDetail({ candidateId, token, onBack }) {
               )}
             </div>
 
-            <h2>{profile.full_name}</h2>
+                        <h2 style={{ color: "var(--blue-700)" }}>{profile.full_name}</h2>
             {profile.designation && <p className="card-meta">{profile.designation}</p>}
 
             {profile.resume_headline && (
@@ -2138,20 +2138,35 @@ function CandidateProfileDetail({ candidateId, token, onBack }) {
             )}
           </div>
 
-          <div style={{ marginTop: "1.5rem", display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.75rem" }}>
-            <p className="card-meta"><strong>Email:</strong> {profile.email}</p>
-            {profile.mobile_number && <p className="card-meta"><strong>Mobile:</strong> {profile.mobile_number}</p>}
-            {profile.location && <p className="card-meta"><strong>Location:</strong> {profile.location}</p>}
-            {profile.years_of_experience && <p className="card-meta"><strong>Experience:</strong> {profile.years_of_experience} yrs</p>}
-            {profile.current_ctc && <p className="card-meta"><strong>Current CTC:</strong> {profile.current_ctc}</p>}
-            {profile.expected_ctc && <p className="card-meta"><strong>Expected CTC:</strong> {profile.expected_ctc}</p>}
-            {profile.notice_period && <p className="card-meta"><strong>Notice period:</strong> {profile.notice_period}</p>}
+          <div style={{
+            marginTop: "1.5rem",
+            display: "grid",
+            gridTemplateColumns: "repeat(2, 1fr)",
+            gap: "0.9rem",
+            background: "var(--bg)",
+            border: "1px solid var(--line)",
+            borderRadius: "var(--radius-sm)",
+            padding: "1.1rem 1.25rem",
+          }}>
+            <p className="card-meta"><strong style={{ color: "var(--blue-700)" }}>Email:</strong> {profile.email}</p>
+            {profile.mobile_number && <p className="card-meta"><strong style={{ color: "var(--blue-700)" }}>Mobile:</strong> {profile.mobile_number}</p>}
+            {profile.location && <p className="card-meta"><strong style={{ color: "var(--blue-700)" }}>Location:</strong> {profile.location}</p>}
+            {profile.years_of_experience && <p className="card-meta"><strong style={{ color: "var(--blue-700)" }}>Experience:</strong> {profile.years_of_experience} yrs</p>}
+            {profile.current_ctc && <p className="card-meta"><strong style={{ color: "var(--blue-700)" }}>Current CTC:</strong> {profile.current_ctc}</p>}
+            {profile.expected_ctc && <p className="card-meta"><strong style={{ color: "var(--blue-700)" }}>Expected CTC:</strong> {profile.expected_ctc}</p>}
+            {profile.notice_period && <p className="card-meta"><strong style={{ color: "var(--blue-700)" }}>Notice period:</strong> {profile.notice_period}</p>}
             {profile.education_level && (
               <p className="card-meta">
-                <strong>Education:</strong> {profile.education_level}
+                <strong style={{ color: "var(--blue-700)" }}>Education:</strong> {profile.education_level}
                 {profile.field_of_study && ` - ${profile.field_of_study}`}
               </p>
             )}
+          </div>
+
+          <div style={{ marginTop: "1.25rem", textAlign: "center" }}>
+            <button className="btn-primary" onClick={handleDownloadResume} disabled={downloading}>
+              {downloading ? "Downloading..." : "Download Resume"}
+            </button>
           </div>
 
           {profile.skills && (
