@@ -3267,7 +3267,16 @@ function MainApp() {
   const [portalInitialRole, setPortalInitialRole] = useState(null);
   const [view, setView] = useState("jobs");
   const [contactOpen, setContactOpen] = useState(false);
-
+  
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("login") === "candidate") {
+    setPortalInitialRole("candidate");
+    setPortalOpen(true);
+    setView("jobs");
+    window.history.replaceState({}, "", "/");
+  }
+}, []);
   function handleCandidateLogin(token) {
     localStorage.setItem("candidate_token", token);
     setCandidateToken(token);
