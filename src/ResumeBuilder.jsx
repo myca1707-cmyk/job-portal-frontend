@@ -1,265 +1,215 @@
-import React, { useState, useMemo } from "react";
+import { useState } from "react";
+import "./ResumeBuilder.css";
 
-const DEFAULT_ORDER = ["summary", "experience", "education", "skills"];
-const emptyExperience = () => ({ id: crypto.randomUUID(), role: "", company: "", dates: "", bullets: "" });
-const emptyEducation = () => ({ id: crypto.randomUUID(), school: "", degree: "", dates: "" });
+const TEMPLATES = ["Modern", "Classic", "Minimal", "Technical"];
 
-/**
- * ResumeBuilder — form + live "paper" preview.
- * `template` (optional) comes from ResumeTemplates and sets section order + accent color.
- *
- * Download uses the browser's native print-to-PDF (no external PDF library needed,
- * so no extra npm install). If the project already has jsPDF/html2canvas elsewhere,
- * swap handleDownload() for that instead — happy to wire it up.
- */
-export default function ResumeBuilder({ template }) {
-  const order = template?.order || DEFAULT_ORDER;
-  const accent = template?.accent || "#C08A3E";
+export default function ResumeBuilder({ template: initialTemplate }) {
+  const [template, setTemplate] = useState(initialTemplate || "Modern");
+  const [personal, setPersonal] = useState({ name: "", title: "", email: "", phone: "" });
+  const [experience, setExperience] = useState([]);
+  const [skills, setSkills] = useState([]);
+  const [skillInput, setSkillInput] = useState("");
+  const [expDraft, setExpDraft] = useState({ role: "", company: "", period: "" });
+  const [showExpForm, setShowExpForm] = useState(false);
 
-  const [info, setInfo] = useState({ name: "", title: "", phone: "", email: "", location: "" });
-  const [summary, setSummary] = useState("");
-  const [experience, setExperience] = useState([emptyExperience()]);
-  const [education, setEducation] = useState([emptyEducation()]);
-  const [skills, setSkills] = useState("");
+  function handlePersonalChange(field, value) {
+    setPersonal((prev) => ({ ...prev, [field]: value }));
+  }
 
-  const skillList = useMemo(
-    () => skills.split(",").map((s) => s.trim()).filter(Boolean),
-    [skills]
-  );
+  function handleAddExperience() {
+    if (!expDraft.role || !expDraft.company) return;
+    setExperience((prev) => [...prev, expDraft]);
+    setExpDraft({ role: "", company: "", period: "" });
+    setShowExpForm(false);
+  }
 
-  const updateExp = (id, field, value) =>
-    setExperience((prev) => prev.map((e) => (e.id === id ? { ...e, [field]: value } : e)));
-  const updateEdu = (id, field, value) =>
-    setEducation((prev) => prev.map((e) => (e.id === id ? { ...e, [field]: value } : e)));
+  function handleRemoveExperience(index) {
+    setExperience((prev) => prev.filter((_, i) => i !== index));
+  }
 
-  const handleDownload = () => {
+  function handleAddSkill() {
+    const trimmed = skillInput.trim();
+    if (!trimmed || skills.includes(trimmed)) return;
+    setSkills((prev) => [...prev, trimmed]);
+    setSkillInput("");
+  }
+
+  function handleSkillKeyDown(e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddSkill();
+    }
+  }
+
+  function handleRemoveSkill(skill) {
+    setSkills((prev) => prev.filter((s) => s !== skill));
+  }
+
+  function handleSaveDraft() {
+    const draft = { template, personal, experience, skills };
+    localStorage.setItem("resume_draft", JSON.stringify(draft));
+    alert("Draft saved.");
+  }
+
+  function handleDownloadPdf() {
     window.print();
-  };
+  }
 
   return (
-    <div>
-      {template && (
-        <p className="text-xs mb-4 px-3 py-2 rounded-lg inline-block" style={{ backgroundColor: "#fff", color: "#4A5568" }}>
-          Using the <span className="font-medium">{template.name}</span> layout — sections are ordered for that kind of role.
-        </p>
-      )}
+    <div className="resume-builder">
+      <div className="rb-topbar">
+        <div className="rb-brand">
+          <div className="rb-brand-dot" />
+          <span>Coretech Talents — Resume Builder</span>
+        </div>
+        <div className="rb-topbar-links">
+          <span className="active">Templates</span>
+          <span>My Resume</span>
+          <span>Download</span>
+        </div>
+      </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
-        {/* ---------- FORM ---------- */}
-        <div className="space-y-5 print:hidden">
-          <Section title="Your details">
-            <div className="grid grid-cols-2 gap-3">
-              <Input label="Full name" value={info.name} onChange={(v) => setInfo({ ...info, name: v })} />
-              <Input label="Job title" value={info.title} onChange={(v) => setInfo({ ...info, title: v })} />
-              <Input label="Phone" value={info.phone} onChange={(v) => setInfo({ ...info, phone: v })} />
-              <Input label="Email" value={info.email} onChange={(v) => setInfo({ ...info, email: v })} />
-              <Input label="Location" value={info.location} onChange={(v) => setInfo({ ...info, location: v })} className="col-span-2" />
-            </div>
-          </Section>
-
-          <Section title="Summary">
-            <Textarea
-              value={summary}
-              onChange={setSummary}
-              placeholder="2–3 lines on your experience and what you're looking for."
-              rows={3}
-            />
-          </Section>
-
-          <Section title="Experience">
-            {experience.map((exp, i) => (
-              <div key={exp.id} className="mb-4 pb-4 border-b border-black/5 last:border-0 last:mb-0 last:pb-0">
-                <div className="grid grid-cols-2 gap-3 mb-2">
-                  <Input label="Role" value={exp.role} onChange={(v) => updateExp(exp.id, "role", v)} />
-                  <Input label="Company" value={exp.company} onChange={(v) => updateExp(exp.id, "company", v)} />
-                  <Input label="Dates" value={exp.dates} onChange={(v) => updateExp(exp.id, "dates", v)} className="col-span-2" />
-                </div>
-                <Textarea
-                  value={exp.bullets}
-                  onChange={(v) => updateExp(exp.id, "bullets", v)}
-                  placeholder="One line per bullet point"
-                  rows={3}
-                />
-                {experience.length > 1 && (
-                  <RemoveBtn onClick={() => setExperience((prev) => prev.filter((e) => e.id !== exp.id))} />
-                )}
-              </div>
-            ))}
-            <AddBtn label="Add another role" onClick={() => setExperience((prev) => [...prev, emptyExperience()])} />
-          </Section>
-
-          <Section title="Education">
-            {education.map((edu) => (
-              <div key={edu.id} className="mb-3 pb-3 border-b border-black/5 last:border-0 last:mb-0 last:pb-0">
-                <div className="grid grid-cols-2 gap-3">
-                  <Input label="Degree / Course" value={edu.degree} onChange={(v) => updateEdu(edu.id, "degree", v)} />
-                  <Input label="Institution" value={edu.school} onChange={(v) => updateEdu(edu.id, "school", v)} />
-                  <Input label="Dates" value={edu.dates} onChange={(v) => updateEdu(edu.id, "dates", v)} className="col-span-2" />
-                </div>
-                {education.length > 1 && (
-                  <RemoveBtn onClick={() => setEducation((prev) => prev.filter((e) => e.id !== edu.id))} />
-                )}
-              </div>
-            ))}
-            <AddBtn label="Add another qualification" onClick={() => setEducation((prev) => [...prev, emptyEducation()])} />
-          </Section>
-
-          <Section title="Skills">
-            <Input
-              label="Comma-separated (e.g. CNC operation, Quality control, Team supervision)"
-              value={skills}
-              onChange={setSkills}
-            />
-          </Section>
-
+      <div className="rb-template-pills">
+        {TEMPLATES.map((t) => (
           <button
-            onClick={handleDownload}
-            className="w-full py-3 rounded-lg font-medium text-sm"
-            style={{ backgroundColor: "#1B2430", color: "#fff" }}
+            key={t}
+            className={`rb-pill ${template === t ? "active" : ""}`}
+            onClick={() => setTemplate(t)}
+            type="button"
           >
-            Download as PDF
+            {t}
           </button>
+        ))}
+      </div>
+
+      <div className="rb-grid">
+        <div className="rb-form-card">
+          <p className="rb-section-title">Personal details</p>
+          <div className="rb-field-col">
+            <input
+              placeholder="Full name"
+              value={personal.name}
+              onChange={(e) => handlePersonalChange("name", e.target.value)}
+            />
+            <input
+              placeholder="Job title / headline"
+              value={personal.title}
+              onChange={(e) => handlePersonalChange("title", e.target.value)}
+            />
+            <div className="rb-row">
+              <input
+                placeholder="Email"
+                value={personal.email}
+                onChange={(e) => handlePersonalChange("email", e.target.value)}
+              />
+              <input
+                placeholder="Phone"
+                value={personal.phone}
+                onChange={(e) => handlePersonalChange("phone", e.target.value)}
+              />
+            </div>
+          </div>
+
+          <p className="rb-section-title">Experience</p>
+          {experience.map((exp, i) => (
+            <div className="rb-exp-item" key={i}>
+              <div>
+                <p className="rb-exp-role">{exp.role}</p>
+                <p className="rb-exp-meta">{exp.company}{exp.period && ` · ${exp.period}`}</p>
+              </div>
+              <button type="button" className="rb-remove-btn" onClick={() => handleRemoveExperience(i)}>✕</button>
+            </div>
+          ))}
+
+          {showExpForm ? (
+            <div className="rb-exp-form">
+              <input
+                placeholder="Role"
+                value={expDraft.role}
+                onChange={(e) => setExpDraft((p) => ({ ...p, role: e.target.value }))}
+              />
+              <input
+                placeholder="Company"
+                value={expDraft.company}
+                onChange={(e) => setExpDraft((p) => ({ ...p, company: e.target.value }))}
+              />
+              <input
+                placeholder="Period (e.g. 2023–present)"
+                value={expDraft.period}
+                onChange={(e) => setExpDraft((p) => ({ ...p, period: e.target.value }))}
+              />
+              <div className="rb-row">
+                <button type="button" className="rb-btn-primary" onClick={handleAddExperience}>Add</button>
+                <button type="button" onClick={() => setShowExpForm(false)}>Cancel</button>
+              </div>
+            </div>
+          ) : (
+            <button type="button" className="rb-add-link" onClick={() => setShowExpForm(true)}>
+              + Add experience
+            </button>
+          )}
+
+          <p className="rb-section-title">Skills</p>
+          <div className="rb-skills-row">
+            {skills.map((skill) => (
+              <span className="rb-skill-tag" key={skill}>
+                {skill}
+                <button type="button" onClick={() => handleRemoveSkill(skill)}>✕</button>
+              </span>
+            ))}
+            <input
+              className="rb-skill-input"
+              placeholder="Add skill, press Enter"
+              value={skillInput}
+              onChange={(e) => setSkillInput(e.target.value)}
+              onKeyDown={handleSkillKeyDown}
+            />
+          </div>
         </div>
 
-        {/* ---------- LIVE PREVIEW ---------- */}
-        <div className="lg:sticky lg:top-6 self-start">
-          <div
-            id="resume-preview"
-            className="bg-white shadow-lg mx-auto"
-            style={{
-              fontFamily: "Georgia, 'Source Serif Pro', serif",
-              width: "100%",
-              maxWidth: "620px",
-              minHeight: "800px",
-              padding: "48px 44px",
-              color: "#1B2430",
-            }}
-          >
-            <h1 style={{ fontSize: "26px", marginBottom: "2px" }}>{info.name || "Your Name"}</h1>
-            <p style={{ fontSize: "14px", color: accent, marginBottom: "10px" }}>{info.title || "Job Title"}</p>
-            <p style={{ fontSize: "11px", color: "#4A5568", marginBottom: "22px" }}>
-              {[info.phone, info.email, info.location].filter(Boolean).join("  ·  ")}
+        <div className="rb-preview-wrap">
+          <div className={`rb-preview-paper rb-template-${template.toLowerCase()}`}>
+            <div className="rb-paper-header">
+              <p className="rb-paper-name">{personal.name || "Your name"}</p>
+              <p className="rb-paper-title">{personal.title || "Your job title"}</p>
+            </div>
+            <p className="rb-paper-contact">
+              {personal.email || "email@example.com"}
+              {personal.phone && ` · ${personal.phone}`}
             </p>
 
-            {order.map((section) => (
-              <PreviewSection key={section} section={section} accent={accent}
-                summary={summary} experience={experience} education={education} skillList={skillList} />
-            ))}
+            {experience.length > 0 && (
+              <div className="rb-paper-section">
+                <p className="rb-paper-heading">Experience</p>
+                {experience.map((exp, i) => (
+                  <div key={i} className="rb-paper-exp">
+                    <p className="rb-paper-exp-role">{exp.role}</p>
+                    <p className="rb-paper-exp-meta">{exp.company}{exp.period && ` · ${exp.period}`}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {skills.length > 0 && (
+              <div className="rb-paper-section">
+                <p className="rb-paper-heading">Skills</p>
+                <div className="rb-paper-skills">
+                  {skills.map((s) => (
+                    <span key={s} className="rb-paper-skill">{s}</span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Print styles: only the paper preview prints, at full page size */}
-      <style>{`
-        @media print {
-          body * { visibility: hidden; }
-          #resume-preview, #resume-preview * { visibility: visible; }
-          #resume-preview { position: absolute; top: 0; left: 0; width: 100%; box-shadow: none; }
-        }
-      `}</style>
+      <div className="rb-actions">
+        <button type="button" onClick={handleSaveDraft}>Save draft</button>
+        <button type="button" className="rb-btn-primary" onClick={handleDownloadPdf}>
+          Download PDF
+        </button>
+      </div>
     </div>
-  );
-}
-
-function PreviewSection({ section, accent, summary, experience, education, skillList }) {
-  const heading = { summary: "Summary", experience: "Experience", education: "Education", skills: "Skills" }[section];
-  const hasContent =
-    (section === "summary" && summary) ||
-    (section === "experience" && experience.some((e) => e.role || e.company)) ||
-    (section === "education" && education.some((e) => e.degree || e.school)) ||
-    (section === "skills" && skillList.length > 0);
-
-  if (!hasContent) return null;
-
-  return (
-    <div style={{ marginBottom: "20px" }}>
-      <h2 style={{ fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", color: accent, borderBottom: `1px solid ${accent}`, paddingBottom: "4px", marginBottom: "10px" }}>
-        {heading}
-      </h2>
-
-      {section === "summary" && <p style={{ fontSize: "13px", lineHeight: 1.6 }}>{summary}</p>}
-
-      {section === "experience" &&
-        experience.filter((e) => e.role || e.company).map((e) => (
-          <div key={e.id} style={{ marginBottom: "14px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", fontWeight: "bold" }}>
-              <span>{e.role}{e.company ? ` — ${e.company}` : ""}</span>
-              <span style={{ fontWeight: "normal", color: "#4A5568" }}>{e.dates}</span>
-            </div>
-            {e.bullets && (
-              <ul style={{ fontSize: "12.5px", lineHeight: 1.6, marginTop: "4px", paddingLeft: "18px" }}>
-                {e.bullets.split("\n").filter(Boolean).map((b, i) => <li key={i}>{b}</li>)}
-              </ul>
-            )}
-          </div>
-        ))}
-
-      {section === "education" &&
-        education.filter((e) => e.degree || e.school).map((e) => (
-          <div key={e.id} style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", marginBottom: "6px" }}>
-            <span>{e.degree}{e.school ? `, ${e.school}` : ""}</span>
-            <span style={{ color: "#4A5568" }}>{e.dates}</span>
-          </div>
-        ))}
-
-      {section === "skills" && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-          {skillList.map((s, i) => (
-            <span key={i} style={{ fontSize: "11.5px", border: `1px solid ${accent}`, borderRadius: "3px", padding: "2px 8px" }}>
-              {s}
-            </span>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ---------- small form primitives ---------- */
-function Section({ title, children }) {
-  return (
-    <div className="bg-white rounded-xl border border-black/5 p-4">
-      <h3 className="text-sm font-semibold mb-3" style={{ color: "#1B2430" }}>{title}</h3>
-      {children}
-    </div>
-  );
-}
-function Input({ label, value, onChange, className = "" }) {
-  return (
-    <label className={`text-xs block ${className}`} style={{ color: "#4A5568" }}>
-      {label}
-      <input
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full text-sm px-3 py-2 rounded-lg border border-black/10 focus:outline-none focus:ring-2"
-        style={{ "--tw-ring-color": "#C08A3E" }}
-      />
-    </label>
-  );
-}
-function Textarea({ value, onChange, placeholder, rows }) {
-  return (
-    <textarea
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      rows={rows}
-      className="w-full text-sm px-3 py-2 rounded-lg border border-black/10 focus:outline-none focus:ring-2"
-      style={{ "--tw-ring-color": "#C08A3E" }}
-    />
-  );
-}
-function AddBtn({ label, onClick }) {
-  return (
-    <button onClick={onClick} className="text-xs font-medium mt-1" style={{ color: "#C08A3E" }}>
-      + {label}
-    </button>
-  );
-}
-function RemoveBtn({ onClick }) {
-  return (
-    <button onClick={onClick} className="text-xs mt-2" style={{ color: "#B45454" }}>
-      Remove this entry
-    </button>
   );
 }
