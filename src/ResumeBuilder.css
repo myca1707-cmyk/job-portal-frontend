@@ -179,11 +179,19 @@
 }
 
 @media print {
-  .rb-noprint {
-    display: none !important;
+  body * {
+    visibility: hidden;
+  }
+  .rb-print-only,
+  .rb-print-only * {
+    visibility: visible;
   }
   .rb-print-only {
-    display: block !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: block;
   }
   .rb-paper {
     box-shadow: none;
