@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./ResumeBuilder.css";
 
 const STEPS = ["Personal", "Experience", "Education", "Skills", "Preview & Download"];
@@ -14,6 +14,15 @@ export default function ResumeBuilder() {
   const [eduDraft, setEduDraft] = useState({ degree: "", school: "", year: "" });
   const [skills, setSkills] = useState([]);
   const [skillInput, setSkillInput] = useState("");
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+
+  useEffect(() => {
+    function onAfterPrint() {
+      setShowLoginPrompt(true);
+    }
+    window.addEventListener("afterprint", onAfterPrint);
+    return () => window.removeEventListener("afterprint", onAfterPrint);
+  }, []);
 
   function handlePersonalChange(field, value) {
     setPersonal((prev) => ({ ...prev, [field]: value }));
@@ -87,6 +96,14 @@ export default function ResumeBuilder() {
 
   function handleDownload() {
     window.print();
+  }
+
+  function handleGoToLogin() {
+    window.location.href = "/?login=candidate";
+  }
+
+  function handleDismissPrompt() {
+    setShowLoginPrompt(false);
   }
 
   const isLastStep = step === STEPS.length - 1;
@@ -253,8 +270,11 @@ export default function ResumeBuilder() {
             {step === 4 && (
               <>
                 <h3>Ready to download</h3>
+                <p className="hint" style={{ marginBottom: "0.5rem" }}>
+                  Review your resume in the preview, then download it as a PDF.
+                </p>
                 <p className="hint" style={{ marginBottom: "1rem" }}>
-                  Review your resume in the preview, then download it as a PDF. Only the resume itself will be printed.
+                  In the print dialog, open <strong>More settings</strong> and turn off <strong>Headers and footers</strong> to remove the date/title line, then choose <strong>Save as PDF</strong>.
                 </p>
                 <button type="button" className="btn-primary" onClick={handleDownload}>
                   Download Resume (PDF)
@@ -281,6 +301,21 @@ export default function ResumeBuilder() {
       <div className="rb-print-only">
         <ResumePreview personal={personal} experience={experience} education={education} skills={skills} />
       </div>
+
+      {showLoginPrompt && (
+        <div className="rb-login-prompt-overlay" onClick={handleDismissPrompt}>
+          <div className="form-card" style={{ maxWidth: 420, width: "90%" }} onClick={(e) => e.stopPropagation()}>
+            <h2>Resume downloaded</h2>
+            <p className="card-meta" style={{ marginTop: "0.75rem" }}>
+              Want to create a candidate profile and start applying to jobs with this resume?
+            </p>
+            <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.25rem" }}>
+              <button className="btn-primary" onClick={handleGoToLogin}>Yes, take me there</button>
+              <button onClick={handleDismissPrompt}>Not now</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
