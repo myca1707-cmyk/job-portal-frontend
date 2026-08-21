@@ -2400,6 +2400,7 @@ function CandidateSearch({ token }) {
             value={filters.q}
             onChange={(e) => handleChange("q", e.target.value)}
             placeholder="Search by name, skills, email, or mobile"
+            style={{ color: "var(--ink)", background: "var(--white)" }}
           />
           <button className="cs-search-btn" type="submit" disabled={loading || (isEmailQuery && !isValidEmail)}>
             {loading ? "Searching..." : "Search"}
