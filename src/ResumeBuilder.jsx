@@ -1,16 +1,17 @@
 import { useState } from "react";
 import "./ResumeBuilder.css";
 
-const TEMPLATES = ["Modern", "Classic", "Minimal", "Technical"];
+const STEPS = ["Personal", "Experience", "Education", "Skills", "Preview & Download"];
 
-export default function ResumeBuilder({ template: initialTemplate }) {
-  const [template, setTemplate] = useState(initialTemplate || "Modern");
-  const [personal, setPersonal] = useState({ name: "", title: "", email: "", phone: "" });
+export default function ResumeBuilder() {
+  const [step, setStep] = useState(0);
+  const [personal, setPersonal] = useState({ name: "", title: "", email: "", phone: "", location: "" });
   const [experience, setExperience] = useState([]);
+  const [expDraft, setExpDraft] = useState({ role: "", company: "", period: "" });
+  const [education, setEducation] = useState([]);
+  const [eduDraft, setEduDraft] = useState({ degree: "", school: "", year: "" });
   const [skills, setSkills] = useState([]);
   const [skillInput, setSkillInput] = useState("");
-  const [expDraft, setExpDraft] = useState({ role: "", company: "", period: "" });
-  const [showExpForm, setShowExpForm] = useState(false);
 
   function handlePersonalChange(field, value) {
     setPersonal((prev) => ({ ...prev, [field]: value }));
@@ -20,11 +21,20 @@ export default function ResumeBuilder({ template: initialTemplate }) {
     if (!expDraft.role || !expDraft.company) return;
     setExperience((prev) => [...prev, expDraft]);
     setExpDraft({ role: "", company: "", period: "" });
-    setShowExpForm(false);
   }
 
-  function handleRemoveExperience(index) {
-    setExperience((prev) => prev.filter((_, i) => i !== index));
+  function handleRemoveExperience(i) {
+    setExperience((prev) => prev.filter((_, idx) => idx !== i));
+  }
+
+  function handleAddEducation() {
+    if (!eduDraft.degree || !eduDraft.school) return;
+    setEducation((prev) => [...prev, eduDraft]);
+    setEduDraft({ degree: "", school: "", year: "" });
+  }
+
+  function handleRemoveEducation(i) {
+    setEducation((prev) => prev.filter((_, idx) => idx !== i));
   }
 
   function handleAddSkill() {
@@ -45,171 +55,229 @@ export default function ResumeBuilder({ template: initialTemplate }) {
     setSkills((prev) => prev.filter((s) => s !== skill));
   }
 
-  function handleSaveDraft() {
-    const draft = { template, personal, experience, skills };
-    localStorage.setItem("resume_draft", JSON.stringify(draft));
-    alert("Draft saved.");
+  function canGoNext() {
+    if (step === 0) return personal.name.trim() && personal.email.trim();
+    return true;
   }
 
-  function handleDownloadPdf() {
+  function goNext() {
+    if (!canGoNext()) return;
+    setStep((s) => Math.min(s + 1, STEPS.length - 1));
+  }
+
+  function goBack() {
+    setStep((s) => Math.max(s - 1, 0));
+  }
+
+  function handleDownload() {
     window.print();
   }
 
+  const isLastStep = step === STEPS.length - 1;
+
   return (
-    <div className="resume-builder">
-      <div className="rb-topbar">
-        <div className="rb-brand">
-          <div className="rb-brand-dot" />
-          <span>Coretech Talents — Resume Builder</span>
-        </div>
-        <div className="rb-topbar-links">
-          <span className="active">Templates</span>
-          <span>My Resume</span>
-          <span>Download</span>
-        </div>
-      </div>
-
-      <div className="rb-template-pills">
-        {TEMPLATES.map((t) => (
-          <button
-            key={t}
-            className={`rb-pill ${template === t ? "active" : ""}`}
-            onClick={() => setTemplate(t)}
-            type="button"
-          >
-            {t}
-          </button>
-        ))}
-      </div>
-
-      <div className="rb-grid">
-        <div className="rb-form-card">
-          <p className="rb-section-title">Personal details</p>
-          <div className="rb-field-col">
-            <input
-              placeholder="Full name"
-              value={personal.name}
-              onChange={(e) => handlePersonalChange("name", e.target.value)}
-            />
-            <input
-              placeholder="Job title / headline"
-              value={personal.title}
-              onChange={(e) => handlePersonalChange("title", e.target.value)}
-            />
-            <div className="rb-row">
-              <input
-                placeholder="Email"
-                value={personal.email}
-                onChange={(e) => handlePersonalChange("email", e.target.value)}
-              />
-              <input
-                placeholder="Phone"
-                value={personal.phone}
-                onChange={(e) => handlePersonalChange("phone", e.target.value)}
-              />
-            </div>
-          </div>
-
-          <p className="rb-section-title">Experience</p>
-          {experience.map((exp, i) => (
-            <div className="rb-exp-item" key={i}>
-              <div>
-                <p className="rb-exp-role">{exp.role}</p>
-                <p className="rb-exp-meta">{exp.company}{exp.period && ` · ${exp.period}`}</p>
-              </div>
-              <button type="button" className="rb-remove-btn" onClick={() => handleRemoveExperience(i)}>✕</button>
+    <div className="rb-wrap">
+      <div className="rb-noprint">
+        <div className="rb-progress">
+          {STEPS.map((label, i) => (
+            <div key={label} className={`rb-progress-step ${i === step ? "active" : ""} ${i < step ? "done" : ""}`}>
+              <div className="rb-progress-dot">{i < step ? "✓" : i + 1}</div>
+              <span>{label}</span>
             </div>
           ))}
-
-          {showExpForm ? (
-            <div className="rb-exp-form">
-              <input
-                placeholder="Role"
-                value={expDraft.role}
-                onChange={(e) => setExpDraft((p) => ({ ...p, role: e.target.value }))}
-              />
-              <input
-                placeholder="Company"
-                value={expDraft.company}
-                onChange={(e) => setExpDraft((p) => ({ ...p, company: e.target.value }))}
-              />
-              <input
-                placeholder="Period (e.g. 2023–present)"
-                value={expDraft.period}
-                onChange={(e) => setExpDraft((p) => ({ ...p, period: e.target.value }))}
-              />
-              <div className="rb-row">
-                <button type="button" className="rb-btn-primary" onClick={handleAddExperience}>Add</button>
-                <button type="button" onClick={() => setShowExpForm(false)}>Cancel</button>
-              </div>
-            </div>
-          ) : (
-            <button type="button" className="rb-add-link" onClick={() => setShowExpForm(true)}>
-              + Add experience
-            </button>
-          )}
-
-          <p className="rb-section-title">Skills</p>
-          <div className="rb-skills-row">
-            {skills.map((skill) => (
-              <span className="rb-skill-tag" key={skill}>
-                {skill}
-                <button type="button" onClick={() => handleRemoveSkill(skill)}>✕</button>
-              </span>
-            ))}
-            <input
-              className="rb-skill-input"
-              placeholder="Add skill, press Enter"
-              value={skillInput}
-              onChange={(e) => setSkillInput(e.target.value)}
-              onKeyDown={handleSkillKeyDown}
-            />
-          </div>
         </div>
 
-        <div className="rb-preview-wrap">
-          <div className={`rb-preview-paper rb-template-${template.toLowerCase()}`}>
-            <div className="rb-paper-header">
-              <p className="rb-paper-name">{personal.name || "Your name"}</p>
-              <p className="rb-paper-title">{personal.title || "Your job title"}</p>
-            </div>
-            <p className="rb-paper-contact">
-              {personal.email || "email@example.com"}
-              {personal.phone && ` · ${personal.phone}`}
-            </p>
+        <div className="rb-content">
+          <div className="rb-form-panel card">
+            {step === 0 && (
+              <>
+                <h3>Personal details</h3>
+                <p className="hint" style={{ marginBottom: "1rem" }}>Let's start with the basics.</p>
+                <div className="field">
+                  <label>Full name</label>
+                  <input value={personal.name} onChange={(e) => handlePersonalChange("name", e.target.value)} required />
+                </div>
+                <div className="field">
+                  <label>Job title / headline</label>
+                  <input value={personal.title} onChange={(e) => handlePersonalChange("title", e.target.value)} placeholder="e.g. Mechanical Engineer" />
+                </div>
+                <div className="field">
+                  <label>Email</label>
+                  <input type="email" value={personal.email} onChange={(e) => handlePersonalChange("email", e.target.value)} required />
+                </div>
+                <div className="field">
+                  <label>Phone</label>
+                  <input value={personal.phone} onChange={(e) => handlePersonalChange("phone", e.target.value)} />
+                </div>
+                <div className="field">
+                  <label>Location</label>
+                  <input value={personal.location} onChange={(e) => handlePersonalChange("location", e.target.value)} placeholder="City, State" />
+                </div>
+              </>
+            )}
 
-            {experience.length > 0 && (
-              <div className="rb-paper-section">
-                <p className="rb-paper-heading">Experience</p>
+            {step === 1 && (
+              <>
+                <h3>Work experience</h3>
+                <p className="hint" style={{ marginBottom: "1rem" }}>Add roles you've held, most recent first.</p>
+
                 {experience.map((exp, i) => (
-                  <div key={i} className="rb-paper-exp">
-                    <p className="rb-paper-exp-role">{exp.role}</p>
-                    <p className="rb-paper-exp-meta">{exp.company}{exp.period && ` · ${exp.period}`}</p>
+                  <div className="rb-list-item" key={i}>
+                    <div>
+                      <p className="rb-list-title">{exp.role}</p>
+                      <p className="hint">{exp.company}{exp.period && ` · ${exp.period}`}</p>
+                    </div>
+                    <button type="button" className="btn-link" onClick={() => handleRemoveExperience(i)}>Remove</button>
                   </div>
                 ))}
-              </div>
+
+                <div className="field">
+                  <label>Role</label>
+                  <input value={expDraft.role} onChange={(e) => setExpDraft((p) => ({ ...p, role: e.target.value }))} />
+                </div>
+                <div className="field">
+                  <label>Company</label>
+                  <input value={expDraft.company} onChange={(e) => setExpDraft((p) => ({ ...p, company: e.target.value }))} />
+                </div>
+                <div className="field">
+                  <label>Period</label>
+                  <input value={expDraft.period} onChange={(e) => setExpDraft((p) => ({ ...p, period: e.target.value }))} placeholder="e.g. 2022 - Present" />
+                </div>
+                <button type="button" onClick={handleAddExperience}>+ Add experience</button>
+              </>
             )}
 
-            {skills.length > 0 && (
-              <div className="rb-paper-section">
-                <p className="rb-paper-heading">Skills</p>
-                <div className="rb-paper-skills">
+            {step === 2 && (
+              <>
+                <h3>Education</h3>
+                <p className="hint" style={{ marginBottom: "1rem" }}>Add your degrees or certifications.</p>
+
+                {education.map((edu, i) => (
+                  <div className="rb-list-item" key={i}>
+                    <div>
+                      <p className="rb-list-title">{edu.degree}</p>
+                      <p className="hint">{edu.school}{edu.year && ` · ${edu.year}`}</p>
+                    </div>
+                    <button type="button" className="btn-link" onClick={() => handleRemoveEducation(i)}>Remove</button>
+                  </div>
+                ))}
+
+                <div className="field">
+                  <label>Degree / course</label>
+                  <input value={eduDraft.degree} onChange={(e) => setEduDraft((p) => ({ ...p, degree: e.target.value }))} placeholder="e.g. B.E Mechanical" />
+                </div>
+                <div className="field">
+                  <label>Institution</label>
+                  <input value={eduDraft.school} onChange={(e) => setEduDraft((p) => ({ ...p, school: e.target.value }))} />
+                </div>
+                <div className="field">
+                  <label>Year</label>
+                  <input value={eduDraft.year} onChange={(e) => setEduDraft((p) => ({ ...p, year: e.target.value }))} placeholder="e.g. 2023" />
+                </div>
+                <button type="button" onClick={handleAddEducation}>+ Add education</button>
+              </>
+            )}
+
+            {step === 3 && (
+              <>
+                <h3>Skills</h3>
+                <p className="hint" style={{ marginBottom: "1rem" }}>Type a skill and press Enter to add it.</p>
+                <div className="field">
+                  <input
+                    value={skillInput}
+                    onChange={(e) => setSkillInput(e.target.value)}
+                    onKeyDown={handleSkillKeyDown}
+                    placeholder="e.g. AutoCAD, Python, Communication"
+                  />
+                </div>
+                <div className="tags">
                   {skills.map((s) => (
-                    <span key={s} className="rb-paper-skill">{s}</span>
+                    <span className="tag" key={s}>
+                      {s} <button type="button" className="rb-tag-remove" onClick={() => handleRemoveSkill(s)}>✕</button>
+                    </span>
                   ))}
                 </div>
-              </div>
+              </>
             )}
+
+            {step === 4 && (
+              <>
+                <h3>Ready to download</h3>
+                <p className="hint" style={{ marginBottom: "1rem" }}>
+                  Review your resume in the preview, then download it as a PDF. Only the resume itself will be printed.
+                </p>
+                <button type="button" className="btn-primary" onClick={handleDownload}>
+                  Download Resume (PDF)
+                </button>
+              </>
+            )}
+
+            <div className="rb-nav-buttons">
+              {step > 0 && <button type="button" onClick={goBack}>← Back</button>}
+              {!isLastStep && (
+                <button type="button" className="btn-primary" onClick={goNext} disabled={!canGoNext()}>
+                  Next →
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="rb-preview-panel">
+            <ResumePreview personal={personal} experience={experience} education={education} skills={skills} />
           </div>
         </div>
       </div>
 
-      <div className="rb-actions">
-        <button type="button" onClick={handleSaveDraft}>Save draft</button>
-        <button type="button" className="rb-btn-primary" onClick={handleDownloadPdf}>
-          Download PDF
-        </button>
+      <div className="rb-print-only">
+        <ResumePreview personal={personal} experience={experience} education={education} skills={skills} />
       </div>
+    </div>
+  );
+}
+
+function ResumePreview({ personal, experience, education, skills }) {
+  return (
+    <div className="rb-paper">
+      <p className="rb-paper-name">{personal.name || "Your name"}</p>
+      <p className="rb-paper-title">{personal.title || "Your job title"}</p>
+      <p className="rb-paper-contact">
+        {[personal.email, personal.phone, personal.location].filter(Boolean).join(" · ") || "email · phone · location"}
+      </p>
+
+      {experience.length > 0 && (
+        <div className="rb-paper-section">
+          <p className="rb-paper-heading">Experience</p>
+          {experience.map((exp, i) => (
+            <div key={i} className="rb-paper-entry">
+              <p className="rb-paper-entry-title">{exp.role}</p>
+              <p className="rb-paper-entry-meta">{exp.company}{exp.period && ` · ${exp.period}`}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {education.length > 0 && (
+        <div className="rb-paper-section">
+          <p className="rb-paper-heading">Education</p>
+          {education.map((edu, i) => (
+            <div key={i} className="rb-paper-entry">
+              <p className="rb-paper-entry-title">{edu.degree}</p>
+              <p className="rb-paper-entry-meta">{edu.school}{edu.year && ` · ${edu.year}`}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {skills.length > 0 && (
+        <div className="rb-paper-section">
+          <p className="rb-paper-heading">Skills</p>
+          <div className="rb-paper-skills">
+            {skills.map((s) => (
+              <span key={s} className="rb-paper-skill">{s}</span>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
