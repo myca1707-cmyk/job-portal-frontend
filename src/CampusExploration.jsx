@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const API_BASE = 'https://<your-backend-url>.railway.app'; // replace with your actual Railway domain
+const API_BASE = 'https://job-portal-backend-production-xxxx.up.railway.app';
 
 const TYPES = ['all', 'Engineering', 'Polytechnic', 'Arts and Science', 'ITI'];
 
