@@ -2472,7 +2472,7 @@ function CandidateSearch({ token }) {
 
           {error && <p className="msg-error">{error}</p>}
 
-          <div className="cs-grid">
+          <div className="cs-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1rem" }}>
             {!loading && paginatedResults.length === 0 && !error && (
               <div className="cs-empty-state">
                 <div className="cs-empty-big">
