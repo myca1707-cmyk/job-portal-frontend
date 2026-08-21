@@ -6,6 +6,7 @@ import introVideo from "./assets/intro.mp4";
 import CookieConsent from "./CookieConsent";
 import ResumeServices from "./ResumeServices";
 
+
 const API_BASE = "https://job-portal-backend-production-6d9d.up.railway.app";
 
 // ================= ABOUT SECTION (tabbed: About Us / Founder / Vision / Mission / Achievements) =================
@@ -738,9 +739,9 @@ function RecruiterSignupForm({ onSuccess }) {
   );
 }
 
-function PortalAccess({ onCandidateLogin, onRecruiterLogin, onClose, initialRole = null }) {
+function PortalAccess({ onCandidateLogin, onRecruiterLogin, onClose, initialRole = null, initialMode = "login" }) {
   const [role, setRole] = useState(initialRole);
-  const [mode, setMode] = useState("login");
+  const [mode, setMode] = useState(initialMode);
   const [candidateSignupDone, setCandidateSignupDone] = useState(false);
   const [recruiterSignupDone, setRecruiterSignupDone] = useState(false);
 
@@ -3264,14 +3265,15 @@ function MainApp() {
   const [adminKey, setAdminKey] = useState(() => localStorage.getItem("admin_key"));
 
   const [portalOpen, setPortalOpen] = useState(false);
-  const [portalInitialRole, setPortalInitialRole] = useState(null);
+  const [portalInitialMode, setPortalInitialMode] = useState("login");
   const [view, setView] = useState("jobs");
   const [contactOpen, setContactOpen] = useState(false);
-  
+
 useEffect(() => {
   const params = new URLSearchParams(window.location.search);
   if (params.get("login") === "candidate") {
     setPortalInitialRole("candidate");
+    setPortalInitialMode(params.get("mode") === "signup" ? "signup" : "login");
     setPortalOpen(true);
     setView("jobs");
     window.history.replaceState({}, "", "/");
@@ -3357,6 +3359,7 @@ useEffect(() => {
             onCandidateLogin={handleCandidateLogin}
             onRecruiterLogin={handleRecruiterLogin}
             initialRole={portalInitialRole}
+            initialMode={portalInitialMode}
             onClose={() => { setPortalOpen(false); setPortalInitialRole(null); }}
           />
         )}
