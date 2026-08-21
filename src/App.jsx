@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { BrowserRouter, Routes, Route, useParams, useNavigate, Link } from "react-router-dom";
 import "./App.css";
 import logo from "./assets/coretech-logo.png";
-import introVideo from "./assets/intro.mp4"function CandidateSearchCard
+import introVideo from "./assets/intro.mp4";
 import CookieConsent from "./CookieConsent";
 import ResumeServices from "./ResumeServices";
 
