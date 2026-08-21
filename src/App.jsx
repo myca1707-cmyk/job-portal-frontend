@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { BrowserRouter, Routes, Route, useParams, useNavigate, Link } from "react-router-dom";
 import "./App.css";
 import logo from "./assets/coretech-logo.png";
@@ -2178,6 +2178,72 @@ function CandidateProfileDetail({ candidateId, token, onBack }) {
 }
 
 // ============ CandidateSearch — recruiter's candidate search page ============
+function candidateInitials(name) {
+  if (!name) return "?";
+  return name.split(" ").filter(Boolean).map((p) => p[0]).slice(0, 2).join("").toUpperCase();
+}
+
+function CandidateSearchCard({ candidate, token, onViewProfile, onDownloadResume, downloadingId }) {
+  const skillList = (candidate.skills || "").split(",").map((s) => s.trim()).filter(Boolean);
+  const visibleSkills = skillList.slice(0, 4);
+  const extra = skillList.length - visibleSkills.length;
+
+  return (
+    <div className="cs-card" onClick={() => onViewProfile(candidate.id)}>
+      <div className="cs-card-top">
+        <CandidatePictureThumb candidateId={candidate.id} token={token} size={46} />
+        <div className="cs-card-id">
+          <p className="cs-card-name">{candidate.full_name}</p>
+          <p className="cs-card-title">
+            {candidate.designation || "—"}
+            {candidate.current_company && ` at ${candidate.current_company}`}
+          </p>
+          {candidate.location && <p className="cs-card-loc">{candidate.location}</p>}
+        </div>
+        {candidate.years_of_experience != null && (
+          <div className="cs-exp-badge">{candidate.years_of_experience}<span>yrs</span></div>
+        )}
+      </div>
+
+      {candidate.resume_headline && <p className="cs-headline">{candidate.resume_headline}</p>}
+
+      <hr className="cs-divider" />
+
+      {skillList.length > 0 && (
+        <div className="cs-skills-row">
+          {visibleSkills.map((s) => (
+            <span className="cs-skill-tag" key={s}>{s}</span>
+          ))}
+          {extra > 0 && <span className="cs-skill-tag extra">+{extra} more</span>}
+        </div>
+      )}
+
+      <div className="cs-meta-row">
+        {candidate.expected_ctc != null && <span className="cs-meta-item">Expected: {candidate.expected_ctc}</span>}
+        {candidate.notice_period && <span className="cs-meta-item">Notice: {candidate.notice_period}</span>}
+        {candidate.education_level && (
+          <span className="cs-meta-item">
+            {candidate.education_level}{candidate.field_of_study && ` - ${candidate.field_of_study}`}
+          </span>
+        )}
+      </div>
+
+      <div className="cs-card-actions" onClick={(e) => e.stopPropagation()}>
+        <button className="cs-btn cs-btn-primary" onClick={() => onViewProfile(candidate.id)}>
+          View profile
+        </button>
+        <button
+          className="cs-btn cs-btn-outline"
+          onClick={(e) => onDownloadResume(candidate, e)}
+          disabled={downloadingId === candidate.id}
+        >
+          {downloadingId === candidate.id ? "Downloading..." : "Resume"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function CandidateSearch({ token }) {
   const [filters, setFilters] = useState({
     q: "",
@@ -2194,6 +2260,7 @@ function CandidateSearch({ token }) {
   const [downloadingId, setDownloadingId] = useState(null);
   const [selectedCandidateId, setSelectedCandidateId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [sort, setSort] = useState("relevance");
   const PAGE_SIZE = 10;
 
   const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -2292,8 +2359,18 @@ function CandidateSearch({ token }) {
     }
   }
 
-  const totalPages = Math.ceil(results.length / PAGE_SIZE);
-  const paginatedResults = results.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const sortedResults = useMemo(() => {
+    const list = [...results];
+    if (sort === "experience") {
+      list.sort((a, b) => (b.years_of_experience || 0) - (a.years_of_experience || 0));
+    } else if (sort === "name") {
+      list.sort((a, b) => (a.full_name || "").localeCompare(b.full_name || ""));
+    }
+    return list;
+  }, [results, sort]);
+
+  const totalPages = Math.ceil(sortedResults.length / PAGE_SIZE);
+  const paginatedResults = sortedResults.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   if (selectedCandidateId) {
     return (
@@ -2306,130 +2383,214 @@ function CandidateSearch({ token }) {
   }
 
   return (
-    <div>
-      <h2 className="page-title">Search Candidates</h2>
+    <div className="cs-wrap">
+      <div className="cs-hero">
+        <h1>Find your next hire</h1>
+        <p>{loading ? "Loading candidates..." : `${results.length} candidate${results.length === 1 ? "" : "s"} in the pool`}</p>
 
-      <div className="form-card">
-        <form onSubmit={handleSearch}>
-          <div className="field">
-            <label>Search by name, skills, email, or mobile</label>
-            <input value={filters.q} onChange={(e) => handleChange("q", e.target.value)} placeholder="e.g. python, name, email, or mobile number" />
-            {isEmailQuery && !isValidEmail && (
-              <p className="msg-error" style={{ marginTop: "0.25rem" }}>That doesn't look like a valid email address</p>
+        <form className="cs-searchbar" onSubmit={handleSearch}>
+          <span className="cs-icon-wrap">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="7" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </span>
+          <input
+            type="text"
+            value={filters.q}
+            onChange={(e) => handleChange("q", e.target.value)}
+            placeholder="Search by name, skills, email, or mobile"
+          />
+          <button className="cs-search-btn" type="submit" disabled={loading || (isEmailQuery && !isValidEmail)}>
+            {loading ? "Searching..." : "Search"}
+          </button>
+        </form>
+        {isEmailQuery && !isValidEmail && (
+          <p className="cs-inline-error">That doesn't look like a valid email address</p>
+        )}
+      </div>
+
+      <div className="cs-layout">
+        <aside className="cs-panel cs-filters">
+          <h3>
+            Filters
+            {hasActiveFilters && (
+              <button className="cs-clear" onClick={handleClearFilters} type="button">Clear all</button>
             )}
-          </div>
+          </h3>
 
-          <div style={{ display: "flex", gap: "0.75rem" }}>
-            <div className="field" style={{ flex: 1 }}>
-              <label>Min Experience (yrs)</label>
-              <input type="number" value={filters.min_experience} onChange={(e) => handleChange("min_experience", e.target.value)} />
-            </div>
-            <div className="field" style={{ flex: 1 }}>
-              <label>Max Experience (yrs)</label>
-              <input type="number" value={filters.max_experience} onChange={(e) => handleChange("max_experience", e.target.value)} />
+          <div className="cs-filter-group">
+            <label className="cs-group-label">Experience (yrs)</label>
+            <div className="cs-range-row">
+              <input type="number" placeholder="Min" value={filters.min_experience} onChange={(e) => handleChange("min_experience", e.target.value)} />
+              <input type="number" placeholder="Max" value={filters.max_experience} onChange={(e) => handleChange("max_experience", e.target.value)} />
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: "0.75rem" }}>
-            <div className="field" style={{ flex: 1 }}>
-              <label>Min Expected Salary</label>
-              <input type="number" value={filters.min_salary} onChange={(e) => handleChange("min_salary", e.target.value)} />
-            </div>
-            <div className="field" style={{ flex: 1 }}>
-              <label>Max Expected Salary</label>
-              <input type="number" value={filters.max_salary} onChange={(e) => handleChange("max_salary", e.target.value)} />
+          <div className="cs-filter-group">
+            <label className="cs-group-label">Expected Salary</label>
+            <div className="cs-range-row">
+              <input type="number" placeholder="Min" value={filters.min_salary} onChange={(e) => handleChange("min_salary", e.target.value)} />
+              <input type="number" placeholder="Max" value={filters.max_salary} onChange={(e) => handleChange("max_salary", e.target.value)} />
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: "0.75rem" }}>
-            <div className="field" style={{ flex: 1 }}>
-              <label>Education Level</label>
-              <select value={filters.education_level} onChange={(e) => handleChange("education_level", e.target.value)}>
-                <option value="">Any</option>
-                <option value="Graduate">Graduate</option>
-                <option value="Postgraduate">Postgraduate</option>
+          <div className="cs-filter-group">
+            <label className="cs-group-label">Education Level</label>
+            <select value={filters.education_level} onChange={(e) => handleChange("education_level", e.target.value)}>
+              <option value="">Any</option>
+              <option value="Graduate">Graduate</option>
+              <option value="Postgraduate">Postgraduate</option>
+            </select>
+          </div>
+
+          <div className="cs-filter-group">
+            <label className="cs-group-label">Field of Study</label>
+            <input value={filters.field_of_study} onChange={(e) => handleChange("field_of_study", e.target.value)} placeholder="e.g. Computer Science" />
+          </div>
+
+          <button className="cs-btn cs-btn-primary" style={{ width: "100%", marginTop: "0.5rem" }} onClick={handleSearch} disabled={loading}>
+            Apply filters
+          </button>
+        </aside>
+
+        <main>
+          <div className="cs-results-bar">
+            <div className="cs-results-count">
+              <b>{sortedResults.length}</b> candidate{sortedResults.length === 1 ? "" : "s"}
+              {hasActiveFilters ? " match your filters" : " total"}
+            </div>
+            <div className="cs-sort-wrap">
+              <label htmlFor="csSortSelect">Sort by</label>
+              <select id="csSortSelect" value={sort} onChange={(e) => setSort(e.target.value)}>
+                <option value="relevance">Relevance</option>
+                <option value="experience">Most experienced</option>
+                <option value="name">Name (A–Z)</option>
               </select>
-            </div>
-            <div className="field" style={{ flex: 1 }}>
-              <label>Field of Study</label>
-              <input value={filters.field_of_study} onChange={(e) => handleChange("field_of_study", e.target.value)} placeholder="e.g. Computer Science" />
             </div>
           </div>
 
           {error && <p className="msg-error">{error}</p>}
-          <div style={{ display: "flex", gap: "0.75rem" }}>
-            <button type="submit" className="btn-primary" disabled={loading || (isEmailQuery && !isValidEmail)}>
-              {loading ? "Searching..." : "Search"}
-            </button>
-            {hasActiveFilters && (
-              <button type="button" onClick={handleClearFilters} disabled={loading}>Clear Filters</button>
-            )}
-          </div>
-        </form>
-      </div>
 
-      <div style={{ marginTop: "1.5rem" }}>
-        <p className="card-meta" style={{ marginBottom: "1rem" }}>
-          {loading
-            ? "Loading candidates..."
-            : hasActiveFilters
-            ? `${results.length} candidate${results.length === 1 ? "" : "s"} match your filters`
-            : `${results.length} candidate${results.length === 1 ? "" : "s"} total`}
-        </p>
-
-        {!loading && results.length === 0 && !error && (
-          <p className="empty-state">
-            {hasActiveFilters ? "No candidates found matching your filters." : "No candidates registered yet."}
-          </p>
-        )}
-
-        {paginatedResults.map((candidate) => (
-          <div
-            key={candidate.id}
-            className="card job-pick"
-            style={{ cursor: "pointer", display: "flex", gap: "1rem", alignItems: "flex-start" }}
-            onClick={() => setSelectedCandidateId(candidate.id)}
-          >
-            <CandidatePictureThumb candidateId={candidate.id} token={token} />
-
-            <div style={{ flex: 1 }}>
-              <h2>{candidate.full_name}</h2>
-              <p className="card-meta">
-                {candidate.email}
-              </p>
-              {candidate.resume_headline && <p className="card-desc">{candidate.resume_headline}</p>}
-              <p className="card-meta">
-                {candidate.years_of_experience != null && `${candidate.years_of_experience} yrs exp`}
-                {candidate.expected_ctc != null && ` · Expected CTC: ${candidate.expected_ctc}`}
-                {candidate.notice_period && ` · Notice: ${candidate.notice_period}`}
-                {candidate.education_level && ` · ${candidate.education_level}`}
-                {candidate.field_of_study && ` - ${candidate.field_of_study}`}
-              </p>
-              {candidate.skills && (
-                <div className="tags">
-                  {candidate.skills.split(",").map((s) => s.trim()).filter(Boolean).map((s) => (
-                    <span className="tag" key={s}>{s}</span>
-                  ))}
+          <div className="cs-grid">
+            {!loading && paginatedResults.length === 0 && !error && (
+              <div className="cs-empty-state">
+                <div className="cs-empty-big">
+                  {hasActiveFilters ? "No candidates match these filters" : "No candidates registered yet"}
                 </div>
-              )}
+                {hasActiveFilters && (
+                  <>
+                    <div>Try widening a range or clearing a filter.</div>
+                    <button onClick={handleClearFilters} type="button">Clear all filters</button>
+                  </>
+                )}
+              </div>
+            )}
 
-              <p className="hint" style={{ marginTop: "0.5rem" }}>Click card to view full profile →</p>
+            {paginatedResults.map((candidate) => (
+              <CandidateSearchCard
+                key={candidate.id}
+                candidate={candidate}
+                token={token}
+                onViewProfile={setSelectedCandidateId}
+                onDownloadResume={handleDownloadResume}
+                downloadingId={downloadingId}
+              />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "1rem", marginTop: "1.5rem" }}>
+              <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>
+                ← Previous
+              </button>
+              <span className="hint">Page {currentPage} of {totalPages}</span>
+              <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
+                Next →
+              </button>
             </div>
-          </div>
-        ))}
-
-        {totalPages > 1 && (
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "1rem", marginTop: "1.5rem" }}>
-            <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>
-              ← Previous
-            </button>
-            <span className="hint">Page {currentPage} of {totalPages}</span>
-            <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
-              Next →
-            </button>
-          </div>
-        )}
+          )}
+        </main>
       </div>
+
+      <style>{`
+        .cs-wrap { --cs-bg:#FFFFFF; --cs-surface:#F3F7FD; --cs-ink:#0B1B33; --cs-ink-soft:#56637D; --cs-ink-faint:#8A96AC;
+          --cs-line:#DCE6F5; --cs-line-strong:#C3D5F0; --cs-navy:#0E2A63; --cs-navy-800:#123170;
+          --cs-blue:#2454E0; --cs-blue-hover:#1A45C4; --cs-blue-100:#E4ECFE; --cs-blue-050:#F3F7FD;
+          --cs-radius-sm:8px; --cs-radius-md:12px; --cs-radius-lg:16px;
+          --cs-shadow-card:0 1px 2px rgba(14,42,99,0.06), 0 8px 24px rgba(14,42,99,0.05);
+          --cs-shadow-card-hover:0 4px 10px rgba(14,42,99,0.08), 0 16px 32px rgba(14,42,99,0.09);
+          font-family:'Inter',system-ui,sans-serif; color:var(--cs-ink); }
+        .cs-wrap *{ box-sizing:border-box; }
+        .cs-hero{ background:linear-gradient(180deg,var(--cs-navy) 0%, var(--cs-navy-800) 100%);
+          padding:28px 24px 84px; margin:-2.5rem -2.5rem 0; border-radius: 0 0 var(--cs-radius-lg) var(--cs-radius-lg); }
+        .cs-hero h1{ font-family:'Space Grotesk',sans-serif; font-size:24px; font-weight:600; color:#fff; margin:0 0 4px; }
+        .cs-hero p{ margin:0; color:#AFC2F0; font-size:13.5px; }
+        .cs-searchbar{ margin-top:18px; background:#fff; border-radius:var(--cs-radius-lg); box-shadow:0 12px 32px rgba(4,17,45,0.28);
+          padding:8px; display:flex; gap:8px; align-items:center; }
+        .cs-searchbar input[type="text"]{ flex:1; border:none; outline:none; font-size:15px; padding:12px 14px; background:transparent; }
+        .cs-icon-wrap{ color:var(--cs-ink-faint); padding-left:8px; display:flex; }
+        .cs-search-btn{ background:var(--cs-blue); color:#fff; border:none; border-radius:var(--cs-radius-md); padding:12px 22px;
+          font-weight:600; font-size:14px; cursor:pointer; white-space:nowrap; }
+        .cs-search-btn:hover{ background:var(--cs-blue-hover); }
+        .cs-search-btn:disabled{ opacity:0.6; cursor:default; }
+        .cs-inline-error{ color:#c0392b; font-size:12.5px; margin:8px 0 0; }
+        .cs-layout{ margin-top:-56px; position:relative; display:grid; grid-template-columns:240px 1fr; gap:24px; padding: 0 0.5rem; }
+        .cs-panel{ background:#fff; border:1px solid var(--cs-line); border-radius:var(--cs-radius-lg); box-shadow:var(--cs-shadow-card); }
+        .cs-filters{ padding:20px; align-self:start; position:sticky; top:24px; }
+        .cs-filters h3{ font-family:'Space Grotesk',sans-serif; font-size:14px; font-weight:600; margin:0 0 14px;
+          display:flex; align-items:center; justify-content:space-between; }
+        .cs-clear{ font-size:12px; font-weight:500; color:var(--cs-blue); background:none; border:none; cursor:pointer; padding:0; }
+        .cs-filter-group{ margin-bottom:18px; }
+        .cs-group-label{ display:block; font-size:12px; font-weight:600; color:var(--cs-ink-soft); text-transform:uppercase;
+          letter-spacing:.04em; margin-bottom:8px; }
+        .cs-filter-group select, .cs-filter-group input{ width:100%; padding:9px 10px; border:1px solid var(--cs-line);
+          border-radius:var(--cs-radius-sm); font-size:13px; color:var(--cs-ink); background:#fff; }
+        .cs-range-row{ display:flex; gap:8px; }
+        .cs-results-bar{ display:flex; align-items:center; justify-content:space-between; margin:0 0 16px; flex-wrap:wrap; gap:10px; }
+        .cs-results-count{ font-size:14px; color:var(--cs-ink-soft); }
+        .cs-results-count b{ color:var(--cs-ink); font-weight:600; }
+        .cs-sort-wrap{ display:flex; align-items:center; gap:8px; }
+        .cs-sort-wrap label{ font-size:13px; color:var(--cs-ink-soft); }
+        .cs-sort-wrap select{ padding:8px 10px; border:1px solid var(--cs-line); border-radius:var(--cs-radius-sm); font-size:13px; }
+        .cs-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+        .cs-card{ background:#fff; border:1px solid var(--cs-line); border-radius:var(--cs-radius-lg); padding:18px;
+          box-shadow:var(--cs-shadow-card); transition:box-shadow .15s ease, transform .15s ease, border-color .15s ease; cursor:pointer; }
+        .cs-card:hover{ box-shadow:var(--cs-shadow-card-hover); transform:translateY(-2px); border-color:var(--cs-line-strong); }
+        .cs-card-top{ display:flex; align-items:flex-start; gap:12px; }
+        .cs-card-id{ flex:1; min-width:0; }
+        .cs-card-name{ font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:16px; margin:0 0 2px;
+          white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .cs-card-title{ font-size:13px; color:var(--cs-ink-soft); margin:0; }
+        .cs-card-loc{ font-size:12.5px; color:var(--cs-ink-faint); margin:3px 0 0; }
+        .cs-exp-badge{ flex-shrink:0; background:var(--cs-blue-100); color:var(--cs-navy); border-radius:var(--cs-radius-sm);
+          padding:4px 8px; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px; text-align:center; }
+        .cs-exp-badge span{ display:block; font-size:9px; font-weight:600; color:var(--cs-ink-soft); }
+        .cs-headline{ font-size:12.5px; color:var(--cs-ink-soft); margin:10px 0 0; }
+        .cs-divider{ border:none; border-top:1px solid var(--cs-line); margin:14px 0; }
+        .cs-skills-row{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+        .cs-skill-tag{ font-size:11.5px; font-weight:500; padding:4px 9px; border-radius:999px; background:var(--cs-surface);
+          color:var(--cs-navy-800); border:1px solid var(--cs-line); }
+        .cs-skill-tag.extra{ color:var(--cs-ink-faint); background:transparent; border-style:dashed; }
+        .cs-meta-row{ display:flex; align-items:center; gap:12px; margin-bottom:16px; font-size:12.5px; color:var(--cs-ink-soft); flex-wrap:wrap; }
+        .cs-card-actions{ display:flex; gap:8px; }
+        .cs-btn{ flex:1; padding:9px 14px; border-radius:var(--cs-radius-sm); font-size:13px; font-weight:600;
+          cursor:pointer; text-align:center; border:1px solid transparent; }
+        .cs-btn-primary{ background:var(--cs-blue); color:#fff; }
+        .cs-btn-primary:hover{ background:var(--cs-blue-hover); }
+        .cs-btn-outline{ background:#fff; color:var(--cs-blue); border-color:var(--cs-blue-100); }
+        .cs-btn-outline:hover{ background:var(--cs-blue-050); }
+        .cs-btn:disabled{ opacity:0.6; cursor:default; }
+        .cs-empty-state{ grid-column:1/-1; text-align:center; padding:64px 20px; color:var(--cs-ink-soft); }
+        .cs-empty-big{ font-family:'Space Grotesk',sans-serif; font-size:17px; font-weight:600; color:var(--cs-ink); margin-bottom:6px; }
+        .cs-empty-state button{ margin-top:14px; background:var(--cs-blue); color:#fff; border:none; border-radius:var(--cs-radius-sm);
+          padding:9px 18px; font-weight:600; font-size:13px; cursor:pointer; }
+        @media (max-width:820px){
+          .cs-layout{ grid-template-columns:1fr; margin-top:0; }
+          .cs-grid{ grid-template-columns:1fr; }
+          .cs-filters{ position:static; }
+        }
+      `}</style>
     </div>
   );
 }
