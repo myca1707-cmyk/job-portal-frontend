@@ -5,6 +5,7 @@ import logo from "./assets/coretech-logo.png";
 import introVideo from "./assets/intro.mp4";
 import CookieConsent from "./CookieConsent";
 import ResumeServices from "./ResumeServices";
+import CampusExploration from "./CampusExploration";
 
 
 const API_BASE = "https://job-portal-backend-production-6d9d.up.railway.app";
@@ -1224,28 +1225,14 @@ function CampusArrangement({ onGoToSupport }) {
 }
 
 function CampusSupport() {
-  const colleges = [
-    { name: "PLACEHOLDER College 1", location: "Add city/area", website: "https://example.edu" },
-    { name: "PLACEHOLDER College 2", location: "Add city/area", website: "https://example.edu" },
-    { name: "PLACEHOLDER College 3", location: "Add city/area", website: "https://example.edu" },
-  ];
-
   return (
     <div>
       <div className="card" style={{ marginBottom: "1.25rem" }}>
         <h3 style={{ marginBottom: "0.5rem" }}>Colleges in your area</h3>
-        <p className="card-meta">Reach out directly to plan campus drives. Let me know the real colleges you work with and I'll fill this list in.</p>
+        <p className="card-meta">Search by city to find engineering, polytechnic, ITI, and arts colleges for campus drives.</p>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-        {colleges.map((college) => (
-          <div key={college.name} className="card">
-            <h3 style={{ marginBottom: "0.25rem" }}>{college.name}</h3>
-            <p className="card-meta" style={{ marginBottom: "0.5rem" }}>{college.location}</p>
-            <a href={college.website} target="_blank" rel="noopener noreferrer" className="btn-link">Visit website →</a>
-          </div>
-        ))}
-      </div>
+      <CampusExploration />
     </div>
   );
 }
