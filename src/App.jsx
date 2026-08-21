@@ -3426,6 +3426,7 @@ function MainApp() {
   const [adminKey, setAdminKey] = useState(() => localStorage.getItem("admin_key"));
 
   const [portalOpen, setPortalOpen] = useState(false);
+  const [portalInitialRole, setPortalInitialRole] = useState(null);
   const [portalInitialMode, setPortalInitialMode] = useState("login");
   const [view, setView] = useState("jobs");
   const [contactOpen, setContactOpen] = useState(false);
