@@ -885,6 +885,7 @@ function ShareJobButton({ job }) {
 function JobCard({ job, token, onRequireLogin }) {
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
+  const [expanded, setExpanded] = useState(false);
 
   async function handleApply(e) {
     e.stopPropagation();
@@ -921,53 +922,113 @@ function JobCard({ job, token, onRequireLogin }) {
     .map((s) => s.trim())
     .filter((s) => Boolean(s) && s.toLowerCase() !== "none");
   const isApplied = status === "applied";
+  const companyInitial = (job.company_name || "C").charAt(0).toUpperCase();
+
+  if (!expanded) {
+    return (
+      <div className="card" style={{ padding: "1rem 1.25rem", cursor: "pointer" }} onClick={() => setExpanded(true)}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div
+            style={{
+              width: 44, height: 44, borderRadius: "50%", flexShrink: 0,
+              background: "var(--blue-100, #E4ECFE)", color: "var(--blue-700, #123170)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontWeight: 700, fontSize: 16,
+            }}
+          >
+            {companyInitial}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ margin: 0, fontWeight: 600, fontSize: 15 }}>{job.title}</p>
+            <p className="card-meta" style={{ margin: "2px 0 0" }}>
+              {job.company_name} · {job.location} · {job.employment_type}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="card" style={{ padding: "1rem 1.25rem" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexWrap: "wrap" }}>
+    <div className="card" style={{ padding: "1.25rem" }}>
+      <button className="btn-link" onClick={() => setExpanded(false)} style={{ marginBottom: "0.75rem" }}>← Back</button>
+
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: 8 }}>
+        <div
+          style={{
+            width: 64, height: 64, borderRadius: "50%",
+            background: "var(--blue-100, #E4ECFE)", color: "var(--blue-700, #123170)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontWeight: 700, fontSize: 22,
+          }}
+        >
+          {companyInitial}
+        </div>
         <div>
-          <p style={{ margin: 0, fontWeight: 600, fontSize: 16 }}>{job.title}</p>
+          <p style={{ margin: 0, fontWeight: 700, fontSize: 18 }}>{job.title}</p>
           <p className="card-meta" style={{ margin: "4px 0 0" }}>
             {job.company_name} · {job.location} · {job.employment_type}
           </p>
-          {(job.experience_required || job.salary) && (
-            <p className="card-meta" style={{ margin: "4px 0 0", fontSize: 12.5 }}>
-              {job.experience_required && <span>{job.experience_required}</span>}
-              {job.experience_required && job.salary && " · "}
-              {job.salary && <span>{job.salary}</span>}
-            </p>
-          )}
         </div>
-        <button
-          className={isApplied ? "btn-applied" : "btn-primary"}
-          onClick={handleApply}
-          disabled={status === "applying" || isApplied}
-          style={{ whiteSpace: "nowrap" }}
-        >
-          {status === "applying" ? "Applying..." : isApplied ? "Applied ✓" : "Apply"}
-        </button>
       </div>
 
+      {(job.experience_required || job.salary || job.domain) && (
+        <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: "1rem", flexWrap: "wrap" }}>
+          {job.experience_required && (
+            <div style={{ textAlign: "center" }}>
+              <p className="hint" style={{ margin: 0 }}>Experience</p>
+              <p style={{ margin: "2px 0 0", fontWeight: 600, fontSize: 14 }}>{job.experience_required}</p>
+            </div>
+          )}
+          {job.salary && (
+            <div style={{ textAlign: "center" }}>
+              <p className="hint" style={{ margin: 0 }}>Salary</p>
+              <p style={{ margin: "2px 0 0", fontWeight: 600, fontSize: 14 }}>{job.salary}</p>
+            </div>
+          )}
+          {job.domain && (
+            <div style={{ textAlign: "center" }}>
+              <p className="hint" style={{ margin: 0 }}>Domain</p>
+              <p style={{ margin: "2px 0 0", fontWeight: 600, fontSize: 14 }}>{job.domain}</p>
+            </div>
+          )}
+        </div>
+      )}
+
       {job.description && (
-        <p className="card-desc" style={{ marginTop: "0.75rem", fontSize: 13 }}>{job.description}</p>
+        <div style={{ marginTop: "1.25rem" }}>
+          <p style={{ fontWeight: 600, fontSize: 14, margin: "0 0 6px" }}>Job description</p>
+          <p className="card-desc">{job.description}</p>
+        </div>
       )}
 
       {skills.length > 0 && (
-        <div className="tags" style={{ marginTop: "0.75rem" }}>
+        <div className="tags" style={{ marginTop: "1rem", justifyContent: "center" }}>
           {skills.map((s) => (
             <span className="tag" key={s}>{s}</span>
           ))}
         </div>
       )}
 
-      {message && (
-        <span className={`status-line ${status === "error" ? "msg-error" : "msg-success"}`} style={{ marginTop: "0.5rem", display: "block" }}>
-          <span className={`status-dot ${status}`}></span>
-          {message}
-        </span>
-      )}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "1.5rem" }}>
+        <button
+          className={isApplied ? "btn-applied" : "btn-primary"}
+          onClick={handleApply}
+          disabled={status === "applying" || isApplied}
+        >
+          {status === "applying" ? "Applying..." : isApplied ? "Applied ✓" : "Apply"}
+        </button>
+        {message && (
+          <span className={`status-line ${status === "error" ? "msg-error" : "msg-success"}`} style={{ marginTop: "0.5rem" }}>
+            <span className={`status-dot ${status}`}></span>
+            {message}
+          </span>
+        )}
+      </div>
 
-      <ShareJobButton job={job} />
+      <div style={{ display: "flex", justifyContent: "center", marginTop: "0.75rem" }}>
+        <ShareJobButton job={job} />
+      </div>
     </div>
   );
 }
