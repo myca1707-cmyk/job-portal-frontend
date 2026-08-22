@@ -3176,6 +3176,70 @@ function CandidateShell({ token, onLogout }) {
   );
 }
 
+function AdminAnalytics({ adminKey }) {
+  const [series, setSeries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetch(`${API_BASE}/admin/analytics?days=30`, { headers: { "X-Admin-Key": adminKey } })
+      .then((res) => res.json())
+      .then((data) => setSeries(data.series || []))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [adminKey]);
+
+  if (loading) return <p className="hint">Loading analytics...</p>;
+  if (error) return <p className="msg-error">{error}</p>;
+  if (series.length === 0) return null;
+
+  const width = 700;
+  const height = 220;
+  const padding = 30;
+  const maxVal = Math.max(1, ...series.flatMap((d) => [d.candidates, d.recruiters, d.applications]));
+
+  function pointsFor(key) {
+    return series
+      .map((d, i) => {
+        const x = padding + (i / (series.length - 1)) * (width - padding * 2);
+        const y = height - padding - (d[key] / maxVal) * (height - padding * 2);
+        return `${x},${y}`;
+      })
+      .join(" ");
+  }
+
+  const lines = [
+    { key: "candidates", color: "#2554E8", label: "Candidates" },
+    { key: "recruiters", color: "#1E8E5A", label: "Recruiters" },
+    { key: "applications", color: "#D85A30", label: "Applications" },
+  ];
+
+  return (
+    <div className="card" style={{ marginBottom: "1.5rem" }}>
+      <h3 style={{ marginBottom: "0.25rem" }}>Portal activity — last 30 days</h3>
+      <p className="hint" style={{ marginBottom: "1rem" }}>New candidates, recruiters, and applications per day</p>
+
+      <div style={{ display: "flex", gap: "16px", marginBottom: "0.75rem", flexWrap: "wrap" }}>
+        {lines.map((l) => (
+          <div key={l.key} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <span style={{ width: 10, height: 10, borderRadius: "50%", background: l.color, display: "inline-block" }}></span>
+            <span className="hint">{l.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <svg viewBox={`0 0 ${width} ${height}`} style={{ width: "100%", height: "auto", display: "block" }}>
+        <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="var(--line, #ddd)" strokeWidth="1" />
+        <line x1={padding} y1={padding} x2={padding} y2={height - padding} stroke="var(--line, #ddd)" strokeWidth="1" />
+
+        {lines.map((l) => (
+          <polyline key={l.key} points={pointsFor(l.key)} fill="none" stroke={l.color} strokeWidth="2" />
+        ))}
+      </svg>
+    </div>
+  );
+}
+
 function AdminDashboard({ adminKey, onBack }) {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -3209,6 +3273,8 @@ function AdminDashboard({ adminKey, onBack }) {
           <div className="card"><p className="meta">Total Views</p><h3>{stats.total_views}</h3></div>
         </div>
       )}
+
+      <AdminAnalytics adminKey={adminKey} />
 
       <PendingRecruiters adminKey={adminKey} />
       <ContactQueries adminKey={adminKey} />
