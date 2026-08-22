@@ -3920,11 +3920,25 @@ function findFaqAnswer(userText) {
   return CHATBOT_FALLBACK;
 }
 
+function NatashaAvatar({ size = 28 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="24" cy="24" r="24" fill="#2554E8" />
+      <circle cx="21" cy="17" r="7" fill="#fff" />
+      <path d="M8 41c0-9 6-15 13-15s13 6 13 15" fill="#fff" />
+      <rect x="26" y="24" width="12" height="15" rx="1.5" fill="#0A192F" />
+      <line x1="29" y1="29" x2="35" y2="29" stroke="#fff" strokeWidth="1.2" />
+      <line x1="29" y1="32.5" x2="35" y2="32.5" stroke="#fff" strokeWidth="1.2" />
+      <line x1="29" y1="36" x2="33" y2="36" stroke="#fff" strokeWidth="1.2" />
+    </svg>
+  );
+}
+
 function ChatbotWidget() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([
-    { from: "bot", text: "Hi! Ask me about jobs, signing up, or our services." },
+    { from: "bot", text: "Hi, I'm Natasha! I know what it's like to be job hunting - ask me about jobs, signing up, or our services and I'll help however I can." },
   ]);
 
   function handleSend(e) {
@@ -3954,8 +3968,12 @@ function ChatbotWidget() {
             overflow: "hidden",
           }}
         >
-          <div style={{ background: "#0A192F", color: "#fff", padding: "0.75rem 1rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <p style={{ margin: 0, fontWeight: 600, fontSize: 14 }}>Coretech Assistant</p>
+          <div style={{ background: "#0A192F", color: "#fff", padding: "0.6rem 1rem", display: "flex", alignItems: "center", gap: 10 }}>
+            <NatashaAvatar size={30} />
+            <div style={{ flex: 1 }}>
+              <p style={{ margin: 0, fontWeight: 600, fontSize: 14 }}>Natasha</p>
+              <p style={{ margin: 0, fontSize: 11, color: "rgba(255,255,255,0.7)" }}>Here to help with your job search</p>
+            </div>
             <button className="btn-link" onClick={() => setOpen(false)} style={{ color: "#fff", padding: 0 }}>✕</button>
           </div>
 
@@ -3983,7 +4001,7 @@ function ChatbotWidget() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask a question..."
+              placeholder="Ask Natasha a question..."
               style={{ flex: 1, fontSize: 13 }}
             />
             <button type="submit" className="btn-primary" style={{ fontSize: 12, padding: "0 12px" }}>Send</button>
@@ -4003,10 +4021,13 @@ function ChatbotWidget() {
           fontSize: 22,
           cursor: "pointer",
           boxShadow: "0 4px 12px rgba(10,25,47,0.25)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
-        aria-label="Open chat assistant"
+        aria-label="Open chat with Natasha"
       >
-        {open ? "✕" : "💬"}
+        {open ? "✕" : <NatashaAvatar size={30} />}
       </button>
     </div>
   );
