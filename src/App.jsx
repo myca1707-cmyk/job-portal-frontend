@@ -1383,7 +1383,33 @@ function ApplicantRow({ applicant, jobId, token, onStatusChanged }) {
   );
 }
 
-function KanbanCard({ applicant, jobId, token, onStatusChanged }) {
+function KanbanCard({ applicant, onOpen }) {
+
+  async function handleDownloadResume() {
+    setError("");
+    setDownloading(true);
+    try {
+      const res = await fetch(`${API_BASE}/jobs/${jobId}/applicants/${applicant.application_id}/resume`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to download resume");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${applicant.name}_resume.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDownloading(false);
+    }
+  }
+
+  function ApplicantDetailModal({ applicant, jobId, token, onClose, onStatusChanged }) {
   const [updating, setUpdating] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState("");
@@ -1400,6 +1426,7 @@ function KanbanCard({ applicant, jobId, token, onStatusChanged }) {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.detail || "Failed to update status");
       onStatusChanged(applicant.application_id, data.status);
+      onClose();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -1430,6 +1457,47 @@ function KanbanCard({ applicant, jobId, token, onStatusChanged }) {
       setDownloading(false);
     }
   }
+
+  const normalizedStatus =
+    applicant.status === "pending" ? "applied" : applicant.status === "accepted" ? "hired" : applicant.status;
+  const currentIndex = PIPELINE_STAGES.indexOf(normalizedStatus);
+
+  return (
+    <div
+      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}
+      onClick={onClose}
+    >
+      <div className="form-card" style={{ maxWidth: 420, width: "90%" }} onClick={(e) => e.stopPropagation()}>
+        <button className="btn-link" style={{ float: "right" }} onClick={onClose}>✕</button>
+        <h2>{applicant.name}</h2>
+        <p className="card-meta" style={{ marginTop: "0.5rem" }}>
+          {applicant.email}
+          {applicant.mobile_number && ` · ${applicant.mobile_number}`}
+        </p>
+        <p className="card-meta" style={{ marginTop: "0.35rem" }}>
+          Skills: {applicant.skills} · Relevance: {applicant.relevance}
+        </p>
+        <p className="hint" style={{ marginTop: "0.5rem" }}>Current stage: {stageLabel(normalizedStatus)}</p>
+
+        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "1rem" }}>
+          {currentIndex > 0 && (
+            <button disabled={updating} onClick={() => updateStatus(PIPELINE_STAGES[currentIndex - 1])}>← Back</button>
+          )}
+          {currentIndex < PIPELINE_STAGES.length - 1 && applicant.status !== "rejected" && (
+            <button disabled={updating} onClick={() => updateStatus(PIPELINE_STAGES[currentIndex + 1])} className="btn-primary">Advance →</button>
+          )}
+          <button disabled={updating || applicant.status === "rejected"} onClick={() => updateStatus("rejected")} style={{ color: "#B3261E" }}>
+            {applicant.status === "rejected" ? "Rejected" : "Reject"}
+          </button>
+          <button onClick={handleDownloadResume} disabled={downloading}>
+            {downloading ? "Downloading..." : "Download Resume"}
+          </button>
+        </div>
+        {error && <p className="msg-error" style={{ marginTop: "0.5rem" }}>{error}</p>}
+      </div>
+    </div>
+  );
+}
 
   const normalizedStatus =
     applicant.status === "pending" ? "applied" : applicant.status === "accepted" ? "hired" : applicant.status;
