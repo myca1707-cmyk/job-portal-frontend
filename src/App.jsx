@@ -3711,6 +3711,145 @@ function JobDetailPage() {
     </div>
   );
 }
+const CHATBOT_FAQS = [
+  {
+    keywords: ["hi", "hello", "hey"],
+    answer: "Hi! I'm here to help with quick questions about Coretech Talents. Ask me about jobs, signing up, or our services.",
+  },
+  {
+    keywords: ["job", "jobs", "opening", "vacancy", "apply"],
+    answer: "You can browse all open jobs on our homepage, or sign up as a candidate to apply directly. Click \"Login / Sign Up\" at the top to get started.",
+  },
+  {
+    keywords: ["recruiter", "hire", "hiring", "post a job", "post job"],
+    answer: "Recruiters can sign up, post jobs, search our candidate pool, and even arrange campus hiring drives. Recruiter accounts need admin approval before first login.",
+  },
+  {
+    keywords: ["resume", "cv"],
+    answer: "We have a free Resume Builder tool under the Services tab — no signup required to try it out.",
+  },
+  {
+    keywords: ["campus", "college", "drive"],
+    answer: "Our Campus Exploration feature helps recruiters connect with colleges across Tamil Nadu for hiring drives. It's available to approved recruiter accounts.",
+  },
+  {
+    keywords: ["contact", "support", "help", "email"],
+    answer: "You can reach us through the Contact Us button on the homepage, and our team will get back to you.",
+  },
+  {
+    keywords: ["signup", "sign up", "register", "account"],
+    answer: "Click \"Login / Sign Up\" at the top of the page, choose Candidate or Recruiter, then Sign Up. Recruiter accounts require approval before they can log in.",
+  },
+  {
+    keywords: ["free", "cost", "price", "charge"],
+    answer: "Coretech Talents is free for candidates. For recruiter services, reach out via Contact Us for details.",
+  },
+];
+
+const CHATBOT_FALLBACK =
+  "I'm not sure about that one — try asking about jobs, signing up, recruiters, resumes, or campus drives. Or use the Contact Us button for anything else.";
+
+function findFaqAnswer(userText) {
+  const text = userText.toLowerCase();
+  for (const faq of CHATBOT_FAQS) {
+    if (faq.keywords.some((kw) => text.includes(kw))) {
+      return faq.answer;
+    }
+  }
+  return CHATBOT_FALLBACK;
+}
+
+function ChatbotWidget() {
+  const [open, setOpen] = useState(false);
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState([
+    { from: "bot", text: "Hi! Ask me about jobs, signing up, or our services." },
+  ]);
+
+  function handleSend(e) {
+    e.preventDefault();
+    const trimmed = input.trim();
+    if (!trimmed) return;
+
+    const reply = findFaqAnswer(trimmed);
+    setMessages((prev) => [...prev, { from: "user", text: trimmed }, { from: "bot", text: reply }]);
+    setInput("");
+  }
+
+  return (
+    <div style={{ position: "fixed", bottom: 20, right: 20, zIndex: 999 }}>
+      {open && (
+        <div
+          style={{
+            width: 300,
+            maxHeight: 420,
+            background: "#fff",
+            borderRadius: 12,
+            border: "1px solid var(--line, #ccc)",
+            boxShadow: "0 8px 24px rgba(10,25,47,0.18)",
+            display: "flex",
+            flexDirection: "column",
+            marginBottom: 12,
+            overflow: "hidden",
+          }}
+        >
+          <div style={{ background: "#0A192F", color: "#fff", padding: "0.75rem 1rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <p style={{ margin: 0, fontWeight: 600, fontSize: 14 }}>Coretech Assistant</p>
+            <button className="btn-link" onClick={() => setOpen(false)} style={{ color: "#fff", padding: 0 }}>✕</button>
+          </div>
+
+          <div style={{ flex: 1, overflowY: "auto", padding: "0.75rem 1rem", display: "flex", flexDirection: "column", gap: "0.5rem", maxHeight: 280 }}>
+            {messages.map((m, i) => (
+              <div
+                key={i}
+                style={{
+                  alignSelf: m.from === "user" ? "flex-end" : "flex-start",
+                  background: m.from === "user" ? "var(--blue-600, #2554E8)" : "var(--bg, #f3f7fd)",
+                  color: m.from === "user" ? "#fff" : "var(--text-primary, #1a1a1a)",
+                  padding: "0.5rem 0.75rem",
+                  borderRadius: 10,
+                  fontSize: 13,
+                  maxWidth: "85%",
+                }}
+              >
+                {m.text}
+              </div>
+            ))}
+          </div>
+
+          <form onSubmit={handleSend} style={{ display: "flex", gap: 6, padding: "0.6rem", borderTop: "1px solid var(--line, #eee)" }}>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask a question..."
+              style={{ flex: 1, fontSize: 13 }}
+            />
+            <button type="submit" className="btn-primary" style={{ fontSize: 12, padding: "0 12px" }}>Send</button>
+          </form>
+        </div>
+      )}
+
+      <button
+        onClick={() => setOpen((v) => !v)}
+        style={{
+          width: 52,
+          height: 52,
+          borderRadius: "50%",
+          background: "var(--blue-600, #2554E8)",
+          color: "#fff",
+          border: "none",
+          fontSize: 22,
+          cursor: "pointer",
+          boxShadow: "0 4px 12px rgba(10,25,47,0.25)",
+        }}
+        aria-label="Open chat assistant"
+      >
+        {open ? "✕" : "💬"}
+      </button>
+    </div>
+  );
+}
 
 function MainApp() {
   const [introDone, setIntroDone] = useState(false);
@@ -3863,6 +4002,7 @@ useEffect(() => {
       </div>
 
       {contactOpen && <ContactUsModal onClose={() => setContactOpen(false)} />}
+      {!portalOpen && (view === "jobs" || view === "home") && <ChatbotWidget />}
     </>
   );
 }
@@ -3878,3 +4018,4 @@ function App() {
 }
 
 export default App;
+
