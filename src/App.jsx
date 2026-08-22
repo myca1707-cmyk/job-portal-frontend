@@ -3922,7 +3922,7 @@ function findFaqAnswer(userText) {
 
 function NatashaAvatar({ size = 28 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden="true">
+      <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden="true" style={{ width: size, height: size, minWidth: size, minHeight: size, display: "block" }}>
       <circle cx="24" cy="24" r="24" fill="#2554E8" />
       <circle cx="21" cy="17" r="7" fill="#fff" />
       <path d="M8 41c0-9 6-15 13-15s13 6 13 15" fill="#fff" />
