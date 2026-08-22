@@ -1603,12 +1603,75 @@ function JobApplicantsPanel({ job, token, onBack }) {
   );
 }
 
+function MatchedCandidatesPanel({ job, token, onBack }) {
+  const [matches, setMatches] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(`${API_BASE}/jobs/${job.id}/matches`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => res.json())
+      .then((data) => setMatches(data.matches || []))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [job.id, token]);
+
+  return (
+    <div>
+      <button className="btn-link" onClick={onBack}>← Back to my jobs</button>
+      <h2 className="page-title">{job.title} — Suggested candidates</h2>
+      <p className="card-desc" style={{ marginBottom: "1rem" }}>
+        Ranked by skills, experience, salary, location, and field of study match.
+      </p>
+
+      {loading && <p className="empty-state">Finding matches...</p>}
+      {error && <p className="msg-error">{error}</p>}
+      {!loading && matches.length === 0 && <p className="empty-state">No strong matches found yet.</p>}
+
+      {matches.map((m) => (
+        <div key={m.candidate_id} className="card" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+          <div>
+            <p style={{ margin: 0, fontWeight: 600, fontSize: 15 }}>{m.name}</p>
+            <p className="card-meta" style={{ margin: "4px 0 0" }}>
+              {m.designation}{m.current_company && ` at ${m.current_company}`}
+              {m.location && ` · ${m.location}`}
+            </p>
+            <p className="card-meta" style={{ margin: "2px 0 0", fontSize: 12.5 }}>
+              {m.years_of_experience && `${m.years_of_experience} yrs`}
+              {m.expected_ctc && ` · Expects ${m.expected_ctc}`}
+            </p>
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <div
+              style={{
+                width: 48, height: 48, borderRadius: "50%",
+                background: m.match_score >= 70 ? "var(--bg-success, #E1F5EE)" : m.match_score >= 40 ? "var(--bg-warning, #FAEEDA)" : "var(--bg, #f3f7fd)",
+                color: m.match_score >= 70 ? "#0F6E56" : m.match_score >= 40 ? "#854F0B" : "var(--text-secondary, #666)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontWeight: 700, fontSize: 14,
+              }}
+            >
+              {m.match_score}%
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function RecruiterDashboard({ token }) {
   const [myJobs, setMyJobs] = useState([]);
   const [jobStats, setJobStats] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedJob, setSelectedJob] = useState(null);
+  const [matchesJob, setMatchesJob] = useState(null);
+
+    if (matchesJob) {
+    return <MatchedCandidatesPanel job={matchesJob} token={token} onBack={() => setMatchesJob(null)} />;
+  }
 
   useEffect(() => {
     setLoading(true);
@@ -2265,6 +2328,38 @@ function CandidateJobBrowser({ token }) {
       <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
         {filteredJobs.map((job) => (
           <JobCard key={job.id} job={job} token={token} onRequireLogin={() => {}} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MatchedJobsStrip({ token }) {
+  const [matches, setMatches] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/candidates/me/matched-jobs`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => res.json())
+      .then((data) => setMatches(data.matches || []))
+      .catch(() => setMatches([]))
+      .finally(() => setLoading(false));
+  }, [token]);
+
+  if (loading || matches.length === 0) return null;
+
+  return (
+    <div style={{ marginBottom: "1.25rem" }}>
+      <p style={{ fontWeight: 600, fontSize: 14, margin: "0 0 8px" }}>Recommended for you</p>
+      <div style={{ display: "flex", gap: "10px", overflowX: "auto", paddingBottom: "4px" }}>
+        {matches.slice(0, 6).map((job) => (
+          <div key={job.job_id} className="card" style={{ minWidth: 220, flexShrink: 0 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px" }}>
+              <p style={{ margin: 0, fontWeight: 600, fontSize: 13.5 }}>{job.title}</p>
+              <span style={{ fontSize: 11, fontWeight: 700, color: "var(--blue-600, #2554E8)", whiteSpace: "nowrap" }}>{job.match_score}% match</span>
+            </div>
+            <p className="hint" style={{ margin: "4px 0 0" }}>{job.company_name} · {job.location}</p>
+          </div>
         ))}
       </div>
     </div>
