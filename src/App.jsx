@@ -1383,6 +1383,89 @@ function ApplicantRow({ applicant, jobId, token, onStatusChanged }) {
   );
 }
 
+function KanbanCard({ applicant, jobId, token, onStatusChanged }) {
+  const [updating, setUpdating] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function updateStatus(newStatus) {
+    setUpdating(true);
+    setError("");
+    try {
+      const res = await fetch(`${API_BASE}/jobs/${jobId}/applicants/${applicant.application_id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail || "Failed to update status");
+      onStatusChanged(applicant.application_id, data.status);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setUpdating(false);
+    }
+  }
+
+  async function handleDownloadResume() {
+    setError("");
+    setDownloading(true);
+    try {
+      const res = await fetch(`${API_BASE}/jobs/${jobId}/applicants/${applicant.application_id}/resume`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to download resume");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${applicant.name}_resume.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDownloading(false);
+    }
+  }
+
+  const normalizedStatus =
+    applicant.status === "pending" ? "applied" : applicant.status === "accepted" ? "hired" : applicant.status;
+  const currentIndex = PIPELINE_STAGES.indexOf(normalizedStatus);
+
+  return (
+    <div className="card" style={{ padding: "0.75rem", marginBottom: "0.5rem" }}>
+      <p style={{ fontWeight: 600, fontSize: 13, margin: 0 }}>{applicant.name}</p>
+      <p className="hint" style={{ margin: "2px 0 6px" }}>{applicant.relevance ? `Relevance: ${applicant.relevance}` : applicant.skills}</p>
+
+      <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginBottom: "6px" }}>
+        {currentIndex > 0 && (
+          <button disabled={updating} onClick={() => updateStatus(PIPELINE_STAGES[currentIndex - 1])} style={{ fontSize: 11, padding: "2px 6px" }}>
+            ← Back
+          </button>
+        )}
+        {currentIndex < PIPELINE_STAGES.length - 1 && applicant.status !== "rejected" && (
+          <button disabled={updating} onClick={() => updateStatus(PIPELINE_STAGES[currentIndex + 1])} className="btn-primary" style={{ fontSize: 11, padding: "2px 6px" }}>
+            Advance →
+          </button>
+        )}
+      </div>
+
+      <div style={{ display: "flex", gap: "6px" }}>
+        <button disabled={updating || applicant.status === "rejected"} onClick={() => updateStatus("rejected")} style={{ fontSize: 11, color: "#B3261E" }}>
+          Reject
+        </button>
+        <button onClick={handleDownloadResume} disabled={downloading} style={{ fontSize: 11 }}>
+          {downloading ? "..." : "Resume"}
+        </button>
+      </div>
+      {error && <p className="msg-error" style={{ fontSize: 11, margin: "4px 0 0" }}>{error}</p>}
+    </div>
+  );
+}
+
 function JobApplicantsPanel({ job, token, onBack }) {
   const [applicants, setApplicants] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -1403,22 +1486,40 @@ function JobApplicantsPanel({ job, token, onBack }) {
 
   return (
     <div>
-      <button className="btn-link" onClick={onBack}>Back to my jobs</button>
+      <button className="btn-link" onClick={onBack}>← Back to my jobs</button>
       <h2 className="page-title">{job.title} — Applicants</h2>
 
       {loading && <p className="empty-state">Loading applicants...</p>}
       {error && <p className="msg-error">{error}</p>}
       {!loading && applicants.length === 0 && <p className="empty-state">No applicants yet.</p>}
 
-      {applicants.map((a) => (
-        <ApplicantRow key={a.application_id} applicant={a} jobId={job.id} token={token} onStatusChanged={handleStatusChanged} />
-      ))}
+      {!loading && applicants.length > 0 && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(0, 1fr))", gap: "12px", marginTop: "1rem" }}>
+          {PIPELINE_STAGES.map((stage) => {
+            const inStage = applicants.filter((a) => {
+              const norm = a.status === "pending" ? "applied" : a.status === "accepted" ? "hired" : a.status;
+              return norm === stage;
+            });
+            return (
+              <div key={stage} style={{ background: "var(--bg, #f3f7fd)", borderRadius: "12px", padding: "10px" }}>
+                <p className="hint" style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                  {stageLabel(stage)} <span>{inStage.length}</span>
+                </p>
+                {inStage.map((a) => (
+                  <KanbanCard key={a.application_id} applicant={a} jobId={job.id} token={token} onStatusChanged={handleStatusChanged} />
+                ))}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
 
 function RecruiterDashboard({ token }) {
   const [myJobs, setMyJobs] = useState([]);
+  const [jobStats, setJobStats] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedJob, setSelectedJob] = useState(null);
@@ -1427,7 +1528,29 @@ function RecruiterDashboard({ token }) {
     setLoading(true);
     fetch(`${API_BASE}/jobs/mine/list`, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => res.json())
-      .then((data) => setMyJobs(data))
+      .then((data) => {
+        setMyJobs(data);
+        Promise.all(
+          data.map((job) =>
+            fetch(`${API_BASE}/jobs/${job.id}/applicants`, { headers: { Authorization: `Bearer ${token}` } })
+              .then((res) => res.json())
+              .then((d) => ({ id: job.id, applicants: d.applicants || [] }))
+              .catch(() => ({ id: job.id, applicants: [] }))
+          )
+        ).then((results) => {
+          const stats = {};
+          results.forEach((r) => {
+            const counts = [0, 0, 0, 0, 0];
+            r.applicants.forEach((a) => {
+              const norm = a.status === "pending" ? "applied" : a.status === "accepted" ? "hired" : a.status;
+              const idx = PIPELINE_STAGES.indexOf(norm);
+              if (idx !== -1) counts[idx] += 1;
+            });
+            stats[r.id] = counts;
+          });
+          setJobStats(stats);
+        });
+      })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [token]);
@@ -1444,17 +1567,51 @@ function RecruiterDashboard({ token }) {
       {error && <p className="msg-error">{error}</p>}
       {!loading && myJobs.length === 0 && <p className="empty-state">You haven't posted any jobs yet.</p>}
 
-      {myJobs.map((job) => (
-        <div key={job.id} className="card job-pick" onClick={() => setSelectedJob(job)}>
-          <h3>{job.title}</h3>
-          <p className="card-meta">
-            {job.company_name} · {job.location} · {job.employment_type}
-            {job.is_active === false && " · inactive"}
-          </p>
-          <p className="hint">Click to view applicants →</p>
-          <ShareJobButton job={job} />
-        </div>
-      ))}
+      {myJobs.map((job) => {
+        const stages = jobStats[job.id] || [0, 0, 0, 0, 0];
+        const total = stages.reduce((a, b) => a + b, 0);
+        const max = Math.max(...stages, 1);
+        return (
+          <div key={job.id} className="card job-pick" onClick={() => setSelectedJob(job)} style={{ cursor: "pointer" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "8px" }}>
+              <div>
+                <h3 style={{ margin: 0 }}>{job.title}</h3>
+                <p className="card-meta" style={{ margin: "4px 0 0" }}>
+                  {job.company_name} · {job.location} · {job.employment_type}
+                  {job.is_active === false && " · inactive"}
+                </p>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <p style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{total}</p>
+                <p className="hint" style={{ margin: 0 }}>applicants</p>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: "6px", marginTop: "14px", paddingTop: "12px", borderTop: "1px solid var(--line)" }}>
+              {PIPELINE_STAGES.map((stage, i) => (
+                <div key={stage} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
+                  <span className="hint" style={{ fontSize: 11 }}>{stages[i]}</span>
+                  <div
+                    style={{
+                      width: "100%",
+                      maxWidth: 34,
+                      height: Math.round((stages[i] / max) * 32) + 4,
+                      borderRadius: "4px 4px 0 0",
+                      background: "var(--blue-600, #2554E8)",
+                      opacity: 0.4 + (i / PIPELINE_STAGES.length) * 0.6,
+                    }}
+                  />
+                  <span className="hint" style={{ fontSize: 10, textAlign: "center" }}>{stageLabel(stage)}</span>
+                </div>
+              ))}
+            </div>
+
+            <div onClick={(e) => e.stopPropagation()}>
+              <ShareJobButton job={job} />
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
