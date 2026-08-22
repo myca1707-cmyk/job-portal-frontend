@@ -788,3 +788,21 @@ button:disabled {
   padding: 2rem 1rem;
   font-size: 0.95rem;
 }
+
+.campus-filter-group {
+  margin-bottom: 16px;
+}
+
+.campus-filter-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+}
+
+.campus-clear-btn {
+  display: inline-block;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+}
