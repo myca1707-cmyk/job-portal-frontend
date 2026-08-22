@@ -885,7 +885,6 @@ function ShareJobButton({ job }) {
 function JobCard({ job, token, onRequireLogin }) {
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
-  const [expanded, setExpanded] = useState(false);
 
   async function handleApply(e) {
     e.stopPropagation();
@@ -893,18 +892,14 @@ function JobCard({ job, token, onRequireLogin }) {
       onRequireLogin();
       return;
     }
-
     setStatus("applying");
     setMessage("");
-
     try {
       const res = await fetch(`${API_BASE}/candidates/jobs/${job.id}/apply`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
-
       const data = await res.json().catch(() => ({}));
-
       if (!res.ok) {
         if (res.status === 400 && data.detail?.toLowerCase().includes("already applied")) {
           setStatus("applied");
@@ -913,7 +908,6 @@ function JobCard({ job, token, onRequireLogin }) {
         }
         throw new Error(data.detail || "Failed to apply");
       }
-
       setStatus("applied");
       setMessage("Applied successfully");
     } catch (err) {
@@ -929,50 +923,51 @@ function JobCard({ job, token, onRequireLogin }) {
   const isApplied = status === "applied";
 
   return (
-    <div className="card" onClick={() => setExpanded((v) => !v)} style={{ cursor: "pointer" }}>
-      <h2>{job.title}</h2>
-
-      {expanded && (
-        <>
-          <p className="card-meta">{job.company_name} · {job.location} · {job.employment_type}</p>
-
-          {(job.experience_required || job.salary || job.domain) && (
-            <p className="card-meta card-meta-secondary">
+    <div className="card" style={{ padding: "1rem 1.25rem" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexWrap: "wrap" }}>
+        <div>
+          <p style={{ margin: 0, fontWeight: 600, fontSize: 16 }}>{job.title}</p>
+          <p className="card-meta" style={{ margin: "4px 0 0" }}>
+            {job.company_name} · {job.location} · {job.employment_type}
+          </p>
+          {(job.experience_required || job.salary) && (
+            <p className="card-meta" style={{ margin: "4px 0 0", fontSize: 12.5 }}>
               {job.experience_required && <span>{job.experience_required}</span>}
-              {job.experience_required && (job.salary || job.domain) && " · "}
+              {job.experience_required && job.salary && " · "}
               {job.salary && <span>{job.salary}</span>}
-              {job.salary && job.domain && " · "}
-              {job.domain && <span>{job.domain}</span>}
             </p>
           )}
+        </div>
+        <button
+          className={isApplied ? "btn-applied" : "btn-primary"}
+          onClick={handleApply}
+          disabled={status === "applying" || isApplied}
+          style={{ whiteSpace: "nowrap" }}
+        >
+          {status === "applying" ? "Applying..." : isApplied ? "Applied ✓" : "Apply"}
+        </button>
+      </div>
 
-          <p className="card-desc">{job.description}</p>
-
-          {skills.length > 0 && (
-            <div className="tags">
-              {skills.map((s) => (
-                <span className="tag" key={s}>{s}</span>
-              ))}
-            </div>
-          )}
-
-          <button
-            className={isApplied ? "btn-applied" : "btn-primary"}
-            onClick={handleApply}
-            disabled={status === "applying" || isApplied}
-          >
-            {status === "applying" ? "Applying..." : isApplied ? "Applied ✓" : "Apply"}
-          </button>
-          {message && (
-            <span className={`status-line ${status === "error" ? "msg-error" : "msg-success"}`}>
-              <span className={`status-dot ${status}`}></span>
-              {message}
-            </span>
-          )}
-
-          <ShareJobButton job={job} />
-        </>
+      {job.description && (
+        <p className="card-desc" style={{ marginTop: "0.75rem", fontSize: 13 }}>{job.description}</p>
       )}
+
+      {skills.length > 0 && (
+        <div className="tags" style={{ marginTop: "0.75rem" }}>
+          {skills.map((s) => (
+            <span className="tag" key={s}>{s}</span>
+          ))}
+        </div>
+      )}
+
+      {message && (
+        <span className={`status-line ${status === "error" ? "msg-error" : "msg-success"}`} style={{ marginTop: "0.5rem", display: "block" }}>
+          <span className={`status-dot ${status}`}></span>
+          {message}
+        </span>
+      )}
+
+      <ShareJobButton job={job} />
     </div>
   );
 }
@@ -2142,6 +2137,8 @@ function CandidateJobBrowser({ token }) {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState("All");
 
   useEffect(() => {
     setLoading(true);
@@ -2152,15 +2149,63 @@ function CandidateJobBrowser({ token }) {
       .finally(() => setLoading(false));
   }, []);
 
+  const employmentTypes = ["All", ...new Set(jobs.map((j) => j.employment_type).filter(Boolean))];
+
+  const filteredJobs = jobs.filter((job) => {
+    const matchesType = typeFilter === "All" || job.employment_type === typeFilter;
+    const q = search.trim().toLowerCase();
+    const matchesSearch =
+      !q ||
+      job.title?.toLowerCase().includes(q) ||
+      job.company_name?.toLowerCase().includes(q) ||
+      job.skills_required?.toLowerCase().includes(q) ||
+      job.location?.toLowerCase().includes(q);
+    return matchesType && matchesSearch;
+  });
+
   return (
     <div>
-      <h2 className="page-title">Job Openings</h2>
-      {loading && <p className="empty-state">Loading jobs...</p>}
+      <div style={{ background: "#0E2A63", borderRadius: 16, padding: "24px 24px 40px", marginBottom: "-24px" }}>
+        <p style={{ margin: "0 0 4px", fontSize: 13, color: "#AFC2F0" }}>Welcome back</p>
+        <h1 style={{ margin: 0, fontSize: 22, fontWeight: 600, color: "#fff" }}>Find your next role</h1>
+        <div style={{ marginTop: 16, background: "#fff", borderRadius: 12, padding: 6, display: "flex", gap: 6, alignItems: "center" }}>
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by title, skill, or company"
+            style={{ flex: 1, border: "none", outline: "none", fontSize: 14, padding: "8px 10px" }}
+          />
+        </div>
+      </div>
+
+      <div style={{ position: "relative", background: "#fff", border: "1px solid var(--line)", borderRadius: 12, padding: 14, marginBottom: 16 }}>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {employmentTypes.map((type) => (
+            <button
+              key={type}
+              onClick={() => setTypeFilter(type)}
+              className={typeFilter === type ? "btn-primary" : ""}
+              style={{ borderRadius: 999, padding: "6px 14px", fontSize: 12.5 }}
+            >
+              {type}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <p className="hint" style={{ marginBottom: "0.75rem" }}>
+        {loading ? "Loading..." : `${filteredJobs.length} opening${filteredJobs.length === 1 ? "" : "s"}`}
+      </p>
+
       {error && <p className="msg-error">{error}</p>}
-      {!loading && jobs.length === 0 && <p className="empty-state">No jobs posted yet.</p>}
-      {jobs.map((job) => (
-        <JobCard key={job.id} job={job} token={token} onRequireLogin={() => {}} />
-      ))}
+      {!loading && filteredJobs.length === 0 && <p className="empty-state">No jobs match your search.</p>}
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+        {filteredJobs.map((job) => (
+          <JobCard key={job.id} job={job} token={token} onRequireLogin={() => {}} />
+        ))}
+      </div>
     </div>
   );
 }
