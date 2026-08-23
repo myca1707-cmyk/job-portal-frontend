@@ -6,6 +6,8 @@ import introVideo from "./assets/intro.mp4";
 import CookieConsent from "./CookieConsent";
 import ResumeServices from "./ResumeServices";
 import CampusExploration from "./CampusExploration";
+import PrivacyPolicy from "./PrivacyPolicy";
+import TermsOfService from "./TermsOfService";
 
 
 const API_BASE = "https://job-portal-backend-production-6d9d.up.railway.app";
@@ -4098,6 +4100,7 @@ useEffect(() => {
     setView("jobs");
   }
 
+
   if (!introDone) {
     return <IntroAnimation onFinish={() => setIntroDone(true)} />;
 }
@@ -4195,6 +4198,8 @@ function App() {
      <Route path="/" element={<MainApp />} />
      <Route path="/jobs/:id" element={<JobDetailPage />} />
      <Route path="/services/resume-building" element={<ResumeServices />} />
+     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+     <Route path="/terms-of-service" element={<TermsOfService />} />
     </Routes>
   );
 }
