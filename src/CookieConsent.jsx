@@ -1,6 +1,26 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
+const GA_MEASUREMENT_ID = "G-7K54796RPL";
+
+function loadGoogleAnalytics() {
+  if (window.gaLoaded) return;
+  window.gaLoaded = true;
+
+  const script = document.createElement("script");
+  script.async = true;
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+  document.head.appendChild(script);
+
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    window.dataLayer.push(arguments);
+  }
+  window.gtag = gtag;
+  gtag("js", new Date());
+  gtag("config", GA_MEASUREMENT_ID);
+}
+
 function CookieConsent() {
   const [visible, setVisible] = useState(false);
 
@@ -8,12 +28,15 @@ function CookieConsent() {
     const consent = localStorage.getItem("cookieConsent");
     if (!consent) {
       setVisible(true);
+    } else if (consent === "accepted") {
+      loadGoogleAnalytics();
     }
   }, []);
 
   const handleAccept = () => {
     localStorage.setItem("cookieConsent", "accepted");
     setVisible(false);
+    loadGoogleAnalytics();
   };
 
   const handleDecline = () => {
