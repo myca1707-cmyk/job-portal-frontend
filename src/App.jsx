@@ -480,6 +480,11 @@ function HomeSection() {
           </a>
         </div>
         <p className="hint">© {new Date().getFullYear()} Coretech Talents. All rights reserved.</p>
+        <p className="hint" style={{ marginTop: "0.5rem" }}>
+          <Link to="/privacy-policy" style={{ color: "inherit" }}>Privacy Policy</Link>
+          {" · "}
+          <Link to="/terms-of-service" style={{ color: "inherit" }}>Terms of Service</Link>
+        </p>
       </div>
     </div>
   );
@@ -575,6 +580,7 @@ function CandidateSignupForm({ onSuccess }) {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -589,6 +595,11 @@ function CandidateSignupForm({ onSuccess }) {
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
+      return;
+    }
+
+    if (!consent) {
+      setError("Please agree to the Privacy Policy and Terms of Service to continue");
       return;
     }
 
@@ -641,6 +652,23 @@ function CandidateSignupForm({ onSuccess }) {
           <label>Confirm password</label>
           <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} />
         </div>
+
+        <div className="field" style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem" }}>
+          <input
+            type="checkbox"
+            id="candidateConsent"
+            checked={consent}
+            onChange={(e) => setConsent(e.target.checked)}
+            style={{ marginTop: "0.2rem" }}
+          />
+          <label htmlFor="candidateConsent" className="card-meta" style={{ margin: 0 }}>
+            I agree to the{" "}
+            <Link to="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</Link>{" "}
+            and{" "}
+            <Link to="/terms-of-service" target="_blank" rel="noopener noreferrer">Terms of Service</Link>
+          </label>
+        </div>
+
         {error && <p className="msg-error">{error}</p>}
         <button type="submit" className="btn-primary" disabled={loading}>
           {loading ? "Creating account..." : "Sign Up"}
@@ -657,6 +685,7 @@ function RecruiterSignupForm({ onSuccess }) {
   const [designation, setDesignation] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -671,6 +700,11 @@ function RecruiterSignupForm({ onSuccess }) {
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
+      return;
+    }
+
+    if (!consent) {
+      setError("Please agree to the Privacy Policy and Terms of Service to continue");
       return;
     }
 
@@ -733,6 +767,23 @@ function RecruiterSignupForm({ onSuccess }) {
           <label>Confirm password</label>
           <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} />
         </div>
+
+        <div className="field" style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem" }}>
+          <input
+            type="checkbox"
+            id="recruiterConsent"
+            checked={consent}
+            onChange={(e) => setConsent(e.target.checked)}
+            style={{ marginTop: "0.2rem" }}
+          />
+          <label htmlFor="recruiterConsent" className="card-meta" style={{ margin: 0 }}>
+            I agree to the{" "}
+            <Link to="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</Link>{" "}
+            and{" "}
+            <Link to="/terms-of-service" target="_blank" rel="noopener noreferrer">Terms of Service</Link>
+          </label>
+        </div>
+
         {error && <p className="msg-error">{error}</p>}
         <button type="submit" className="btn-primary" disabled={loading}>
           {loading ? "Creating account..." : "Sign Up"}
