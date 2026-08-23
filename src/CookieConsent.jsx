@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 function CookieConsent() {
   const [visible, setVisible] = useState(false);
@@ -42,7 +43,11 @@ function CookieConsent() {
       }}
     >
       <p style={{ margin: 0, fontSize: "0.9rem", flex: "1 1 300px" }}>
-        We use cookies to improve your experience on our site. By continuing to browse, you agree to our use of cookies.
+        We use cookies to improve your experience on our site. By continuing to browse, you agree to our use of cookies. Read our{" "}
+        <Link to="/privacy-policy" style={{ color: "#fff", textDecoration: "underline" }}>
+          Privacy Policy
+        </Link>{" "}
+        to learn more.
       </p>
       <div style={{ display: "flex", gap: "0.75rem", flexShrink: 0 }}>
         <button
