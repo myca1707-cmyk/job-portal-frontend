@@ -3518,7 +3518,7 @@ function RecruiterProfile({ token }) {
 }
 
 function RecruiterShell({ token, onLogout }) {
-  const [view, setView] = useState("home");
+  const [view, setView] = useState("dashboard");
 
   const tabs = [
     { key: "profile", label: "My Profile" },
@@ -3546,14 +3546,6 @@ function RecruiterShell({ token, onLogout }) {
       </div>
 
       <div className="recruiter-main" style={{ flex: 1, padding: "2.5rem" }}>
-        {view === "home" && (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "70vh", textAlign: "center" }}>
-            <img src={logo} alt="Coretech Talents" style={{ width: 110, height: 110, marginBottom: "1.25rem" }} />
-            <h1 className="brand-name" style={{ fontSize: "1.8rem" }}>Coretech Talents</h1>
-            <p className="hint">Choose an option from the panel to get started.</p>
-          </div>
-        )}
-
         {view === "profile" && <RecruiterProfile token={token} />}
         {view === "dashboard" && <RecruiterDashboard token={token} />}
         {view === "searchCandidates" && <CandidateSearch token={token} />}
@@ -4473,7 +4465,26 @@ useEffect(() => {
           />
         )}
 
-        {view === "home" && !portalOpen && <HomeSection />}
+        {view === "home" && !portalOpen && (
+          <HomePage
+            onPostJob={() => {
+              setPortalInitialRole("recruiter");
+              setPortalInitialMode("signup");
+              setPortalOpen(true);
+              setView("jobs");
+            }}
+            onBrowseJobs={() => {
+              setPortalOpen(false);
+              setView("jobs");
+            }}
+            onLogin={() => {
+              setPortalInitialRole("candidate");
+              setPortalInitialMode("signup");
+              setPortalOpen(true);
+              setView("jobs");
+            }}
+          />
+        )}
 
         {view === "about" && !portalOpen && (
           <>
