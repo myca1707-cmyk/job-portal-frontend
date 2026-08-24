@@ -9,12 +9,6 @@ import CampusExploration from "./CampusExploration";
 import PrivacyPolicy from "./PrivacyPolicy";
 import TermsOfService from "./TermsOfService";
 import AudienceSplit from "./AudienceSplit";
-// ...
-<AudienceSplit
-  onCandidateClick={() => setShowCandidateSignup(true)}
-  onRecruiterClick={() => setShowRecruiterSignup(true)}
-/>
-
 
 const API_BASE = "https://job-portal-backend-production-6d9d.up.railway.app";
 
@@ -4151,8 +4145,22 @@ useEffect(() => {
     setView("jobs");
   }
 
-  function openRecruiterPortalForCampus() {
+    function openRecruiterPortalForCampus() {
     setPortalInitialRole("recruiter");
+    setPortalOpen(true);
+    setView("jobs");
+  }
+
+  function openCandidateSignup() {
+    setPortalInitialRole("candidate");
+    setPortalInitialMode("signup");
+    setPortalOpen(true);
+    setView("jobs");
+  }
+
+  function openRecruiterSignup() {
+    setPortalInitialRole("recruiter");
+    setPortalInitialMode("signup");
     setPortalOpen(true);
     setView("jobs");
   }
@@ -4188,7 +4196,14 @@ useEffect(() => {
           document.getElementById("newsletter-section")?.scrollIntoView({ behavior: "smooth" });
         }}
       />
-      <CookieConsent />
+            <CookieConsent />
+
+      {!portalOpen && view === "jobs" && (
+        <AudienceSplit
+          onCandidateClick={openCandidateSignup}
+          onRecruiterClick={openRecruiterSignup}
+        />
+      )}
 
       {!portalOpen && view === "jobs" && <NewsletterSection />}
 
