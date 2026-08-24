@@ -399,35 +399,109 @@ function StatsRow() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API_BASE}/jobs/`)
-      .then((res) => res.json())
-      .then((data) => {
-        const jobs = Array.isArray(data) ? data : [];
-        setJobCount(jobs.length);
-        const uniqueCompanies = new Set(jobs.map((j) => j.company_name).filter(Boolean));
+    const fetchStats = async () => {
+      try {
+        setLoading(true);
+
+        const res = await fetch(`${API_BASE}/jobs/`);
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch jobs");
+        }
+
+        const data = await res.json();
+
+        // Make sure we have an array of jobs
+        const jobs = Array.isArray(data)
+          ? data
+          : Array.isArray(data.jobs)
+          ? data.jobs
+          : [];
+
+        // Count active jobs
+        const activeJobs = jobs.filter(
+          (job) =>
+            !job.status ||
+            job.status.toLowerCase() === "active"
+        );
+
+        setJobCount(activeJobs.length);
+
+        // Count unique companies
+        const uniqueCompanies = new Set(
+          activeJobs
+            .map((job) => job.company_name)
+            .filter(
+              (company) =>
+                company &&
+                company.trim() !== ""
+            )
+        );
+
         setCompanyCount(uniqueCompanies.size);
-      })
-      .catch(() => {
+      } catch (error) {
+        console.error("Error fetching stats:", error);
+
         setJobCount(null);
         setCompanyCount(null);
-      })
-      .finally(() => setLoading(false));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
   }, []);
 
   const stats = [
-    { label: "Active Job Openings", value: loading ? "…" : jobCount ?? "—" },
-    { label: "Companies Hiring With Us", value: loading ? "…" : companyCount ?? "—" },
-    { label: "Candidates", value: "Growing every day" },
+    {
+      label: "Active Job Openings",
+      value: loading ? "…" : jobCount ?? "—",
+    },
+    {
+      label: "Companies Hiring With Us",
+      value: loading ? "…" : companyCount ?? "—",
+    },
+    {
+      label: "Candidates",
+      value: "Growing every day",
+    },
   ];
 
   return (
-    <div className="card-grid" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+    <div
+      className="card-grid"
+      style={{
+        gridTemplateColumns: "repeat(3, 1fr)",
+      }}
+    >
       {stats.map((s) => (
-        <div className="card" key={s.label} style={{ textAlign: "center" }}>
-          <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "2rem", color: "var(--blue-600)" }}>
+        <div
+          className="card"
+          key={s.label}
+          style={{
+            textAlign: "center",
+          }}
+        >
+          <div
+            style={{
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              fontWeight: 800,
+              fontSize: "2rem",
+              color: "var(--blue-600)",
+            }}
+          >
             {s.value}
           </div>
-          <p className="card-meta" style={{ marginTop: "0.4rem", marginBottom: 0 }}>{s.label}</p>
+
+          <p
+            className="card-meta"
+            style={{
+              marginTop: "0.4rem",
+              marginBottom: 0,
+            }}
+          >
+            {s.label}
+          </p>
         </div>
       ))}
     </div>
