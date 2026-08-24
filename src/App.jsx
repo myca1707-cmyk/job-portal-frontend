@@ -344,7 +344,7 @@ function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter, 
             <button onClick={onHome}>Home</button>
             <button onClick={onAbout}>About</button>
             <button onClick={onServices}>Services</button>
-            <button onClick={onNewsletter}>Newsletter</button>
+            <button onClick={onNewsletter}>Career Advancement</button>
             <button onClick={onOpenPortal}>Login / Sign Up</button>
           </div>
         </div>
@@ -489,7 +489,168 @@ function HomeSection() {
   );
 }
 
-function NewsletterSection() {
+function CareerCounsellingForm() {
+  const [form, setForm] = useState({ name: "", email: "", mobile_number: "", preferred_date: "", query: "" });
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
+    setSubmitting(true);
+
+    try {
+      const res = await fetch(`${API_BASE}/contact/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          mobile_number: form.mobile_number,
+          query: `[Career Counselling Session Request] Preferred date: ${form.preferred_date || "Not specified"}. Topic: ${form.query}`,
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail || "Failed to submit request");
+
+      setSubmitted(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (submitted) {
+    return (
+      <div className="card" style={{ maxWidth: 500, margin: "0 auto", textAlign: "center" }}>
+        <p className="msg-success">
+          Thanks, {form.name.split(" ")[0]}! We've received your counselling session request and will reach out to confirm a time.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="form-card" style={{ maxWidth: 500, margin: "0 auto" }}>
+      <h2>Book a Career Counselling Session</h2>
+      <p className="card-meta" style={{ marginBottom: "1rem" }}>
+        Get one-on-one guidance on your resume, interview prep, or career direction from our team.
+      </p>
+      <form onSubmit={handleSubmit}>
+        <div className="field">
+          <label>Name</label>
+          <input type="text" name="name" value={form.name} onChange={handleChange} required />
+        </div>
+        <div className="field">
+          <label>Email</label>
+          <input type="email" name="email" value={form.email} onChange={handleChange} required />
+        </div>
+        <div className="field">
+          <label>Mobile Number</label>
+          <input type="tel" name="mobile_number" value={form.mobile_number} onChange={handleChange} required />
+        </div>
+        <div className="field">
+          <label>Preferred date</label>
+          <input type="date" name="preferred_date" value={form.preferred_date} onChange={handleChange} />
+        </div>
+        <div className="field">
+          <label>What would you like to discuss?</label>
+          <textarea
+            name="query"
+            rows={3}
+            value={form.query}
+            onChange={handleChange}
+            placeholder="e.g. resume review, interview prep, career change advice"
+            required
+          />
+        </div>
+        {error && <p className="msg-error">{error}</p>}
+        <button type="submit" className="btn-primary" disabled={submitting}>
+          {submitting ? "Submitting..." : "Request Session"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+function CoretechMinis() {
+  const minis = [
+    { title: "5 Resume Mistakes to Avoid", tag: "Resume Tips" },
+    { title: "What Recruiters Look For in 30 Seconds", tag: "Interview Tips" },
+    { title: "Manufacturing Jobs: What's Hot Right Now", tag: "Job Market" },
+    { title: "How to Negotiate Your Offer", tag: "Career Advice" },
+    { title: "Campus to Career: First Job Tips", tag: "Freshers" },
+    { title: "Reading a Job Description Like a Pro", tag: "Job Market" },
+  ];
+
+  return (
+    <div>
+      <p className="card-desc" style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+        Quick 15-second videos on job market trends, resume tips, and interview advice.
+      </p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "1rem" }}>
+        {minis.map((m) => (
+          <div key={m.title} className="card" style={{ padding: 0, overflow: "hidden", cursor: "pointer" }}>
+            <div
+              style={{
+                aspectRatio: "9/16",
+                background: "linear-gradient(155deg, #0A192F 0%, #123170 100%)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+              }}
+            >
+              <div
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: "50%",
+                  background: "rgba(255,255,255,0.15)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+              <span
+                style={{
+                  position: "absolute",
+                  top: 8,
+                  left: 8,
+                  fontSize: 10,
+                  fontWeight: 600,
+                  color: "#64FFDA",
+                  background: "rgba(0,0,0,0.35)",
+                  padding: "2px 6px",
+                  borderRadius: 4,
+                }}
+              >
+                {m.tag}
+              </span>
+            </div>
+            <p style={{ margin: 0, padding: "0.6rem 0.75rem", fontSize: 12.5, fontWeight: 600 }}>{m.title}</p>
+          </div>
+        ))}
+      </div>
+      <p className="hint" style={{ textAlign: "center", marginTop: "1rem" }}>More Coretech Minis dropping soon.</p>
+    </div>
+  );
+}
+
+function CareerAdvancementSection() {
+  const [activeTab, setActiveTab] = useState("newsletters");
+
   const newsletters = [
     { title: "Recruitment Trends 2026", desc: "Hiring is shifting toward skills-based assessments over degrees, faster interview cycles, and AI-assisted shortlisting — companies that adapt are seeing stronger candidate pipelines." },
     { title: "Understanding the GenZ Mindset", desc: "GenZ candidates prioritize purpose, flexibility, and transparency. They expect quick feedback loops, honest job descriptions, and clear growth paths — not just a paycheck." },
@@ -497,21 +658,53 @@ function NewsletterSection() {
     { title: "Technology in Recruitment", desc: "AI-powered resume screening, automated interview scheduling, and data-driven candidate matching are reshaping how recruiters find and engage talent faster and more accurately." },
   ];
 
+  const tabs = [
+    { id: "newsletters", label: "Newsletters" },
+    { id: "counselling", label: "Career Counselling" },
+    { id: "minis", label: "Coretech Minis" },
+  ];
+
   return (
-    <div className="container" id="newsletter-section" style={{ paddingTop: "2.5rem", paddingBottom: "1rem" }}>
+    <div className="container" id="career-advancement-section" style={{ paddingTop: "2.5rem", paddingBottom: "1rem" }}>
       <div className="card" style={{ textAlign: "center", marginBottom: "2rem" }}>
-        <h2 className="page-title">Newsletter</h2>
-        <p className="card-desc">Insights on hiring trends, workplace shifts, and what's next in recruitment.</p>
+        <h2 className="page-title">Career Advancement</h2>
+        <p className="card-desc">Newsletters, counselling sessions, and quick video tips to help you grow.</p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1.25rem" }}>
-        {newsletters.map((item) => (
-          <div key={item.title} className="card">
-            <h3 style={{ marginBottom: "0.5rem" }}>{item.title}</h3>
-            <p className="card-meta">{item.desc}</p>
-          </div>
+      <div style={{ display: "flex", justifyContent: "center", gap: "0.75rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            style={{
+              padding: "0.6rem 1.4rem",
+              borderRadius: "999px",
+              border: activeTab === tab.id ? "2px solid #1a1a1a" : "1px solid #ccc",
+              background: activeTab === tab.id ? "#1a1a1a" : "#fff",
+              color: activeTab === tab.id ? "#fff" : "#333",
+              fontWeight: 600,
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+            }}
+          >
+            {tab.label}
+          </button>
         ))}
       </div>
+
+      {activeTab === "newsletters" && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1.25rem" }}>
+          {newsletters.map((item) => (
+            <div key={item.title} className="card">
+              <h3 style={{ marginBottom: "0.5rem" }}>{item.title}</h3>
+              <p className="card-meta">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {activeTab === "counselling" && <CareerCounsellingForm />}
+      {activeTab === "minis" && <CoretechMinis />}
     </div>
   );
 }
@@ -4176,12 +4369,12 @@ useEffect(() => {
         onServices={() => { setView("services"); setPortalOpen(false); }}
        onHome={() => { setView("home"); setPortalOpen(false); }}
         onNewsletter={() => {
-          document.getElementById("newsletter-section")?.scrollIntoView({ behavior: "smooth" });
+          document.getElementById("career-advancement-section")?.scrollIntoView({ behavior: "smooth" });
         }}
       />
       <CookieConsent />
 
-      {!portalOpen && view === "jobs" && <NewsletterSection />}
+      {!portalOpen && view === "jobs" && <CareerAdvancementSection />}
 
       <div className="container">
         {portalOpen && (
