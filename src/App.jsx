@@ -127,7 +127,6 @@ function AboutSection() {
 }
 
 // ================= SERVICES PAGE =================
-// ================= SERVICES PAGE =================
 function ResumeConsentModal({ onConfirm, onCancel }) {
   return (
     <div
@@ -813,12 +812,12 @@ function PortalAccess({ onCandidateLogin, onRecruiterLogin, onClose, initialRole
   }
 
   return (
-    <div className="container" style={{ maxWidth: 480 }}>
+    <div className="container" style={{ maxWidth: role ? 480 : "100%" }}>
       {!role && (
-        <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}>
-          <button style={{ flex: 1 }} onClick={() => chooseRole("candidate")}>Candidate</button>
-          <button style={{ flex: 1 }} onClick={() => chooseRole("recruiter")}>Recruiter</button>
-        </div>
+        <AudienceSplit
+          onCandidateClick={() => chooseRole("candidate")}
+          onRecruiterClick={() => chooseRole("recruiter")}
+        />
       )}
 
       {role && (
@@ -1428,7 +1427,6 @@ function ApplicantRow({ applicant, jobId, token, onStatusChanged }) {
   }
 
   const isRejected = applicant.status === "rejected";
-  // Treat legacy "pending"/"accepted" values as "applied"/"hired" for stepper position.
   const normalizedStatus =
     applicant.status === "pending" ? "applied" :
     applicant.status === "accepted" ? "hired" :
@@ -4145,26 +4143,11 @@ useEffect(() => {
     setView("jobs");
   }
 
-    function openRecruiterPortalForCampus() {
+  function openRecruiterPortalForCampus() {
     setPortalInitialRole("recruiter");
     setPortalOpen(true);
     setView("jobs");
   }
-
-  function openCandidateSignup() {
-    setPortalInitialRole("candidate");
-    setPortalInitialMode("signup");
-    setPortalOpen(true);
-    setView("jobs");
-  }
-
-  function openRecruiterSignup() {
-    setPortalInitialRole("recruiter");
-    setPortalInitialMode("signup");
-    setPortalOpen(true);
-    setView("jobs");
-  }
-
 
   if (!introDone) {
     return <IntroAnimation onFinish={() => setIntroDone(true)} />;
@@ -4196,14 +4179,7 @@ useEffect(() => {
           document.getElementById("newsletter-section")?.scrollIntoView({ behavior: "smooth" });
         }}
       />
-            <CookieConsent />
-
-      {!portalOpen && view === "jobs" && (
-        <AudienceSplit
-          onCandidateClick={openCandidateSignup}
-          onRecruiterClick={openRecruiterSignup}
-        />
-      )}
+      <CookieConsent />
 
       {!portalOpen && view === "jobs" && <NewsletterSection />}
 
@@ -4277,4 +4253,3 @@ function App() {
 }
 
 export default App;
-
