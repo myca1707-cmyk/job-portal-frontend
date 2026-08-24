@@ -9,7 +9,6 @@ import CampusExploration from "./CampusExploration";
 import PrivacyPolicy from "./PrivacyPolicy";
 import TermsOfService from "./TermsOfService";
 import AudienceSplit from "./AudienceSplit";
-import HomePage from "./HomePage";
 
 const API_BASE = "https://job-portal-backend-production-6d9d.up.railway.app";
 
@@ -354,94 +353,33 @@ function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter, 
   );
 }
 
-// ================= HOME SECTION (showcase: stats, general info, copyright) =================
-function HomeIllustration() {
-  return (
-    <svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "auto", display: "block" }}>
-      <defs>
-        <linearGradient id="homeIllusBg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#F3F7FE" />
-          <stop offset="100%" stopColor="#E8EFFE" />
-        </linearGradient>
-      </defs>
-      <rect width="700" height="260" rx="16" fill="url(#homeIllusBg)" />
-
-      <rect x="60" y="180" width="180" height="10" rx="3" fill="#2554E8" opacity="0.15" />
-      <circle cx="120" cy="120" r="22" fill="#2554E8" />
-      <rect x="95" y="145" width="50" height="45" rx="14" fill="#12274A" />
-      <rect x="90" y="170" width="60" height="14" rx="4" fill="#0A1628" />
-
-      <rect x="290" y="190" width="180" height="10" rx="3" fill="#2554E8" opacity="0.15" />
-      <circle cx="350" cy="110" r="22" fill="#1C3FB8" />
-      <rect x="325" y="135" width="50" height="55" rx="14" fill="#2554E8" />
-      <rect x="365" y="150" width="40" height="12" rx="6" fill="#2554E8" transform="rotate(20 365 150)" />
-
-      <circle cx="530" cy="105" r="22" fill="#12274A" />
-      <rect x="505" y="130" width="50" height="55" rx="14" fill="#1C3FB8" />
-      <rect x="500" y="115" width="14" height="35" rx="6" fill="#1C3FB8" transform="rotate(-30 500 115)" />
-      <rect x="546" y="115" width="14" height="35" rx="6" fill="#1C3FB8" transform="rotate(30 546 115)" />
-
-      <circle cx="600" cy="70" r="26" fill="#1E8E5A" opacity="0.15" />
-      <circle cx="600" cy="70" r="18" fill="#1E8E5A" />
-      <path d="M591 70 L597 76 L610 62" stroke="#FFFFFF" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-
-      <rect x="40" y="45" width="34" height="42" rx="4" fill="#FFFFFF" stroke="#2554E8" strokeWidth="2" />
-      <line x1="47" y1="58" x2="67" y2="58" stroke="#2554E8" strokeWidth="2" />
-      <line x1="47" y1="66" x2="67" y2="66" stroke="#2554E8" strokeWidth="2" />
-      <line x1="47" y1="74" x2="60" y2="74" stroke="#2554E8" strokeWidth="2" />
-    </svg>
-  );
-}
-
-function StatsRow() {
+// ================= HOME SECTION (candidate-focused, live data) =================
+function HomeSection({ onLogin }) {
+  const [jobs, setJobs] = useState([]);
   const [jobCount, setJobCount] = useState(null);
   const [companyCount, setCompanyCount] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchJobs = async () => {
       try {
-        setLoading(true);
-
         const res = await fetch(`${API_BASE}/jobs/`);
-
-        if (!res.ok) {
-          throw new Error("Failed to fetch jobs");
-        }
-
+        if (!res.ok) throw new Error("Failed to fetch jobs");
         const data = await res.json();
 
-        // Make sure we have an array of jobs
-        const jobs = Array.isArray(data)
-          ? data
-          : Array.isArray(data.jobs)
-          ? data.jobs
-          : [];
+        const list = Array.isArray(data) ? data : Array.isArray(data.jobs) ? data.jobs : [];
+        const activeJobs = list.filter((job) => !job.status || job.status.toLowerCase() === "active");
 
-        // Count active jobs
-        const activeJobs = jobs.filter(
-          (job) =>
-            !job.status ||
-            job.status.toLowerCase() === "active"
-        );
-
+        setJobs(activeJobs);
         setJobCount(activeJobs.length);
 
-        // Count unique companies
         const uniqueCompanies = new Set(
-          activeJobs
-            .map((job) => job.company_name)
-            .filter(
-              (company) =>
-                company &&
-                company.trim() !== ""
-            )
+          activeJobs.map((job) => job.company_name).filter((c) => c && c.trim() !== "")
         );
-
         setCompanyCount(uniqueCompanies.size);
       } catch (error) {
-        console.error("Error fetching stats:", error);
-
+        console.error("Error loading jobs:", error);
+        setJobs([]);
         setJobCount(null);
         setCompanyCount(null);
       } finally {
@@ -449,117 +387,248 @@ function StatsRow() {
       }
     };
 
-    fetchStats();
+    fetchJobs();
   }, []);
 
-  const stats = [
-    {
-      label: "Active Job Openings",
-      value: loading ? "…" : jobCount ?? "—",
-    },
-    {
-      label: "Companies Hiring With Us",
-      value: loading ? "…" : companyCount ?? "—",
-    },
-    {
-      label: "Candidates",
-      value: "Growing every day",
-    },
-  ];
+  function companyInitials(name) {
+    if (!name) return "?";
+    return name.trim().slice(0, 2).toUpperCase();
+  }
 
   return (
-    <div
-      className="card-grid"
-      style={{
-        gridTemplateColumns: "repeat(3, 1fr)",
-      }}
-    >
-      {stats.map((s) => (
-        <div
-          className="card"
-          key={s.label}
-          style={{
-            textAlign: "center",
-          }}
-        >
-          <div
-            style={{
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontWeight: 800,
-              fontSize: "2rem",
-              color: "var(--blue-600)",
-            }}
-          >
-            {s.value}
+    <div className="ch-wrap">
+      {/* ---- hero ---- */}
+      <div className="ch-hero">
+        <div className="ch-hero-inner">
+          <div className="ch-eyebrow">For job seekers</div>
+          <h1 className="ch-title">Everything you need to land your next job — free.</h1>
+          <p className="ch-sub">
+            Build a profile, get matched to real openings, sharpen your interview skills, and get
+            expert career advice — all in one place, at no cost.
+          </p>
+          <button className="ch-hero-btn" onClick={onLogin}>Create your free profile</button>
+          <p className="ch-hero-note">No cost, ever, for candidates.</p>
+        </div>
+      </div>
+
+      {/* ---- live stats ---- */}
+      <div className="ch-stats">
+        <div className="ch-stat">
+          <div className="ch-stat-num">{loading ? "—" : jobCount ?? "—"}</div>
+          <div className="ch-stat-label">Job openings</div>
+        </div>
+        <div className="ch-stat">
+          <div className="ch-stat-num">{loading ? "—" : companyCount ?? "—"}</div>
+          <div className="ch-stat-label">Companies hiring</div>
+        </div>
+      </div>
+
+      {/* ---- live job openings ---- */}
+      <div className="ch-section">
+        <div className="ch-section-head">
+          <div className="ch-section-eyebrow">Open roles right now</div>
+          <h2>Live openings on the portal</h2>
+          <p>Sign in to view full details and apply — it takes less than a minute.</p>
+        </div>
+
+        <div className="ch-jobs">
+          {loading && <div className="ch-empty">Loading jobs…</div>}
+          {!loading && jobs.length === 0 && <div className="ch-empty">No openings live right now — check back soon.</div>}
+          {!loading &&
+            jobs.slice(0, 5).map((job) => (
+              <div key={job.id} className="ch-job" onClick={onLogin}>
+                <div className="ch-job-badge">{companyInitials(job.company_name || "C")}</div>
+                <div className="ch-job-info">
+                  <p className="ch-job-title">{job.title}</p>
+                  <p className="ch-job-meta">{[job.company_name, job.location].filter(Boolean).join(" · ")}</p>
+                </div>
+                <span className="ch-job-cta">Sign in to apply →</span>
+              </div>
+            ))}
+        </div>
+
+        <div className="ch-jobs-footer">
+          <button onClick={onLogin}>View all openings</button>
+        </div>
+      </div>
+
+      {/* ---- feature grid ---- */}
+      <div className="ch-section">
+        <div className="ch-section-head">
+          <div className="ch-section-eyebrow">What you get</div>
+          <h2>Everything you need, free</h2>
+          <p>No hidden fees for candidates — ever.</p>
+        </div>
+
+        <div className="ch-features">
+          <div className="ch-feature" onClick={onLogin}>
+            <div className="ch-feature-top">
+              <div className="ch-feature-icon" style={{ background: "#E4ECFE", color: "#123170" }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <circle cx="12" cy="8" r="4" /><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
+                </svg>
+              </div>
+              <span className="ch-feature-badge">FREE</span>
+            </div>
+            <h3>Free candidate profile</h3>
+            <p>Build your profile once and get automatically matched to relevant openings as they go live.</p>
+            <span className="ch-feature-link">Create your profile →</span>
           </div>
 
-          <p
-            className="card-meta"
-            style={{
-              marginTop: "0.4rem",
-              marginBottom: 0,
-            }}
-          >
-            {s.label}
-          </p>
+          <Link to="/services/resume-building" target="_blank" className="ch-feature" style={{ textDecoration: "none", color: "inherit" }}>
+            <div className="ch-feature-top">
+              <div className="ch-feature-icon" style={{ background: "#FDECD8", color: "#8A4B0C" }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <rect x="4" y="3" width="16" height="18" rx="2" /><line x1="8" y1="8" x2="16" y2="8" /><line x1="8" y1="12" x2="16" y2="12" /><line x1="8" y1="16" x2="12" y2="16" />
+                </svg>
+              </div>
+              <span className="ch-feature-badge">FREE</span>
+            </div>
+            <h3>Resume builder</h3>
+            <p>Build a professional resume with guided templates and a live preview — no signup needed to try it.</p>
+            <span className="ch-feature-link">Build your resume →</span>
+          </Link>
+
+          <div className="ch-feature" onClick={onLogin}>
+            <div className="ch-feature-top">
+              <div className="ch-feature-icon" style={{ background: "#E1F5EE", color: "#0F6E56" }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <circle cx="12" cy="12" r="9" /><path d="M10 9l5 3-5 3V9Z" fill="currentColor" stroke="none" />
+                </svg>
+              </div>
+              <span className="ch-feature-badge">FREE</span>
+            </div>
+            <h3>Coretech Minis</h3>
+            <p>Quick videos on resume mistakes, interview prep, and what recruiters actually look for.</p>
+            <span className="ch-feature-link">Watch the tips →</span>
+          </div>
+
+          <div className="ch-feature" onClick={onLogin}>
+            <div className="ch-feature-top">
+              <div className="ch-feature-icon" style={{ background: "#FBEAF0", color: "#993556" }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <rect x="3" y="4" width="18" height="17" rx="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="16" y1="2" x2="16" y2="6" />
+                </svg>
+              </div>
+              <span className="ch-feature-badge">FREE</span>
+            </div>
+            <h3>Career counselling</h3>
+            <p>Book a 1:1 session with our team for resume review, interview prep, or career-direction advice.</p>
+            <span className="ch-feature-link">Book a session →</span>
+          </div>
         </div>
-      ))}
-    </div>
-  );
-}
-
-function HomeSection() {
-  return (
-    <div className="container" style={{ paddingTop: "2.5rem", paddingBottom: "1rem" }}>
-      <div className="card" style={{ textAlign: "center", marginBottom: "2rem" }}>
-        <h2 className="page-title">Welcome to Coretech Talents</h2>
-        <p className="card-desc">
-          Connecting skilled candidates with manufacturing, industrial, and corporate employers across India —
-          fast, reliable, and built on real relationships.
-        </p>
       </div>
 
-      <div className="card" style={{ marginBottom: "2rem", padding: 0, overflow: "hidden" }}>
-        <HomeIllustration />
-      </div>
-
-      <StatsRow />
-
-      <div className="card" style={{ marginTop: "1.1rem" }}>
-        <h3 style={{ marginBottom: "0.6rem" }}>What we do</h3>
-        <p className="card-meta">
-          We specialize in sourcing candidates for machining, production, and industrial roles, as well as corporate
-          support functions — moving fast without compromising on candidate quality. Whether you're a recruiter
-          looking for the right hire or a candidate looking for your next opportunity, our portal brings both sides
-          together in one place.
-        </p>
-      </div>
-
-      <div style={{ textAlign: "center", marginTop: "2.5rem", paddingTop: "1.5rem", borderTop: "1px solid var(--line)" }}>
-        <div style={{ display: "flex", justifyContent: "center", gap: "1.25rem", marginBottom: "1rem" }}>
-          <a href="http://www.youtube.com/@CoreTech_Talents" target="_blank" rel="noopener noreferrer" aria-label="YouTube" style={{ color: "var(--text-primary)", opacity: 0.75 }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-             <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.6V8.4L15.8 12l-6.2 3.6Z" />
-            </svg>
-          </a>
-          <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ color: "var(--text-primary)", opacity: 0.75 }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2c2.7 0 3.05.01 4.12.06 1.06.05 1.79.22 2.43.47.66.26 1.22.6 1.77 1.15.55.55.9 1.11 1.15 1.77.25.64.42 1.37.47 2.43.05 1.07.06 1.42.06 4.12s-.01 3.05-.06 4.12c-.05 1.06-.22 1.79-.47 2.43a4.9 4.9 0 0 1-1.15 1.77 4.9 4.9 0 0 1-1.77 1.15c-.64.25-1.37.42-2.43.47-1.07.05-1.42.06-4.12.06s-3.05-.01-4.12-.06c-1.06-.05-1.79-.22-2.43-.47a4.9 4.9 0 0 1-1.77-1.15 4.9 4.9 0 0 1-1.15-1.77c-.25-.64-.42-1.37-.47-2.43C2.01 15.05 2 14.7 2 12s.01-3.05.06-4.12c.05-1.06.22-1.79.47-2.43.26-.66.6-1.22 1.15-1.77A4.9 4.9 0 0 1 5.45.53c.64-.25 1.37-.42 2.43-.47C8.95.01 9.3 0 12 0Zm0 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 8.2a3.2 3.2 0 1 1 0-6.4 3.2 3.2 0 0 1 0 6.4Zm5.2-8.4a1.17 1.17 0 1 0 0-2.34 1.17 1.17 0 0 0 0 2.34Z" />
-            </svg>
-          </a>
-          <a href="#" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" style={{ color: "var(--text-primary)", opacity: 0.75 }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.15 1.45-2.15 2.94v5.67H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z" />
-            </svg>
-          </a>
+      {/* ---- why us ---- */}
+      <div className="ch-section">
+        <div className="ch-why">
+          <div className="ch-why-item">
+            <div className="ch-why-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20 6 9 17l-5-5" /></svg>
+            </div>
+            <h4>Verified companies only</h4>
+            <p>Every recruiter account is manually approved before they can post a role.</p>
+          </div>
+          <div className="ch-why-item">
+            <div className="ch-why-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" /></svg>
+            </div>
+            <h4>Fast matching</h4>
+            <p>Your profile is matched against openings automatically — no endless scrolling.</p>
+          </div>
+          <div className="ch-why-item">
+            <div className="ch-why-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 2 3 7v6c0 5 4 9 9 9s9-4 9-9V7l-9-5Z" /></svg>
+            </div>
+            <h4>Always free for candidates</h4>
+            <p>Profile, applications, resume builder, and counselling — no cost, ever.</p>
+          </div>
         </div>
-        <p className="hint">© {new Date().getFullYear()} Coretech Talents. All rights reserved.</p>
-        <p className="hint" style={{ marginTop: "0.5rem" }}>
-          <Link to="/privacy-policy" style={{ color: "inherit" }}>Privacy Policy</Link>
+      </div>
+
+      {/* ---- final CTA ---- */}
+      <div className="ch-final">
+        <h2>Your next opportunity is one profile away.</h2>
+        <p>Join in under a minute — no fees, no catch.</p>
+        <button onClick={onLogin}>Create your free profile</button>
+      </div>
+
+      {/* ---- footer ---- */}
+      <div className="ch-footer">
+        <p>© {new Date().getFullYear()} Coretech Talents. All rights reserved.</p>
+        <p className="ch-footer-links">
+          <Link to="/privacy-policy">Privacy Policy</Link>
           {" · "}
-          <Link to="/terms-of-service" style={{ color: "inherit" }}>Terms of Service</Link>
+          <Link to="/terms-of-service">Terms of Service</Link>
         </p>
       </div>
+
+      <style>{`
+        .ch-wrap { max-width: 1000px; margin: 0 auto; font-family: 'Inter', sans-serif; }
+
+        .ch-hero { background: linear-gradient(160deg, #0E2A63 0%, #123170 100%); padding: 3.25rem 2rem 4.5rem; border-radius: 20px; }
+        .ch-hero-inner { max-width: 560px; margin: 0 auto; text-align: center; }
+        .ch-eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: #8FB4FF; text-transform: uppercase; margin-bottom: 0.75rem; }
+        .ch-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: clamp(1.9rem, 3.4vw, 2.5rem); color: #fff; margin: 0 0 0.85rem; line-height: 1.22; }
+        .ch-sub { font-size: 15px; color: #B7C8EE; margin: 0 auto 1.75rem; max-width: 480px; line-height: 1.6; }
+        .ch-hero-btn { background: #fff; color: #0E2A63; border: none; border-radius: 10px; padding: 13px 26px; font-size: 14.5px; font-weight: 700; cursor: pointer; }
+        .ch-hero-note { font-size: 12px; color: #8FB4FF; margin-top: 0.75rem; }
+
+        .ch-stats { background: #fff; border-radius: 14px; box-shadow: 0 8px 24px rgba(14,42,99,0.08); display: flex; margin: -2.75rem auto 3rem; max-width: 500px; overflow: hidden; }
+        .ch-stat { flex: 1; text-align: center; padding: 1.1rem 0.5rem; }
+        .ch-stat + .ch-stat { border-left: 1px solid #EEF2F9; }
+        .ch-stat-num { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 1.5rem; color: #0E2A63; }
+        .ch-stat-label { font-size: 11.5px; color: #6B7688; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+
+        .ch-section { margin-bottom: 3rem; padding: 0 0.5rem; }
+        .ch-section-head { text-align: center; max-width: 520px; margin: 0 auto 1.5rem; }
+        .ch-section-eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; color: #2554E8; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .ch-section-head h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.35rem; font-weight: 800; color: #0A192F; margin: 0 0 0.5rem; }
+        .ch-section-head p { font-size: 13.5px; color: #6B7688; margin: 0; line-height: 1.5; }
+
+        .ch-jobs { display: flex; flex-direction: column; gap: 10px; }
+        .ch-job { background: #fff; border: 1px solid #E6ECF7; border-radius: 12px; padding: 1rem 1.15rem; display: flex; align-items: center; gap: 14px; cursor: pointer; }
+        .ch-job:hover { border-color: #C3D5F0; }
+        .ch-job-badge { width: 42px; height: 42px; border-radius: 10px; background: #E4ECFE; color: #123170; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; flex-shrink: 0; }
+        .ch-job-info { flex: 1; min-width: 0; }
+        .ch-job-title { font-size: 14.5px; font-weight: 700; color: #14213D; margin: 0 0 2px; }
+        .ch-job-meta { font-size: 12.5px; color: #7A879C; margin: 0; }
+        .ch-job-cta { font-size: 12px; font-weight: 700; color: #2554E8; white-space: nowrap; }
+        .ch-empty { text-align: center; padding: 2rem; color: #8A96AC; font-size: 13.5px; }
+        .ch-jobs-footer { text-align: center; margin-top: 1rem; }
+        .ch-jobs-footer button { background: #fff; border: 1px solid #C3D5F0; color: #2554E8; border-radius: 8px; padding: 9px 18px; font-size: 13px; font-weight: 700; cursor: pointer; }
+
+        .ch-features { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
+        .ch-feature { background: #fff; border: 1px solid #E6ECF7; border-radius: 16px; padding: 1.5rem; cursor: pointer; display: block; }
+        .ch-feature:hover { border-color: #C3D5F0; }
+        .ch-feature-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.9rem; }
+        .ch-feature-icon { width: 42px; height: 42px; border-radius: 11px; display: flex; align-items: center; justify-content: center; }
+        .ch-feature-badge { font-size: 10.5px; font-weight: 700; color: #0F6E56; background: #E1F5EE; border-radius: 999px; padding: 3px 9px; letter-spacing: 0.03em; }
+        .ch-feature h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.02rem; font-weight: 700; color: #0A192F; margin: 0 0 0.4rem; }
+        .ch-feature p { font-size: 13px; color: #6B7688; margin: 0 0 0.9rem; line-height: 1.55; }
+        .ch-feature-link { font-size: 12.5px; font-weight: 700; color: #2554E8; }
+
+        .ch-why { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .ch-why-item { text-align: center; padding: 0.5rem; }
+        .ch-why-icon { width: 44px; height: 44px; border-radius: 12px; background: #F3F7FD; color: #2554E8; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; }
+        .ch-why-item h4 { font-size: 13.5px; font-weight: 700; color: #14213D; margin: 0 0 0.3rem; }
+        .ch-why-item p { font-size: 12px; color: #7A879C; margin: 0; line-height: 1.5; }
+
+        .ch-final { background: #0E2A63; border-radius: 20px; padding: 2.5rem; text-align: center; }
+        .ch-final h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.35rem; font-weight: 800; color: #fff; margin: 0 0 0.6rem; }
+        .ch-final p { font-size: 13.5px; color: #B7C8EE; margin: 0 0 1.35rem; }
+        .ch-final button { background: #fff; color: #0E2A63; border: none; border-radius: 10px; padding: 12px 26px; font-size: 14px; font-weight: 700; cursor: pointer; }
+
+        .ch-footer { text-align: center; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #E1E8F5; }
+        .ch-footer p { font-size: 12.5px; color: #8A96AC; margin: 0; }
+        .ch-footer-links { margin-top: 0.5rem; }
+        .ch-footer-links a { color: inherit; }
+
+        @media (max-width: 700px) {
+          .ch-features { grid-template-columns: 1fr; }
+          .ch-why { grid-template-columns: 1fr; }
+        }
+      `}</style>
     </div>
   );
 }
@@ -4540,17 +4609,7 @@ useEffect(() => {
         )}
 
         {view === "home" && !portalOpen && (
-          <HomePage
-            onPostJob={() => {
-              setPortalInitialRole("recruiter");
-              setPortalInitialMode("signup");
-              setPortalOpen(true);
-              setView("jobs");
-            }}
-            onBrowseJobs={() => {
-              setPortalOpen(false);
-              setView("jobs");
-            }}
+          <HomeSection
             onLogin={() => {
               setPortalInitialRole("candidate");
               setPortalInitialMode("signup");
