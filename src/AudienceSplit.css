@@ -1,0 +1,244 @@
+/* AudienceSplit — candidate / recruiter stacked panels
+   Palette: navy #0F2A4A, blue #2563EB, sky #EAF2FF, amber #F5A524, slate text #1E293B
+   Light panel = candidate (open, approachable). Dark panel = recruiter (authority, premium).
+   The two meet on a diagonal seam rather than a straight line, since the content
+   itself is "one platform, two paths." */
+
+.audience-split {
+  width: 100%;
+  overflow: hidden;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.audience-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 48px;
+  padding: 88px 8vw;
+  position: relative;
+}
+
+.audience-panel--candidate {
+  background: linear-gradient(155deg, #eaf2ff 0%, #f7fbff 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 92%, 0 100%);
+  padding-bottom: 116px;
+}
+
+.audience-panel--recruiter {
+  background: linear-gradient(155deg, #0f2a4a 0%, #16345c 100%);
+  clip-path: polygon(0 8%, 100% 0, 100% 100%, 0 100%);
+  margin-top: -64px;
+  padding-top: 152px;
+  flex-direction: row;
+}
+
+.audience-split__seam {
+  height: 5px;
+  width: 160px;
+  margin: -2px auto 0;
+  background: linear-gradient(90deg, #2563eb, #f5a524);
+  transform: rotate(-3deg);
+  border-radius: 3px;
+  position: relative;
+  z-index: 2;
+}
+
+.audience-panel__text {
+  flex: 0 1 440px;
+  min-width: 260px;
+}
+
+.audience-panel__eyebrow {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.audience-panel--candidate .audience-panel__eyebrow {
+  color: #2563eb;
+}
+
+.audience-panel--recruiter .audience-panel__eyebrow {
+  color: #f5a524;
+}
+
+.audience-panel__headline {
+  font-size: clamp(30px, 3.6vw, 44px);
+  line-height: 1.1;
+  font-weight: 800;
+  margin: 0 0 16px;
+  letter-spacing: -0.01em;
+}
+
+.audience-panel--candidate .audience-panel__headline {
+  color: #0f2a4a;
+}
+
+.audience-panel--recruiter .audience-panel__headline {
+  color: #ffffff;
+}
+
+.audience-panel__support {
+  font-size: 17px;
+  line-height: 1.55;
+  margin: 0 0 30px;
+  max-width: 40ch;
+}
+
+.audience-panel--candidate .audience-panel__support {
+  color: #1e293b;
+}
+
+.audience-panel--recruiter .audience-panel__support {
+  color: #c9d6e8;
+}
+
+.audience-panel__cta {
+  border: none;
+  border-radius: 8px;
+  padding: 14px 30px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.audience-panel__cta:hover {
+  transform: translateY(-2px);
+}
+
+.audience-panel__cta:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+}
+
+.audience-panel__cta--candidate {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.28);
+}
+
+.audience-panel__cta--recruiter {
+  background: #f5a524;
+  color: #1a1200;
+  box-shadow: 0 8px 20px rgba(245, 165, 36, 0.25);
+}
+
+.audience-panel__art {
+  flex: 0 0 auto;
+  width: min(280px, 32vw);
+}
+
+.audience-illustration {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* -- illustration theming -- */
+.illus-bg--candidate {
+  fill: #d7e6ff;
+}
+
+.illus-bg--recruiter {
+  fill: #1f3f68;
+}
+
+.audience-panel--candidate .illus-figure {
+  fill: #0f2a4a;
+}
+
+.audience-panel--recruiter .illus-figure {
+  fill: #eaf2ff;
+}
+
+.audience-panel--candidate .illus-paper {
+  fill: #ffffff;
+  stroke: #2563eb;
+  stroke-width: 2;
+}
+
+.audience-panel--recruiter .illus-paper {
+  fill: #ffffff;
+  stroke: #f5a524;
+  stroke-width: 2;
+}
+
+.audience-panel--candidate .illus-line {
+  stroke: #9fb8dd;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.audience-panel--candidate .illus-line--bold {
+  stroke: #2563eb;
+  stroke-width: 4;
+}
+
+.audience-panel--recruiter .illus-line {
+  stroke: #a9c3e6;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.audience-panel--candidate .illus-arm {
+  fill: none;
+  stroke: #0f2a4a;
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+
+.illus-laptop-base {
+  fill: #0f2a4a;
+}
+
+.audience-panel--recruiter .illus-laptop-base {
+  fill: #eaf2ff;
+}
+
+.illus-laptop-screen {
+  fill: #16345c;
+  stroke: #f5a524;
+  stroke-width: 2;
+}
+
+/* -- responsive -- */
+@media (max-width: 760px) {
+  .audience-panel,
+  .audience-panel--recruiter {
+    flex-direction: column-reverse;
+    text-align: center;
+    padding: 56px 7vw 72px;
+    gap: 28px;
+  }
+
+  .audience-panel--candidate,
+  .audience-panel--recruiter {
+    clip-path: none;
+    margin-top: 0;
+  }
+
+  .audience-panel__support {
+    max-width: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .audience-panel__art {
+    width: min(220px, 60vw);
+  }
+
+  .audience-split__seam {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .audience-panel__cta {
+    transition: none;
+  }
+}

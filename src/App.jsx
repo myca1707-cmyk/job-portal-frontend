@@ -8,6 +8,12 @@ import ResumeServices from "./ResumeServices";
 import CampusExploration from "./CampusExploration";
 import PrivacyPolicy from "./PrivacyPolicy";
 import TermsOfService from "./TermsOfService";
+import AudienceSplit from "./AudienceSplit";
+// ...
+<AudienceSplit
+  onCandidateClick={() => setShowCandidateSignup(true)}
+  onRecruiterClick={() => setShowRecruiterSignup(true)}
+/>
 
 
 const API_BASE = "https://job-portal-backend-production-6d9d.up.railway.app";
