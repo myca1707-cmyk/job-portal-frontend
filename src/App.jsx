@@ -580,14 +580,75 @@ function CareerCounsellingForm() {
   );
 }
 
+function getYouTubeEmbedId(url) {
+  if (!url) return null;
+  const patterns = [
+    /youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/,
+    /youtu\.be\/([a-zA-Z0-9_-]+)/,
+    /youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/,
+  ];
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+  return null;
+}
+
+function MiniVideoModal({ mini, onClose }) {
+  const videoId = getYouTubeEmbedId(mini.videoUrl);
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.85)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1000,
+      }}
+      onClick={onClose}
+    >
+      <div style={{ position: "relative", width: "min(360px, 90vw)" }} onClick={(e) => e.stopPropagation()}>
+        <button
+          className="btn-link"
+          onClick={onClose}
+          style={{ position: "absolute", top: -40, right: 0, color: "#fff", fontSize: 20 }}
+        >
+          ✕
+        </button>
+        {videoId ? (
+          <div style={{ aspectRatio: "9/16", borderRadius: 12, overflow: "hidden" }}>
+            <iframe
+              src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
+              title={mini.title}
+              style={{ width: "100%", height: "100%", border: "none" }}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        ) : (
+          <div className="card" style={{ textAlign: "center" }}>
+            <p className="card-meta">This video is coming soon.</p>
+          </div>
+        )}
+        <p style={{ color: "#fff", textAlign: "center", marginTop: "0.75rem", fontSize: 14, fontWeight: 600 }}>{mini.title}</p>
+      </div>
+    </div>
+  );
+}
+
 function CoretechMinis() {
+  const [openMini, setOpenMini] = useState(null);
+
   const minis = [
-    { title: "5 Resume Mistakes to Avoid", tag: "Resume Tips" },
-    { title: "What Recruiters Look For in 30 Seconds", tag: "Interview Tips" },
-    { title: "Manufacturing Jobs: What's Hot Right Now", tag: "Job Market" },
-    { title: "How to Negotiate Your Offer", tag: "Career Advice" },
-    { title: "Campus to Career: First Job Tips", tag: "Freshers" },
-    { title: "Reading a Job Description Like a Pro", tag: "Job Market" },
+    { title: "5 Resume Mistakes to Avoid", tag: "Resume Tips", videoUrl: "https://youtube.com/shorts/lXxusAKZnsw?si=wNxstYNMLrv9ksLH" },
+    { title: "What Recruiters Look For in 30 Seconds", tag: "Interview Tips", videoUrl: null },
+    { title: "Manufacturing Jobs: What's Hot Right Now", tag: "Job Market", videoUrl: null },
+    { title: "How to Negotiate Your Offer", tag: "Career Advice", videoUrl: null },
+    { title: "Campus to Career: First Job Tips", tag: "Freshers", videoUrl: null },
+    { title: "Reading a Job Description Like a Pro", tag: "Job Market", videoUrl: null },
   ];
 
   return (
@@ -597,7 +658,12 @@ function CoretechMinis() {
       </p>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "1rem" }}>
         {minis.map((m) => (
-          <div key={m.title} className="card" style={{ padding: 0, overflow: "hidden", cursor: "pointer" }}>
+          <div
+            key={m.title}
+            className="card"
+            style={{ padding: 0, overflow: "hidden", cursor: "pointer" }}
+            onClick={() => setOpenMini(m)}
+          >
             <div
               style={{
                 aspectRatio: "9/16",
@@ -638,12 +704,31 @@ function CoretechMinis() {
               >
                 {m.tag}
               </span>
+              {!m.videoUrl && (
+                <span
+                  style={{
+                    position: "absolute",
+                    bottom: 8,
+                    right: 8,
+                    fontSize: 9,
+                    fontWeight: 600,
+                    color: "#fff",
+                    background: "rgba(255,255,255,0.15)",
+                    padding: "2px 6px",
+                    borderRadius: 4,
+                  }}
+                >
+                  Coming soon
+                </span>
+              )}
             </div>
             <p style={{ margin: 0, padding: "0.6rem 0.75rem", fontSize: 12.5, fontWeight: 600 }}>{m.title}</p>
           </div>
         ))}
       </div>
       <p className="hint" style={{ textAlign: "center", marginTop: "1rem" }}>More Coretech Minis dropping soon.</p>
+
+      {openMini && <MiniVideoModal mini={openMini} onClose={() => setOpenMini(null)} />}
     </div>
   );
 }
