@@ -9,6 +9,7 @@ import CampusExploration from "./CampusExploration";
 import PrivacyPolicy from "./PrivacyPolicy";
 import TermsOfService from "./TermsOfService";
 import AudienceSplit from "./AudienceSplit";
+import HomePage from "./HomePage";
 
 const API_BASE = "https://job-portal-backend-production-6d9d.up.railway.app";
 
