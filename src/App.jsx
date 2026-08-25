@@ -1162,13 +1162,67 @@ function CoretechMinis() {
 
 function CareerAdvancementSection() {
   const [activeTab, setActiveTab] = useState("newsletters");
+  const [audienceFilter, setAudienceFilter] = useState("all");
 
   const newsletters = [
-    { title: "Recruitment Trends 2026", desc: "Hiring is shifting toward skills-based assessments over degrees, faster interview cycles, and AI-assisted shortlisting — companies that adapt are seeing stronger candidate pipelines." },
-    { title: "Understanding the GenZ Mindset", desc: "GenZ candidates prioritize purpose, flexibility, and transparency. They expect quick feedback loops, honest job descriptions, and clear growth paths — not just a paycheck." },
-    { title: "Evolving Recruitment Strategies", desc: "Employer branding, referral-driven hiring, and community-led talent pools are replacing traditional job-board-only approaches as competition for skilled talent increases." },
-    { title: "Technology in Recruitment", desc: "AI-powered resume screening, automated interview scheduling, and data-driven candidate matching are reshaping how recruiters find and engage talent faster and more accurately." },
+    {
+      title: "5 Resume Mistakes That Get You Filtered Out",
+      desc: "Most resumes never make it to a human reviewer — they get filtered out before that stage, often for reasons that have nothing to do with your actual experience. Formatting that confuses automated screening, generic bullet points that could apply to any candidate, missing keywords from the job description, unclear job titles, and resumes that try to cover every skill you've ever touched instead of the ones relevant to this role. None of these are fixed by rewriting your whole resume — each one is a small, specific correction. This piece walks through all five, with concrete examples of the wrong way and the fixed version side by side, so you can check your own resume against each point in a few minutes.",
+      audience: "candidate",
+    },
+    {
+      title: "How to Negotiate Your First Salary",
+      desc: "Negotiating your first salary feels different from every negotiation that comes after it — you don't yet have a track record to point to, and the fear of losing the offer entirely makes most first-timers just accept whatever number comes in. But most initial offers do have room, and the way you ask matters more than how much you ask for. This piece breaks down what to say when an offer arrives below what you expected, how to counter without sounding ungrateful, when it's actually fine to just accept, and a few short scripts you can adapt directly instead of writing your own from scratch under pressure.",
+      audience: "candidate",
+    },
+    {
+      title: "Remote vs Hybrid vs On-site: What to Ask Before You Accept",
+      desc: "Job listings rarely tell you what day-to-day work actually looks like under a given work arrangement, and \"hybrid\" in particular can mean wildly different things from one company to the next — two days a week, five days that shift by team, or a policy that exists on paper but isn't really enforced. Before accepting an offer, there's a short list of questions that reveal the real answer: who else on the team is remote, how meetings are actually run, what the expectation is for response time outside office hours, and whether the arrangement is written into your offer letter or just a verbal understanding. This piece walks through exactly what to ask and why each answer matters.",
+      audience: "candidate",
+    },
+    {
+      title: "What 'Entry-Level' Actually Means Across IT, Manufacturing & ITES",
+      desc: "The term \"entry-level\" gets used loosely across job postings, but it means something genuinely different depending on the domain. In IT, entry-level often still assumes some hands-on project experience or a relevant certification. In manufacturing, it can mean a fresh diploma holder learning on the shop floor with close supervision. In ITES, it's frequently about communication skills and trainability more than prior experience at all. Understanding which definition a specific posting is using — and how to tell from the listing itself — helps you avoid applying to roles that assume more than you have, or underselling yourself for roles that would have taken you as you are.",
+      audience: "candidate",
+    },
+    {
+      title: "Recruitment Trends 2026",
+      desc: "Hiring is shifting toward skills-based assessments over degrees, faster interview cycles, and AI-assisted shortlisting — companies that adapt are seeing stronger candidate pipelines. For candidates, that shift means a portfolio of demonstrated ability is starting to matter as much as a credential on paper, and being ready to show your work in a practical assessment is becoming a normal part of the process rather than the exception. For recruiters, it means the tools for finding and evaluating candidates are evolving quickly, and processes built five years ago may already be filtering out strong candidates for the wrong reasons. This piece looks at what's actually changing and what to do about it, on both sides of the hiring table.",
+      audience: "both",
+    },
+    {
+      title: "Understanding the GenZ Mindset",
+      desc: "GenZ candidates prioritize purpose, flexibility, and transparency. They expect quick feedback loops, honest job descriptions, and clear growth paths — not just a paycheck. For recruiters used to hiring the previous generation of candidates, some of this can read as a shift in what \"loyalty\" or \"commitment\" even means, but it's better understood as a shift in what candidates need to see before they'll commit at all. This piece looks at what actually drives GenZ candidates to accept an offer and stay past the first year, what kind of job description language tends to attract versus repel them, and small process changes — faster response times, clearer next steps, more candid conversations about role expectations — that make a measurable difference in offer acceptance.",
+      audience: "recruiter",
+    },
+    {
+      title: "Evolving Recruitment Strategies",
+      desc: "Employer branding, referral-driven hiring, and community-led talent pools are replacing traditional job-board-only approaches as competition for skilled talent increases. Posting a job and waiting for applications is no longer enough in fields where good candidates have several options — the companies winning that competition are the ones building a reputation candidates already know about before they ever see a job listing, and the ones who've built referral pipelines from their own current employees. This piece walks through practical ways to start building that reputation even as a smaller company, how to structure a referral program that people actually use, and where community-led sourcing tends to outperform generic job board postings.",
+      audience: "recruiter",
+    },
+    {
+      title: "Technology in Recruitment",
+      desc: "AI-powered resume screening, automated interview scheduling, and data-driven candidate matching are reshaping how recruiters find and engage talent faster and more accurately. The upside is real — less time spent on manual shortlisting, fewer scheduling back-and-forths, and matching that improves with more data over time. The risk, equally real, is that automation applied carelessly can filter out strong candidates for superficial reasons, or make the process feel impersonal at exactly the moment a candidate is deciding whether they want to work with you. This piece covers which parts of the process are genuinely worth automating, which parts should stay human, and how to tell the difference.",
+      audience: "recruiter",
+    },
   ];
+
+  const audienceFilters = [
+    { id: "all", label: "All" },
+    { id: "candidate", label: "For candidates" },
+    { id: "recruiter", label: "For recruiters" },
+  ];
+
+  function badgeLabel(a) {
+    if (a === "candidate") return "CANDIDATES";
+    if (a === "recruiter") return "RECRUITERS";
+    return "BOTH";
+  }
+
+  const filteredNewsletters =
+    audienceFilter === "all"
+      ? newsletters
+      : newsletters.filter((n) => n.audience === audienceFilter || n.audience === "both");
 
   const tabs = [
     { id: "newsletters", label: "Newsletters" },
@@ -1205,13 +1259,57 @@ function CareerAdvancementSection() {
       </div>
 
       {activeTab === "newsletters" && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1.25rem" }}>
-          {newsletters.map((item) => (
-            <div key={item.title} className="card">
-              <h3 style={{ marginBottom: "0.5rem" }}>{item.title}</h3>
-              <p className="card-meta">{item.desc}</p>
-            </div>
-          ))}
+        <div className="nl-wrap">
+          <div className="nl-filters">
+            {audienceFilters.map((f) => (
+              <button
+                key={f.id}
+                className={`nl-filter ${audienceFilter === f.id ? "active" : ""}`}
+                onClick={() => setAudienceFilter(f.id)}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+
+          <p className="nl-count">
+            {filteredNewsletters.length} article{filteredNewsletters.length === 1 ? "" : "s"}
+          </p>
+
+          <div className="nl-grid">
+            {filteredNewsletters.length === 0 ? (
+              <div className="nl-empty">No articles here yet.</div>
+            ) : (
+              filteredNewsletters.map((item) => (
+                <div key={item.title} className="nl-card">
+                  <span className={`nl-badge ${item.audience}`}>{badgeLabel(item.audience)}</span>
+                  <h3>{item.title}</h3>
+                  <p>{item.desc}</p>
+                </div>
+              ))
+            )}
+          </div>
+
+          <style>{`
+            .nl-wrap { max-width: 700px; margin: 0 auto; }
+            .nl-filters { display: flex; justify-content: center; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+            .nl-filter {
+              padding: 8px 16px; border-radius: 999px; border: 1px solid #E1E8F5; background: #fff;
+              color: #56637D; font-size: 13px; font-weight: 600; cursor: pointer;
+            }
+            .nl-filter.active { background: #0E2A63; color: #fff; border-color: #0E2A63; }
+            .nl-count { font-size: 12.5px; color: #8A96AC; text-align: center; margin-bottom: 1.25rem; }
+            .nl-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+            .nl-card { background: #fff; border: 1px solid #E6ECF7; border-radius: 14px; padding: 1.5rem 1.75rem; transition: border-color 0.15s ease, transform 0.15s ease; }
+            .nl-card:hover { border-color: #C3D5F0; transform: translateY(-2px); }
+            .nl-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 999px; letter-spacing: 0.03em; margin-bottom: 0.65rem; }
+            .nl-badge.candidate { background: #E1F5EE; color: #0F6E56; }
+            .nl-badge.recruiter { background: #E4ECFE; color: #123170; }
+            .nl-badge.both { background: #FAEEDA; color: #854F0B; }
+            .nl-card h3 { font-size: 15.5px; font-weight: 700; color: #14213D; margin: 0 0 0.6rem; line-height: 1.35; }
+            .nl-card p { font-size: 13px; color: #6B7688; margin: 0; line-height: 1.75; }
+            .nl-empty { text-align: center; padding: 2.5rem; color: #8A96AC; font-size: 13.5px; }
+          `}</style>
         </div>
       )}
 
