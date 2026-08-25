@@ -156,102 +156,285 @@ function ResumeConsentModal({ onConfirm, onCancel }) {
 }
 
 function ServicesPage({ onCampusExploration }) {
-  const [expanded, setExpanded] = useState(null);
+  const [activeTab, setActiveTab] = useState("campus");
   const [showResumeConsent, setShowResumeConsent] = useState(false);
 
-  const services = [
-    {
-      id: "campus",
-      title: "Campus Exploration",
-      summary: "Direct access to fresh graduate talent through structured campus partnerships and drives.",
-      isRecruiterOnly: true,
-    },
-    {
-      id: "techNonTech",
-      title: "Tech and Non Tech Hiring",
-      summary: "Permanent placement solutions across technical and non-technical roles.",
-      body: "From engineering and IT roles to operations, admin, and support functions, we focus on permanent placement solutions — matching candidates to long-term roles rather than short-term or temporary staffing.",
-    },
-    {
-      id: "rpo",
-      title: "Coretech Expert Solutions",
-      summary: "RPO-style support with a dedicated recruitment expert working alongside your team.",
-      body: "Our Coretech Expert Solutions follow an RPO (Recruitment Process Outsourcing) model — a dedicated recruitment expert works in-office with your team, managing the entire hiring process end-to-end, giving you in-house-level support without building an internal team from scratch.",
-    },
-    {
-      id: "resumeBuilding",
-      title: "Resume Building",
-      summary: "Build a professional resume with our guided templates and live preview.",
-      isExternalTool: true,
-    },
+  const tabs = [
+    { id: "campus", label: "Campus Exploration", icon: "🎓" },
+    { id: "tech", label: "Tech & Non-Tech Hiring", icon: "💼" },
+    { id: "rpo", label: "Expert Solutions", icon: "🤝" },
+    { id: "resume", label: "Resume Building", icon: "📄" },
   ];
-
-  function handleClick(service) {
-    if (service.isRecruiterOnly) {
-      onCampusExploration();
-      return;
-    }
-    if (service.isExternalTool) {
-      setShowResumeConsent(true);
-      return;
-    }
-    setExpanded((prev) => (prev === service.id ? null : service.id));
-  }
 
   function handleResumeConfirm() {
     setShowResumeConsent(false);
     window.open("/services/resume-building", "_blank", "noopener,noreferrer");
   }
 
+  const roles = [
+    { icon: "💻", label: "IT", desc: "Software, infrastructure & IT services", bg: "#E4ECFE", fg: "#123170" },
+    { icon: "🎧", label: "ITES", desc: "Support, BPO & IT-enabled services", bg: "#E1F5EE", fg: "#0F6E56" },
+    { icon: "🏭", label: "Manufacturing", desc: "Production, plant & shop-floor roles", bg: "#FDECD8", fg: "#8A4B0C" },
+    { icon: "✈️", label: "Aerospace", desc: "Aviation & aerospace engineering", bg: "#EEEDFE", fg: "#3C3489" },
+    { icon: "🚗", label: "Automobile", desc: "Automotive engineering & production", bg: "#FBEAF0", fg: "#993556" },
+    { icon: "🧭", label: "Leadership", desc: "Senior, managerial & leadership hires", bg: "#FAEEDA", fg: "#854F0B" },
+  ];
+
+  const pipelineStages = [
+    { num: "01", label: "Applied", desc: "Candidate applies through the portal", icon: "📝", cls: "hp-s1" },
+    { num: "02", label: "Shortlisted", desc: "Skills matched against the role", icon: "🔎", cls: "hp-s2" },
+    { num: "03", label: "Interview", desc: "Recruiter moves candidate forward", icon: "🗣️", cls: "hp-s3" },
+    { num: "04", label: "Offer", desc: "Offer extended to the candidate", icon: "📄", cls: "hp-s4" },
+    { num: "05", label: "Hired", desc: "Placement confirmed", icon: "✅", cls: "hp-s5" },
+  ];
+
+  const rpoSteps = [
+    { num: 1, title: "Share your need", desc: "Tell us the roles and volume you're hiring for" },
+    { num: 2, title: "Expert deployed", desc: "A dedicated recruiter joins your team in-office" },
+    { num: 3, title: "End-to-end hiring", desc: "Sourcing through offer, fully managed for you" },
+    { num: 4, title: "Ongoing support", desc: "Support continues as your hiring needs grow" },
+  ];
+
   return (
-    <div className="container" id="services-section" style={{ paddingTop: "2.5rem", paddingBottom: "1rem" }}>
-      <div className="card" style={{ textAlign: "center", marginBottom: "2rem" }}>
-        <h2 className="page-title">Our Services</h2>
-        <p className="card-desc">What we offer, and how we help you hire.</p>
+    <div className="container sv-wrap" id="services-section" style={{ paddingTop: "2.5rem", paddingBottom: "1rem" }}>
+      <div className="sv-head">
+        <div className="sv-eyebrow">Our services</div>
+        <h1 className="sv-title">Everything you need to hire, in one place</h1>
+        <p className="sv-sub">From permanent placements to full recruitment support — pick what fits your hiring need.</p>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: "800px", margin: "0 auto" }}>
-        {services.map((service) => (
-          <div
-            key={service.id}
-            className="card"
-            style={{ cursor: "pointer" }}
-            onClick={() => handleClick(service)}
+      <div className="sv-tabs">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            className={`sv-tab ${activeTab === tab.id ? "active" : ""}`}
+            onClick={() => setActiveTab(tab.id)}
           >
-            <h3 style={{ marginBottom: "0.5rem" }}>{service.title}</h3>
-            <p className="card-meta">{service.summary}</p>
-
-            {service.isRecruiterOnly && (
-              <p className="hint" style={{ marginTop: "0.5rem" }}>
-                Available to recruiters — click to log in and explore →
-              </p>
-            )}
-
-            {service.isExternalTool && (
-              <p className="hint" style={{ marginTop: "0.5rem" }}>
-                Click to open the Resume Builder →
-              </p>
-            )}
-
-            {!service.isRecruiterOnly && !service.isExternalTool && expanded === service.id && (
-              <p className="card-desc" style={{ marginTop: "0.75rem" }}>{service.body}</p>
-            )}
-
-            {!service.isRecruiterOnly && !service.isExternalTool && (
-              <p className="hint" style={{ marginTop: "0.5rem" }}>
-                {expanded === service.id ? "Click to collapse ↑" : "Click to read more →"}
-              </p>
-            )}
-          </div>
+            <span className="sv-tab-icon">{tab.icon}</span>
+            {tab.label}
+          </button>
         ))}
       </div>
 
-      {showResumeConsent && (
-        <ResumeConsentModal
-          onConfirm={handleResumeConfirm}
-          onCancel={() => setShowResumeConsent(false)}
-        />
+      {/* ---- CAMPUS ---- */}
+      {activeTab === "campus" && (
+        <div className="sv-panel">
+          <div className="sv-panel-head">
+            <div className="sv-panel-badge" style={{ background: "#FDECD8" }}>🎓</div>
+            <div>
+              <h2>
+                Campus Exploration <span className="sv-access-tag recruiters">RECRUITERS ONLY</span>
+              </h2>
+              <p>Direct access to fresh graduate talent through structured campus drives</p>
+            </div>
+          </div>
+          <div className="sv-locked-card">
+            <div className="sv-locked-icon">🔒</div>
+            <h3>Available to recruiter accounts</h3>
+            <p>
+              Register a campus hiring requirement or browse partner colleges by city, domain, and course —
+              log in as a recruiter to get started.
+            </p>
+            <button className="sv-locked-btn" onClick={onCampusExploration}>
+              Log in as a recruiter →
+            </button>
+          </div>
+        </div>
       )}
+
+      {/* ---- TECH & NON-TECH ---- */}
+      {activeTab === "tech" && (
+        <div className="sv-panel">
+          <div className="sv-panel-head">
+            <div className="sv-panel-badge" style={{ background: "#E4ECFE" }}>💼</div>
+            <div>
+              <h2>Tech and Non Tech Hiring</h2>
+              <p>Permanent placement solutions across technical and non-technical roles</p>
+            </div>
+          </div>
+          <p className="sv-body-text">
+            Every candidate moves through the same tracked pipeline — the same one your recruiters see in
+            their own dashboard.
+          </p>
+
+          <div className="hp-funnel-card">
+            <div className="hp-funnel">
+              {pipelineStages.map((s) => (
+                <div key={s.label} className={`hp-stage ${s.cls}`}>
+                  <span className="hp-stage-num">{s.num}</span>
+                  <div className="hp-stage-icon">{s.icon}</div>
+                  {s.label}
+                </div>
+              ))}
+            </div>
+            <div className="hp-desc-row">
+              {pipelineStages.map((s) => (
+                <div key={s.label} className="hp-desc-item">
+                  <span>{s.label}</span>
+                  <p>{s.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="hp-roles-head">
+            <h3>Roles we hire for</h3>
+            <p>Across every domain, from entry-level to leadership</p>
+          </div>
+          <div className="hp-role-grid">
+            {roles.map((r) => (
+              <div key={r.label} className="hp-role-card">
+                <div className="hp-role-icon" style={{ background: r.bg, color: r.fg }}>{r.icon}</div>
+                <h4>{r.label}</h4>
+                <p>{r.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ---- RPO ---- */}
+      {activeTab === "rpo" && (
+        <div className="sv-panel">
+          <div className="sv-panel-head">
+            <div className="sv-panel-badge" style={{ background: "#E1F5EE" }}>🤝</div>
+            <div>
+              <h2>Coretech Expert Solutions</h2>
+              <p>RPO-style support with a dedicated recruitment expert working alongside your team</p>
+            </div>
+          </div>
+          <p className="sv-body-text">
+            A dedicated recruitment expert works in-office with your team, managing the entire hiring
+            process end-to-end — giving you in-house-level support without building an internal team from
+            scratch.
+          </p>
+
+          <div className="rpo-card">
+            <div className="rpo-flow">
+              {rpoSteps.map((s, i) => (
+                <div key={s.num} className={`rpo-step ${i === rpoSteps.length - 1 ? "last" : ""}`}>
+                  <div className="rpo-step-num">{s.num}</div>
+                  <h4>{s.title}</h4>
+                  <p>{s.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ---- RESUME BUILDING ---- */}
+      {activeTab === "resume" && (
+        <div className="sv-panel">
+          <div className="sv-panel-head">
+            <div className="sv-panel-badge" style={{ background: "#FBEAF0" }}>📄</div>
+            <div>
+              <h2>
+                Resume Building <span className="sv-access-tag free">FREE</span>
+              </h2>
+              <p>Build a professional resume with guided templates and live preview</p>
+            </div>
+          </div>
+          <div className="rb-card">
+            <p className="sv-body-text" style={{ marginBottom: 0 }}>
+              No signup required to try it — build a resume in minutes with a live preview as you go.
+            </p>
+            <div className="rb-features">
+              <div className="rb-feature"><span className="rb-check">✓</span> Guided, professional templates</div>
+              <div className="rb-feature"><span className="rb-check">✓</span> Live preview as you type</div>
+              <div className="rb-feature"><span className="rb-check">✓</span> Download as PDF when you're done</div>
+            </div>
+            <button className="rb-btn" onClick={() => setShowResumeConsent(true)}>
+              Open Resume Builder →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showResumeConsent && (
+        <ResumeConsentModal onConfirm={handleResumeConfirm} onCancel={() => setShowResumeConsent(false)} />
+      )}
+
+      <style>{`
+        .sv-wrap { font-family: 'Inter', sans-serif; }
+
+        .sv-head { text-align: center; max-width: 560px; margin: 0 auto 2rem; }
+        .sv-eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; color: #2554E8; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .sv-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; font-weight: 800; color: #0A192F; margin: 0 0 0.6rem; }
+        .sv-sub { font-size: 14px; color: #6B7688; margin: 0; line-height: 1.55; }
+
+        .sv-tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 1.75rem; flex-wrap: wrap; }
+        .sv-tab {
+          display: flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 999px; border: 1px solid #E1E8F5;
+          background: #fff; color: #56637D; font-size: 13px; font-weight: 600; cursor: pointer;
+        }
+        .sv-tab.active { background: #0E2A63; color: #fff; border-color: #0E2A63; }
+        .sv-tab-icon { font-size: 15px; }
+
+        .sv-panel { max-width: 720px; margin: 0 auto; }
+
+        .sv-panel-head { display: flex; align-items: center; gap: 12px; margin-bottom: 1.25rem; }
+        .sv-panel-badge { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+        .sv-panel-head h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.2rem; font-weight: 700; color: #0A192F; margin: 0 0 2px; }
+        .sv-panel-head p { font-size: 13px; color: #6B7688; margin: 0; }
+        .sv-access-tag { font-size: 10.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; letter-spacing: 0.03em; margin-left: 6px; vertical-align: middle; }
+        .sv-access-tag.recruiters { background: #FDECD8; color: #8A4B0C; }
+        .sv-access-tag.free { background: #E1F5EE; color: #0F6E56; }
+
+        .sv-body-text { font-size: 14px; color: #4A5468; line-height: 1.65; margin: 0 0 1.5rem; }
+
+        .sv-locked-card { background: #fff; border: 1px solid #E6ECF7; border-radius: 18px; padding: 2rem; text-align: center; }
+        .sv-locked-icon { width: 56px; height: 56px; border-radius: 14px; background: #FDECD8; color: #8A4B0C; font-size: 26px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+        .sv-locked-card h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 700; color: #0A192F; margin: 0 0 0.5rem; }
+        .sv-locked-card p { font-size: 13.5px; color: #6B7688; max-width: 420px; margin: 0 auto 1.25rem; line-height: 1.55; }
+        .sv-locked-btn { background: #0E2A63; color: #fff; border: none; border-radius: 9px; padding: 11px 22px; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+
+        .hp-funnel-card { background: #fff; border: 1px solid #E6ECF7; border-radius: 18px; padding: 2rem 1.5rem 1.5rem; margin-bottom: 1.5rem; }
+        .hp-funnel { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 0 auto; max-width: 500px; }
+        .hp-stage { width: 100%; height: 54px; display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 10px; color: #fff; font-weight: 700; font-size: 13.5px; position: relative; }
+        .hp-stage-icon { width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; }
+        .hp-stage-num { position: absolute; left: 14px; font-size: 10.5px; font-weight: 700; opacity: 0.7; }
+        .hp-s1 { width: 100%; background: #123170; }
+        .hp-s2 { width: 88%; background: #1C48A3; }
+        .hp-s3 { width: 74%; background: #2554E8; }
+        .hp-s4 { width: 60%; background: #4A7BF0; }
+        .hp-s5 { width: 46%; background: #F2A93B; color: #4A2E00; }
+        .hp-desc-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 1.1rem; }
+        .hp-desc-item { text-align: center; }
+        .hp-desc-item p { font-size: 11px; color: #7A879C; margin: 0; line-height: 1.4; }
+        .hp-desc-item span { display: block; font-size: 11.5px; font-weight: 700; color: #14213D; margin-bottom: 2px; }
+
+        .hp-roles-head { text-align: center; margin: 0 0 1rem; }
+        .hp-roles-head h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 700; color: #0A192F; margin: 0 0 4px; }
+        .hp-roles-head p { font-size: 12.5px; color: #7A879C; margin: 0; }
+        .hp-role-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .hp-role-card { background: #fff; border: 1px solid #E6ECF7; border-radius: 14px; padding: 1.25rem 1rem; text-align: center; }
+        .hp-role-icon { width: 42px; height: 42px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 19px; margin: 0 auto 0.65rem; }
+        .hp-role-card h4 { font-size: 13px; font-weight: 700; color: #14213D; margin: 0 0 3px; }
+        .hp-role-card p { font-size: 11px; color: #7A879C; margin: 0; line-height: 1.4; }
+
+        .rpo-card { background: #fff; border: 1px solid #E6ECF7; border-radius: 18px; padding: 2rem 1.5rem; }
+        .rpo-flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; position: relative; }
+        .rpo-step { text-align: center; padding: 0 8px; position: relative; }
+        .rpo-step::after { content: "→"; position: absolute; top: 22px; right: -12px; color: #C3D5F0; font-size: 18px; font-weight: 700; }
+        .rpo-step.last::after { content: ""; }
+        .rpo-step-num { width: 44px; height: 44px; border-radius: 50%; background: #E4ECFE; color: #123170; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; }
+        .rpo-step h4 { font-size: 13px; font-weight: 700; color: #14213D; margin: 0 0 4px; }
+        .rpo-step p { font-size: 11.5px; color: #7A879C; margin: 0; line-height: 1.45; }
+
+        .rb-card { background: #fff; border: 1px solid #E6ECF7; border-radius: 18px; padding: 2rem; }
+        .rb-features { display: flex; flex-direction: column; gap: 10px; margin: 1.25rem 0 1.5rem; }
+        .rb-feature { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: #4A5468; }
+        .rb-check { color: #0F6E56; font-weight: 800; }
+        .rb-btn { background: #0E2A63; color: #fff; border: none; border-radius: 9px; padding: 11px 22px; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+
+        @media (max-width: 640px) {
+          .hp-desc-row { grid-template-columns: repeat(3, 1fr); row-gap: 12px; }
+          .hp-role-grid { grid-template-columns: repeat(2, 1fr); }
+          .rpo-flow { grid-template-columns: 1fr 1fr; row-gap: 1.5rem; }
+          .rpo-step::after { display: none; }
+        }
+      `}</style>
     </div>
   );
 }
