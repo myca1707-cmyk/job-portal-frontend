@@ -921,8 +921,58 @@ function getYouTubeEmbedId(url) {
   return null;
 }
 
+// Loads the YouTube IFrame Player API once and reuses it for every modal open
+let ytApiPromise = null;
+function loadYouTubeIframeAPI() {
+  if (window.YT && window.YT.Player) return Promise.resolve(window.YT);
+  if (ytApiPromise) return ytApiPromise;
+
+  ytApiPromise = new Promise((resolve) => {
+    const previousCallback = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => {
+      if (previousCallback) previousCallback();
+      resolve(window.YT);
+    };
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+  });
+
+  return ytApiPromise;
+}
+
 function MiniVideoModal({ mini, onClose }) {
   const videoId = getYouTubeEmbedId(mini.videoUrl);
+  const [containerId] = useState(() => `yt-player-${Math.random().toString(36).slice(2)}`);
+  const playerRef = useState({ current: null })[0];
+
+  useEffect(() => {
+    if (!videoId) return;
+    let cancelled = false;
+
+    loadYouTubeIframeAPI().then((YT) => {
+      if (cancelled) return;
+      playerRef.current = new YT.Player(containerId, {
+        videoId,
+        playerVars: { autoplay: 1, playsinline: 1 },
+        events: {
+          onStateChange: (event) => {
+            if (event.data === YT.PlayerState.ENDED) {
+              onClose();
+            }
+          },
+        },
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      if (playerRef.current && playerRef.current.destroy) {
+        playerRef.current.destroy();
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [videoId]);
 
   return (
     <div
@@ -947,13 +997,7 @@ function MiniVideoModal({ mini, onClose }) {
         </button>
         {videoId ? (
           <div style={{ aspectRatio: "9/16", borderRadius: 12, overflow: "hidden" }}>
-            <iframe
-              src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
-              title={mini.title}
-              style={{ width: "100%", height: "100%", border: "none" }}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+            <div id={containerId} style={{ width: "100%", height: "100%" }} />
           </div>
         ) : (
           <div className="card" style={{ textAlign: "center" }}>
@@ -967,8 +1011,6 @@ function MiniVideoModal({ mini, onClose }) {
 }
 
 function CoretechMinis() {
-  const [openMini, setOpenMini] = useState(null);
-
   const minis = [
     { title: "5 Resume Mistakes to Avoid", tag: "Resume Tips", videoUrl: "https://youtube.com/shorts/lXxusAKZnsw?si=wNxstYNMLrv9ksLH" },
     { title: "What Recruiters Look For in 30 Seconds", tag: "Interview Tips", videoUrl: null },
@@ -978,84 +1020,142 @@ function CoretechMinis() {
     { title: "Reading a Job Description Like a Pro", tag: "Job Market", videoUrl: null },
   ];
 
+  const VISIBLE = 3;
+  const DEFAULT_DURATION_MS = 15000; // matches the "Quick 15-second videos" copy below
+  const TRANSITION_MS = 260;
+
+  const [order, setOrder] = useState(minis.map((_, i) => i));
+  const [leaving, setLeaving] = useState(false);
+  const [openMini, setOpenMini] = useState(null);
+
+  function advance() {
+    setLeaving(true);
+    setTimeout(() => {
+      setOrder((prev) => {
+        const next = [...prev];
+        next.push(next.shift());
+        return next;
+      });
+      setLeaving(false);
+    }, TRANSITION_MS);
+  }
+
+  useEffect(() => {
+    if (openMini) return; // paused while a video is open — the stack shouldn't move underneath it
+    const currentDuration = minis[order[0]].durationMs || DEFAULT_DURATION_MS;
+    const timer = setTimeout(advance, currentDuration);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [order, openMini]);
+
   return (
     <div>
       <p className="card-desc" style={{ textAlign: "center", marginBottom: "1.5rem" }}>
         Quick 15-second videos on job market trends, resume tips, and interview advice.
       </p>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "1rem" }}>
-        {minis.map((m) => (
-          <div
-            key={m.title}
-            className="card"
-            style={{ padding: 0, overflow: "hidden", cursor: "pointer" }}
-            onClick={() => setOpenMini(m)}
-          >
+
+      <div className="rs-stage">
+        {order.slice(0, VISIBLE).map((idx, depth) => {
+          const m = minis[idx];
+          const isFront = depth === 0;
+          const transform = isFront && leaving
+            ? "translateX(260px) translateY(-10px) rotate(10deg) scale(0.9)"
+            : `translateX(${depth * 10}px) translateY(${depth * 8}px) scale(${1 - depth * 0.06})`;
+          const opacity = isFront && leaving ? 0 : depth === 0 ? 1 : depth === 1 ? 0.85 : 0.6;
+
+          return (
             <div
-              style={{
-                aspectRatio: "9/16",
-                background: "linear-gradient(155deg, #0A192F 0%, #123170 100%)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                position: "relative",
-              }}
+              key={idx}
+              className="rs-card"
+              style={{ zIndex: VISIBLE - depth, transform, opacity }}
+              onClick={isFront ? advance : undefined}
             >
-              <div
-                style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: "50%",
-                  background: "rgba(255,255,255,0.15)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
+              <span className="rs-tag">{m.tag}</span>
+
+              {isFront && m.videoUrl && (
+                <span
+                  className="rs-watch"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpenMini(m);
+                  }}
+                >
+                  ▶ Watch
+                </span>
+              )}
+
+              <div className="rs-play">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff">
                   <path d="M8 5v14l11-7z" />
                 </svg>
               </div>
-              <span
-                style={{
-                  position: "absolute",
-                  top: 8,
-                  left: 8,
-                  fontSize: 10,
-                  fontWeight: 600,
-                  color: "#64FFDA",
-                  background: "rgba(0,0,0,0.35)",
-                  padding: "2px 6px",
-                  borderRadius: 4,
-                }}
-              >
-                {m.tag}
-              </span>
-              {!m.videoUrl && (
-                <span
-                  style={{
-                    position: "absolute",
-                    bottom: 8,
-                    right: 8,
-                    fontSize: 9,
-                    fontWeight: 600,
-                    color: "#fff",
-                    background: "rgba(255,255,255,0.15)",
-                    padding: "2px 6px",
-                    borderRadius: 4,
-                  }}
-                >
-                  Coming soon
-                </span>
-              )}
+
+              {!m.videoUrl && <span className="rs-soon">Coming soon</span>}
+
+              <div className="rs-title">{m.title}</div>
             </div>
-            <p style={{ margin: 0, padding: "0.6rem 0.75rem", fontSize: 12.5, fontWeight: 600 }}>{m.title}</p>
-          </div>
+          );
+        })}
+      </div>
+
+      <p className="hint" style={{ textAlign: "center", marginTop: "0.75rem" }}>
+        Each one plays for a bit, then moves on · tap to skip ahead
+      </p>
+
+      <div className="rs-dots">
+        {minis.map((_, i) => (
+          <span key={i} className={`rs-dot ${order[0] === i ? "active" : ""}`} />
         ))}
       </div>
+
       <p className="hint" style={{ textAlign: "center", marginTop: "1rem" }}>More Coretech Minis dropping soon.</p>
 
-      {openMini && <MiniVideoModal mini={openMini} onClose={() => setOpenMini(null)} />}
+      {openMini && (
+        <MiniVideoModal
+          mini={openMini}
+          onClose={() => {
+            setOpenMini(null);
+            advance();
+          }}
+        />
+      )}
+
+      <style>{`
+        .rs-stage { position: relative; width: 220px; height: 390px; margin: 0 auto 1.25rem; }
+
+        .rs-card {
+          position: absolute; inset: 0; border-radius: 16px; overflow: hidden; cursor: pointer;
+          background: linear-gradient(155deg, #0A192F 0%, #123170 100%);
+          transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.45s ease;
+          display: flex; align-items: center; justify-content: center;
+        }
+
+        .rs-tag {
+          position: absolute; top: 10px; left: 10px; font-size: 10px; font-weight: 700; color: #64FFDA;
+          background: rgba(0,0,0,0.35); padding: 3px 8px; border-radius: 5px; letter-spacing: 0.02em;
+        }
+        .rs-soon {
+          position: absolute; bottom: 40px; right: 10px; font-size: 9px; font-weight: 700; color: #fff;
+          background: rgba(255,255,255,0.18); padding: 3px 7px; border-radius: 5px;
+        }
+        .rs-play {
+          width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.18);
+          display: flex; align-items: center; justify-content: center; z-index: 2;
+        }
+        .rs-title {
+          position: absolute; bottom: 0; left: 0; right: 0; padding: 0.75rem 0.85rem;
+          font-size: 12.5px; font-weight: 700; color: #fff; text-align: left;
+          background: linear-gradient(0deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 100%);
+        }
+        .rs-watch {
+          position: absolute; top: 10px; right: 10px; font-size: 10px; font-weight: 700; color: #0A192F;
+          background: #64FFDA; padding: 4px 9px; border-radius: 6px; z-index: 3; cursor: pointer;
+        }
+
+        .rs-dots { display: flex; justify-content: center; gap: 6px; }
+        .rs-dot { width: 6px; height: 6px; border-radius: 50%; background: #DCE6F5; transition: background 0.3s ease, width 0.3s ease; }
+        .rs-dot.active { background: #2554E8; width: 16px; border-radius: 3px; }
+      `}</style>
     </div>
   );
 }
