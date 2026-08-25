@@ -1376,13 +1376,96 @@ function LoginForm({ endpoint, label, onLogin }) {
   );
 }
 
+const PRIVACY_POLICY_VERSION = "2026-08"; // keep in sync with the "Last updated" date on PrivacyPolicy/TermsOfService
+
+function SignupConsent({ consentRequired, setConsentRequired, consentMarketing, setConsentMarketing, error }) {
+  const [infoOpen, setInfoOpen] = useState(false);
+
+  return (
+    <div style={{ marginTop: "0.5rem", marginBottom: "1rem" }}>
+      <p style={{ fontSize: 12, fontWeight: 700, color: "var(--blue-600, #2554E8)", textTransform: "uppercase", letterSpacing: "0.04em", margin: "0 0 0.75rem" }}>
+        Your consent
+      </p>
+
+      <div
+        onClick={() => setInfoOpen((v) => !v)}
+        style={{
+          display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, color: "#56637D",
+          background: "#F3F7FD", border: "1px solid #E1E8F5", borderRadius: 8, padding: "8px 12px",
+          cursor: "pointer", marginBottom: "0.75rem",
+        }}
+      >
+        <span style={{ transform: infoOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s ease", display: "inline-flex" }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#56637D" strokeWidth="2"><path d="M6 9l6 6 6-6" /></svg>
+        </span>
+        What we collect and why
+      </div>
+
+      {infoOpen && (
+        <ul style={{ fontSize: 12, color: "#6B7688", lineHeight: 1.7, margin: "-0.4rem 0 0.9rem", paddingLeft: 18 }}>
+          <li><strong>Name, email, phone</strong> — to create and secure your account, and let recruiters or candidates contact you.</li>
+          <li><strong>Password</strong> — stored securely, used only to log you in.</li>
+          <li><strong>Resume, skills, and profile details</strong> you add later — used to match you to relevant jobs.</li>
+          <li><strong>Email address</strong> — used to send account and application updates. Newsletter emails only if you opt in below.</li>
+        </ul>
+      )}
+
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: "0.75rem" }}>
+        <input
+          type="checkbox"
+          id="consentRequired"
+          checked={consentRequired}
+          onChange={(e) => setConsentRequired(e.target.checked)}
+          style={{ marginTop: 3, flexShrink: 0 }}
+        />
+        <label htmlFor="consentRequired" className="card-meta" style={{ margin: 0, fontSize: 13, lineHeight: 1.55 }}>
+          <span style={{ fontSize: 9.5, fontWeight: 700, padding: "2px 7px", borderRadius: 999, letterSpacing: "0.03em", marginRight: 6, background: "#FBEAF0", color: "#993556" }}>
+            REQUIRED
+          </span>
+          I have read and agree to the{" "}
+          <Link to="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</Link> and{" "}
+          <Link to="/terms-of-service" target="_blank" rel="noopener noreferrer">Terms of Service</Link>, and consent to
+          Coretech Talents processing my personal data to create and manage my account.
+        </label>
+      </div>
+
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: "0.75rem" }}>
+        <input
+          type="checkbox"
+          id="consentMarketing"
+          checked={consentMarketing}
+          onChange={(e) => setConsentMarketing(e.target.checked)}
+          style={{ marginTop: 3, flexShrink: 0 }}
+        />
+        <label htmlFor="consentMarketing" className="card-meta" style={{ margin: 0, fontSize: 13, lineHeight: 1.55 }}>
+          <span style={{ fontSize: 9.5, fontWeight: 700, padding: "2px 7px", borderRadius: 999, letterSpacing: "0.03em", marginRight: 6, background: "#E1F5EE", color: "#0F6E56" }}>
+            OPTIONAL
+          </span>
+          Send me career tips, job alerts, and newsletter updates by email.
+        </label>
+      </div>
+
+      <p style={{ fontSize: 11, color: "#9AA5B8", lineHeight: 1.6, margin: "0.75rem 0 0", paddingTop: "0.75rem", borderTop: "1px solid #EEF2F9" }}>
+        Your consent choices are recorded with a timestamp when you sign up. You can withdraw
+        consent, ask what data we hold, or request deletion of your account any time — see{" "}
+        <Link to="/terms-of-service" target="_blank" rel="noopener noreferrer">Terms of Service, Section 9</Link>{" "}
+        or contact us.
+      </p>
+
+      {error && <p className="msg-error" style={{ marginTop: "0.5rem" }}>{error}</p>}
+    </div>
+  );
+}
+
+
 function CandidateSignupForm({ onSuccess }) {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [consent, setConsent] = useState(false);
+  const [consentRequired, setConsentRequired] = useState(false);
+  const [consentMarketing, setConsentMarketing] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -1400,8 +1483,8 @@ function CandidateSignupForm({ onSuccess }) {
       return;
     }
 
-    if (!consent) {
-      setError("Please agree to the Privacy Policy and Terms of Service to continue");
+    if (!consentRequired) {
+      setError("Please agree to the required consent to continue");
       return;
     }
 
@@ -1411,7 +1494,15 @@ function CandidateSignupForm({ onSuccess }) {
       const res = await fetch(`${API_BASE}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ full_name: fullName, email, password, phone }),
+        body: JSON.stringify({
+          full_name: fullName,
+          email,
+          password,
+          phone,
+          marketing_consent: consentMarketing,
+          consent_given_at: new Date().toISOString(),
+          privacy_policy_version: PRIVACY_POLICY_VERSION,
+        }),
       });
 
       const data = await res.json().catch(() => ({}));
@@ -1455,23 +1546,14 @@ function CandidateSignupForm({ onSuccess }) {
           <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} />
         </div>
 
-        <div className="field" style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem" }}>
-          <input
-            type="checkbox"
-            id="candidateConsent"
-            checked={consent}
-            onChange={(e) => setConsent(e.target.checked)}
-            style={{ marginTop: "0.2rem" }}
-          />
-          <label htmlFor="candidateConsent" className="card-meta" style={{ margin: 0 }}>
-            I agree to the{" "}
-            <Link to="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</Link>{" "}
-            and{" "}
-            <Link to="/terms-of-service" target="_blank" rel="noopener noreferrer">Terms of Service</Link>
-          </label>
-        </div>
+        <SignupConsent
+          consentRequired={consentRequired}
+          setConsentRequired={setConsentRequired}
+          consentMarketing={consentMarketing}
+          setConsentMarketing={setConsentMarketing}
+          error={error}
+        />
 
-        {error && <p className="msg-error">{error}</p>}
         <button type="submit" className="btn-primary" disabled={loading}>
           {loading ? "Creating account..." : "Sign Up"}
         </button>
@@ -1487,7 +1569,8 @@ function RecruiterSignupForm({ onSuccess }) {
   const [designation, setDesignation] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [consent, setConsent] = useState(false);
+  const [consentRequired, setConsentRequired] = useState(false);
+  const [consentMarketing, setConsentMarketing] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -1505,8 +1588,8 @@ function RecruiterSignupForm({ onSuccess }) {
       return;
     }
 
-    if (!consent) {
-      setError("Please agree to the Privacy Policy and Terms of Service to continue");
+    if (!consentRequired) {
+      setError("Please agree to the required consent to continue");
       return;
     }
 
@@ -1522,6 +1605,9 @@ function RecruiterSignupForm({ onSuccess }) {
           password,
           company_name: companyName,
           designation: designation,
+          marketing_consent: consentMarketing,
+          consent_given_at: new Date().toISOString(),
+          privacy_policy_version: PRIVACY_POLICY_VERSION,
         }),
       });
 
@@ -1570,23 +1656,14 @@ function RecruiterSignupForm({ onSuccess }) {
           <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} />
         </div>
 
-        <div className="field" style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem" }}>
-          <input
-            type="checkbox"
-            id="recruiterConsent"
-            checked={consent}
-            onChange={(e) => setConsent(e.target.checked)}
-            style={{ marginTop: "0.2rem" }}
-          />
-          <label htmlFor="recruiterConsent" className="card-meta" style={{ margin: 0 }}>
-            I agree to the{" "}
-            <Link to="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</Link>{" "}
-            and{" "}
-            <Link to="/terms-of-service" target="_blank" rel="noopener noreferrer">Terms of Service</Link>
-          </label>
-        </div>
+        <SignupConsent
+          consentRequired={consentRequired}
+          setConsentRequired={setConsentRequired}
+          consentMarketing={consentMarketing}
+          setConsentMarketing={setConsentMarketing}
+          error={error}
+        />
 
-        {error && <p className="msg-error">{error}</p>}
         <button type="submit" className="btn-primary" disabled={loading}>
           {loading ? "Creating account..." : "Sign Up"}
         </button>
