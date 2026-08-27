@@ -2592,6 +2592,107 @@ function MatchedCandidatesPanel({ job, token, onBack }) {
   );
 }
 
+function EditJobModal({ job, token, onClose, onSaved }) {
+  const [form, setForm] = useState({
+    title: job.title || "",
+    description: job.description || "",
+    company_name: job.company_name || "",
+    location: job.location || "",
+    employment_type: job.employment_type || "",
+    skills_required: job.skills_required || "",
+    experience_required: job.experience_required || "",
+    salary: job.salary || "",
+    domain: job.domain || "",
+  });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleChange = (field) => (e) => setForm({ ...form, [field]: e.target.value });
+
+  const handleSave = () => {
+    setSaving(true);
+    setError("");
+    fetch(`${API_BASE}/jobs/${job.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(form),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to update job");
+        return res.json();
+      })
+      .then((updated) => {
+        onSaved(updated);
+        onClose();
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setSaving(false));
+  };
+
+  return (
+    <div
+      style={{
+        position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+        background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center",
+        justifyContent: "center", zIndex: 1000,
+      }}
+      onClick={onClose}
+    >
+      <div
+        className="card"
+        style={{ maxWidth: 480, width: "90%", maxHeight: "85vh", overflowY: "auto" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 style={{ marginTop: 0 }}>Edit Job</h3>
+
+        {error && <p className="msg-error">{error}</p>}
+
+        <label className="hint">Title</label>
+        <input value={form.title} onChange={handleChange("title")} style={{ width: "100%", marginBottom: 10 }} />
+
+        <label className="hint">Description</label>
+        <textarea
+          value={form.description}
+          onChange={handleChange("description")}
+          rows={4}
+          style={{ width: "100%", marginBottom: 10 }}
+        />
+
+        <label className="hint">Company Name</label>
+        <input value={form.company_name} onChange={handleChange("company_name")} style={{ width: "100%", marginBottom: 10 }} />
+
+        <label className="hint">Location</label>
+        <input value={form.location} onChange={handleChange("location")} style={{ width: "100%", marginBottom: 10 }} />
+
+        <label className="hint">Employment Type</label>
+        <input value={form.employment_type} onChange={handleChange("employment_type")} style={{ width: "100%", marginBottom: 10 }} />
+
+        <label className="hint">Skills Required (comma-separated)</label>
+        <input value={form.skills_required} onChange={handleChange("skills_required")} style={{ width: "100%", marginBottom: 10 }} />
+
+        <label className="hint">Experience Required</label>
+        <input value={form.experience_required} onChange={handleChange("experience_required")} style={{ width: "100%", marginBottom: 10 }} />
+
+        <label className="hint">Salary</label>
+        <input value={form.salary} onChange={handleChange("salary")} style={{ width: "100%", marginBottom: 10 }} />
+
+        <label className="hint">Domain</label>
+        <input value={form.domain} onChange={handleChange("domain")} style={{ width: "100%", marginBottom: 16 }} />
+
+        <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+          <button onClick={onClose} disabled={saving}>Cancel</button>
+          <button onClick={handleSave} disabled={saving}>
+            {saving ? "Saving..." : "Save Changes"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function RecruiterDashboard({ token }) {
   const [myJobs, setMyJobs] = useState([]);
   const [jobStats, setJobStats] = useState({});
@@ -2599,6 +2700,8 @@ function RecruiterDashboard({ token }) {
   const [error, setError] = useState("");
   const [selectedJob, setSelectedJob] = useState(null);
   const [matchesJob, setMatchesJob] = useState(null);
+  const [editingJob, setEditingJob] = useState(null);
+  const [statusUpdating, setStatusUpdating] = useState(null);
 
     if (matchesJob) {
     return <MatchedCandidatesPanel job={matchesJob} token={token} onBack={() => setMatchesJob(null)} />;
@@ -2635,6 +2738,26 @@ function RecruiterDashboard({ token }) {
       .finally(() => setLoading(false));
   }, [token]);
 
+  const handleToggleStatus = (job) => {
+    setStatusUpdating(job.id);
+    fetch(`${API_BASE}/jobs/${job.id}/status`, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((result) => {
+        setMyJobs((prev) =>
+          prev.map((j) => (j.id === job.id ? { ...j, is_active: result.is_active } : j))
+        );
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setStatusUpdating(null));
+  };
+
+  const handleJobSaved = (updatedJob) => {
+    setMyJobs((prev) => prev.map((j) => (j.id === updatedJob.id ? updatedJob : j)));
+  };
+
   if (selectedJob) {
     return <JobApplicantsPanel job={selectedJob} token={token} onBack={() => setSelectedJob(null)} />;
   }
@@ -2646,6 +2769,15 @@ function RecruiterDashboard({ token }) {
       {loading && <p className="empty-state">Loading your jobs...</p>}
       {error && <p className="msg-error">{error}</p>}
       {!loading && myJobs.length === 0 && <p className="empty-state">You haven't posted any jobs yet.</p>}
+
+      {editingJob && (
+        <EditJobModal
+          job={editingJob}
+          token={token}
+          onClose={() => setEditingJob(null)}
+          onSaved={handleJobSaved}
+        />
+      )}
 
       {myJobs.map((job) => {
         const stages = jobStats[job.id] || [0, 0, 0, 0, 0];
@@ -2686,8 +2818,19 @@ function RecruiterDashboard({ token }) {
               ))}
             </div>
 
-            <div onClick={(e) => e.stopPropagation()}>
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap", alignItems: "center" }}
+            >
               <ShareJobButton job={job} />
+              <button onClick={() => setEditingJob(job)}>Edit</button>
+              <button onClick={() => handleToggleStatus(job)} disabled={statusUpdating === job.id}>
+                {statusUpdating === job.id
+                  ? "Updating..."
+                  : job.is_active === false
+                  ? "Reopen"
+                  : "Close"}
+              </button>
             </div>
           </div>
         );
