@@ -4828,6 +4828,78 @@ const CHATBOT_FAQS = [
     keywords: ["free", "cost", "price", "charge"],
     answer: "Coretech Talents is free for candidates. For recruiter services, reach out via Contact Us for details.",
   },
+  {
+    keywords: ["hi", "hello", "hey"],
+    answer: "Hi! I'm here to help with quick questions about Coretech Talents. Ask me about jobs, signing up, or our services.",
+  },
+  {
+    keywords: ["counselling", "counseling", "1:1", "career advice"],
+    answer: "You can book a free 1:1 Career Counselling session under Career Advancement — resume review, interview prep, or career-direction advice from our team.",
+  },
+  {
+    keywords: ["mini", "minis", "video", "shorts"],
+    answer: "Coretech Minis are quick 15-second videos on resume tips, interview prep, and job market trends — find them under Career Advancement.",
+  },
+  {
+    keywords: ["newsletter", "article", "blog"],
+    answer: "We publish newsletters on resume tips, salary negotiation, recruitment trends, and more — check the Newsletters tab under Career Advancement.",
+  },
+  {
+    keywords: ["campus", "college", "drive"],
+    answer: "Our Campus Exploration feature helps recruiters connect with colleges across Tamil Nadu for hiring drives. It's available to approved recruiter accounts.",
+  },
+  {
+    keywords: ["rpo", "expert solution", "dedicated recruiter", "outsourc"],
+    answer: "Coretech Expert Solutions gives you a dedicated recruiter working in-office with your team, managing hiring end-to-end. Check the Services tab for details.",
+  },
+  {
+    keywords: ["resume", "cv"],
+    answer: "We have a free Resume Builder tool under the Services tab — no signup required to try it out.",
+  },
+  {
+    keywords: ["service", "services", "what do you offer", "what do you provide"],
+    answer: "We offer job matching, a free Resume Builder, Career Counselling, Coretech Minis, and career newsletters for candidates — check the Services and Career Advancement tabs. For recruiters: job posting, candidate search, Campus Exploration, and Expert Solutions (RPO-style support).",
+  },
+  {
+    keywords: ["recruiter", "hire", "hiring", "post a job", "post job"],
+    answer: "Recruiters can sign up, post jobs, search our candidate pool, and even arrange campus hiring drives. Recruiter accounts need admin approval before first login.",
+  },
+  {
+    keywords: ["job", "jobs", "opening", "vacancy", "apply"],
+    answer: "You can browse all open jobs on our homepage, or sign up as a candidate to apply directly. Click \"Login / Sign Up\" at the top to get started.",
+  },
+  {
+    keywords: ["status", "application", "applied"],
+    answer: "You can track your application status anytime under \"My Applications\" in your candidate dashboard once you're logged in.",
+  },
+  {
+    keywords: ["password", "forgot", "login issue", "can't log in", "cant log in"],
+    answer: "For login or password issues, please reach out via the Contact Us button and our team will help you sort it out.",
+  },
+  {
+    keywords: ["pending", "approval", "waiting", "not approved"],
+    answer: "New recruiter accounts are manually reviewed for verification — you'll get an email once approved, usually within a business day or two.",
+  },
+  {
+    keywords: ["about", "founder", "who are you", "company"],
+    answer: "Coretech Talents is a recruitment and staffing company connecting skilled talent with manufacturing and corporate employers across India. Check the About tab to learn more, including about our founder.",
+  },
+  {
+    keywords: ["privacy", "data", "gdpr", "delete my"],
+    answer: "You can review what we collect in our Privacy Policy, and request data access or deletion any time — see Terms of Service, Section 9, or Contact Us.",
+  },
+  {
+    keywords: ["signup", "sign up", "register", "account"],
+    answer: "Click \"Login / Sign Up\" at the top of the page, choose Candidate or Recruiter, then Sign Up. Recruiter accounts require approval before they can log in.",
+  },
+  {
+    keywords: ["free", "cost", "price", "charge"],
+    answer: "Coretech Talents is free for candidates — profile, applications, resume builder, and counselling, always. Recruiter services aren't cost-based right now either; that may change down the line as the platform grows.",
+  },
+  {
+    keywords: ["contact", "support", "help", "email"],
+    answer: "You can reach us through the Contact Us button on the homepage, and our team will get back to you.",
+  },
 ];
 
 const CHATBOT_FALLBACK =
