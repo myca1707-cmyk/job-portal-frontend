@@ -2592,6 +2592,86 @@ function MatchedCandidatesPanel({ job, token, onBack }) {
   );
 }
 
+function DeleteAccountFlow({ token, endpoint, onLoggedOut }) {
+  const [step, setStep] = useState("closed"); // "closed" | "confirm" | "success"
+  const [error, setError] = useState("");
+  const [deleting, setDeleting] = useState(false);
+
+  const handleConfirmDelete = () => {
+    setDeleting(true);
+    setError("");
+    fetch(`${API_BASE}${endpoint}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to delete account");
+        setStep("success");
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setDeleting(false));
+  };
+
+  return (
+    <>
+      <button
+        onClick={() => setStep("confirm")}
+        style={{ background: "#FFFFFF", border: "0.5px solid #D85A30", color: "#993C1D" }}
+      >
+        Delete account
+      </button>
+
+      {step === "confirm" && (
+        <div
+          style={{
+            position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+            background: "rgba(4,44,83,0.45)", display: "flex", alignItems: "center",
+            justifyContent: "center", zIndex: 1000,
+          }}
+          onClick={() => setStep("closed")}
+        >
+          <div className="card" style={{ maxWidth: 380, width: "90%" }} onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ marginTop: 0 }}>Delete your account?</h3>
+            <p className="hint">This permanently removes your profile, resume, and applications. This can't be undone.</p>
+            {error && <p className="msg-error">{error}</p>}
+            <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 16 }}>
+              <button onClick={() => setStep("closed")} disabled={deleting}>Cancel</button>
+              <button
+                onClick={handleConfirmDelete}
+                disabled={deleting}
+                style={{ background: "#A32D2D", color: "#fff", border: "none" }}
+              >
+                {deleting ? "Deleting..." : "Delete account"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {step === "success" && (
+        <div
+          style={{
+            position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+            background: "rgba(4,44,83,0.45)", display: "flex", alignItems: "center",
+            justifyContent: "center", zIndex: 1000,
+          }}
+        >
+          <div className="card" style={{ maxWidth: 380, width: "90%", textAlign: "center" }}>
+            <h3 style={{ marginTop: 0 }}>Account deleted</h3>
+            <p className="hint">Your account and all associated data have been removed. You'll now be signed out.</p>
+            <button
+              onClick={onLoggedOut}
+              style={{ background: "#185FA5", color: "#fff", border: "none", marginTop: 8 }}
+            >
+              Return to home
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 function EditJobModal({ job, token, onClose, onSaved }) {
   const [form, setForm] = useState({
     title: job.title || "",
@@ -3026,6 +3106,96 @@ function getInitials(name) {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
+function DeleteAccountFlow({ token, endpoint }) {
+  const [step, setStep] = useState("closed"); // "closed" | "confirm" | "success"
+  const [error, setError] = useState("");
+  const [deleting, setDeleting] = useState(false);
+
+  const handleConfirmDelete = () => {
+    setDeleting(true);
+    setError("");
+    fetch(`${API_BASE}${endpoint}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to delete account");
+        setStep("success");
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setDeleting(false));
+  };
+
+  const handleReturnHome = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+  };
+
+  return (
+    <div style={{ marginTop: "1.5rem", borderTop: "1px solid var(--line)", paddingTop: "1.25rem" }}>
+      <h3 style={{ marginBottom: "0.5rem", color: "#993C1D" }}>Danger zone</h3>
+      <p className="hint" style={{ marginBottom: "0.75rem" }}>
+        Deleting your account permanently removes your profile, resume, and applications.
+      </p>
+      <button
+        onClick={() => setStep("confirm")}
+        style={{ background: "#FFFFFF", border: "0.5px solid #D85A30", color: "#993C1D" }}
+      >
+        Delete account
+      </button>
+
+      {step === "confirm" && (
+        <div
+          style={{
+            position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+            background: "rgba(4,44,83,0.45)", display: "flex", alignItems: "center",
+            justifyContent: "center", zIndex: 1000,
+          }}
+          onClick={() => setStep("closed")}
+        >
+          <div className="card" style={{ maxWidth: 380, width: "90%" }} onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ marginTop: 0 }}>Delete your account?</h3>
+            <p className="hint">This permanently removes your profile, resume, and applications. This can't be undone.</p>
+            {error && <p className="msg-error">{error}</p>}
+            <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 16 }}>
+              <button onClick={() => setStep("closed")} disabled={deleting}>Cancel</button>
+              <button
+                onClick={handleConfirmDelete}
+                disabled={deleting}
+                style={{ background: "#A32D2D", color: "#fff", border: "none" }}
+              >
+                {deleting ? "Deleting..." : "Delete account"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {step === "success" && (
+        <div
+          style={{
+            position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+            background: "rgba(4,44,83,0.45)", display: "flex", alignItems: "center",
+            justifyContent: "center", zIndex: 1000,
+          }}
+        >
+          <div className="card" style={{ maxWidth: 380, width: "90%", textAlign: "center" }}>
+            <h3 style={{ marginTop: 0 }}>Account deleted</h3>
+            <p className="hint">Your account and all associated data have been removed. You'll now be signed out.</p>
+            <button
+              onClick={handleReturnHome}
+              style={{ background: "#185FA5", color: "#fff", border: "none", marginTop: 8 }}
+            >
+              Return to home
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 function CandidateProfile({ token }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -3325,6 +3495,8 @@ function CandidateProfile({ token }) {
               </button>
             </form>
           </div>
+
+          <DeleteAccountFlow token={token} endpoint="/candidates/me" />
         </div>
       )}
     </div>
@@ -5347,5 +5519,7 @@ function App() {
     </Routes>
   );
 }
+
+
 
 export default App;
