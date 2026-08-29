@@ -3303,6 +3303,7 @@ function CandidateProfile({ token }) {
     notice_period: "",
     education_level: "",
     field_of_study: "",
+    job_alerts_opt_in: false,
   });
 
   const [saving, setSaving] = useState(false);
@@ -3328,6 +3329,7 @@ function CandidateProfile({ token }) {
           notice_period: data.notice_period || "",
           education_level: data.education_level || "",
           field_of_study: data.field_of_study || "",
+          job_alerts_opt_in: data.job_alerts_opt_in || false,
         });
       })
       .catch((err) => setError(err.message))
@@ -3554,6 +3556,18 @@ function CandidateProfile({ token }) {
             <div className="field">
               <label>Notice period</label>
               <input value={form.notice_period} onChange={(e) => handleFormChange("notice_period", e.target.value)} />
+            </div>
+
+            <div className="field" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <input
+                type="checkbox"
+                id="jobAlertsOptIn"
+                checked={form.job_alerts_opt_in}
+                onChange={(e) => handleFormChange("job_alerts_opt_in", e.target.checked)}
+              />
+              <label htmlFor="jobAlertsOptIn" style={{ margin: 0 }}>
+                Email me a weekly digest of new matching jobs
+              </label>
             </div>
 
             {saveError && <p className="msg-error">{saveError}</p>}
