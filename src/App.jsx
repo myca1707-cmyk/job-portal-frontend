@@ -1319,11 +1319,163 @@ function CareerAdvancementSection() {
   );
 }
 
-function LoginForm({ endpoint, label, onLogin }) {
+function ForgotPasswordFlow({ role, onClose }) {
+  const [step, setStep] = useState("email"); // "email" | "reset" | "success"
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
+
+  const handleSendOtp = (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    fetch(`${API_BASE}/auth/forgot-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, role }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setInfo(data.detail || "If an account exists with this email, an OTP has been sent.");
+        setStep("reset");
+      })
+      .catch(() => setError("Something went wrong. Please try again."))
+      .finally(() => setLoading(false));
+  };
+
+  const handleResetPassword = (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (newPassword !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+    if (newPassword.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+
+    setLoading(true);
+    fetch(`${API_BASE}/auth/reset-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, role, otp, new_password: newPassword }),
+    })
+      .then(async (res) => {
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.detail || "Failed to reset password");
+        setStep("success");
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  };
+
+  return (
+    <div
+      style={{
+        position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+        background: "rgba(4,44,83,0.45)", display: "flex", alignItems: "center",
+        justifyContent: "center", zIndex: 1000,
+      }}
+      onClick={onClose}
+    >
+      <div className="card" style={{ maxWidth: 380, width: "90%" }} onClick={(e) => e.stopPropagation()}>
+
+        {step === "email" && (
+          <form onSubmit={handleSendOtp}>
+            <h3 style={{ marginTop: 0 }}>Reset your password</h3>
+            <p className="hint">Enter your email and we'll send you a 6-digit code.</p>
+
+            <div className="field">
+              <label>Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            {error && <p className="msg-error">{error}</p>}
+
+            <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 16 }}>
+              <button type="button" onClick={onClose} disabled={loading}>Cancel</button>
+              <button type="submit" className="btn-primary" disabled={loading}>
+                {loading ? "Sending..." : "Send code"}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {step === "reset" && (
+          <form onSubmit={handleResetPassword}>
+            <h3 style={{ marginTop: 0 }}>Enter your code</h3>
+            {info && <p className="hint">{info}</p>}
+
+            <div className="field">
+              <label>6-digit code</label>
+              <input
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                maxLength={6}
+                required
+              />
+            </div>
+            <div className="field">
+              <label>New password</label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+              />
+            </div>
+            <div className="field">
+              <label>Confirm new password</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            {error && <p className="msg-error">{error}</p>}
+
+            <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 16 }}>
+              <button type="button" onClick={() => setStep("email")} disabled={loading}>Back</button>
+              <button type="submit" className="btn-primary" disabled={loading}>
+                {loading ? "Resetting..." : "Reset password"}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {step === "success" && (
+          <div style={{ textAlign: "center" }}>
+            <h3 style={{ marginTop: 0 }}>Password reset!</h3>
+            <p className="hint">You can now log in with your new password.</p>
+            <button className="btn-primary" onClick={onClose} style={{ marginTop: 8 }}>
+              Back to login
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function LoginForm({ endpoint, label, onLogin, role }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -1372,6 +1524,16 @@ function LoginForm({ endpoint, label, onLogin }) {
           {loading ? "Logging in..." : "Log in"}
         </button>
       </form>
+
+      <div style={{ textAlign: "center", marginTop: "0.75rem" }}>
+        <button type="button" className="btn-link" onClick={() => setShowForgotPassword(true)}>
+          Forgot password?
+        </button>
+      </div>
+
+      {showForgotPassword && (
+        <ForgotPasswordFlow role={role} onClose={() => setShowForgotPassword(false)} />
+      )}
     </div>
   );
 }
@@ -1714,7 +1876,7 @@ function PortalAccess({ onCandidateLogin, onRecruiterLogin, onClose, initialRole
           {role === "candidate" && mode === "login" && (
             <>
               {candidateSignupDone && <p className="msg-success" style={{ marginBottom: "1rem" }}>Account created successfully — please log in.</p>}
-              <LoginForm endpoint="/auth/login" label="Candidate Login" onLogin={onCandidateLogin} />
+              <LoginForm endpoint="/auth/login" label="Candidate Login" onLogin={onCandidateLogin} role="candidate" />
             </>
           )}
 
@@ -1729,7 +1891,7 @@ function PortalAccess({ onCandidateLogin, onRecruiterLogin, onClose, initialRole
                   Account created. It's pending admin approval — you'll get an email once you're approved and can log in.
                 </p>
               )}
-              <LoginForm endpoint="/recruiter-auth/login" label="Recruiter Login" onLogin={onRecruiterLogin} />
+              <LoginForm endpoint="/recruiter-auth/login" label="Recruiter Login" onLogin={onRecruiterLogin} role="recruiter" />
             </>
           )}
 
