@@ -1908,70 +1908,176 @@ function PortalAccess({ onCandidateLogin, onRecruiterLogin, onClose, initialRole
   );
 }
 
-// ================= SHARE JOB BUTTON (WhatsApp / LinkedIn / SMS / copy link) =================
+// ================= SHARE JOB BUTTON (single icon → popup: WhatsApp / LinkedIn / Instagram / SMS / copy) =================
+function ShareIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
+      <line x1="8.6" y1="10.6" x2="15.4" y2="6.4" /><line x1="8.6" y1="13.4" x2="15.4" y2="17.6" />
+    </svg>
+  );
+}
+
 function ShareJobButton({ job }) {
+  const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [igCopied, setIgCopied] = useState(false);
   const jobUrl = `${window.location.origin}/jobs/${job.id}`;
   const shareText = `Check out this job: ${job.title}${job.company_name ? ` at ${job.company_name}` : ""}`;
 
-  function handleCopy(e) {
-    e.stopPropagation();
+  function copyLink(onDone) {
     navigator.clipboard
       .writeText(jobUrl)
       .then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        onDone(true);
+        setTimeout(() => onDone(false), 2000);
       })
       .catch(() => {});
   }
 
-  const shareBtnStyle = {
-    padding: "0.4rem 0.85rem",
-    borderRadius: "8px",
-    border: "1px solid var(--line, #ccc)",
-    background: "#fff",
+  const itemStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    padding: "8px 14px",
+    fontSize: 13.5,
     color: "var(--text-primary, #1a1a1a)",
-    fontSize: "0.85rem",
-    fontWeight: 600,
+    background: "none",
+    border: "none",
+    width: "100%",
+    textAlign: "left",
     cursor: "pointer",
     textDecoration: "none",
-    display: "inline-flex",
-    alignItems: "center",
   };
 
   return (
-    <div
-      style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "0.75rem" }}
-      onClick={(e) => e.stopPropagation()}
-    >
-      <a
-        href={`https://wa.me/?text=${encodeURIComponent(`${shareText} ${jobUrl}`)}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={shareBtnStyle}
-        title="Share on WhatsApp"
+    <div style={{ position: "relative", display: "inline-block" }} onClick={(e) => e.stopPropagation()}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        title="Share this job"
+        style={{
+          width: 34, height: 34, borderRadius: "50%", border: "1px solid var(--line, #ccc)",
+          background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+        }}
       >
-        WhatsApp
-      </a>
-      <a
-        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(jobUrl)}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={shareBtnStyle}
-        title="Share on LinkedIn"
-      >
-        LinkedIn
-      </a>
-      <a
-        href={`sms:?body=${encodeURIComponent(`${shareText} ${jobUrl}`)}`}
-        style={shareBtnStyle}
-        title="Share via SMS"
-      >
-        SMS
-      </a>
-      <button type="button" onClick={handleCopy} style={shareBtnStyle}>
-        {copied ? "Copied!" : "Copy Link"}
+        <ShareIcon />
       </button>
+
+      {open && (
+        <>
+          <div style={{ position: "fixed", inset: 0, zIndex: 998 }} onClick={() => setOpen(false)} />
+          <div
+            style={{
+              position: "absolute", bottom: "calc(100% + 8px)", left: 0, zIndex: 999,
+              background: "#fff", border: "1px solid var(--line, #ccc)", borderRadius: 10,
+              boxShadow: "0 8px 24px rgba(10,25,47,0.15)", minWidth: 170, overflow: "hidden",
+            }}
+          >
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent(`${shareText} ${jobUrl}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={itemStyle}
+              onClick={() => setOpen(false)}
+            >
+              WhatsApp
+            </a>
+            <a
+              href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(jobUrl)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={itemStyle}
+              onClick={() => setOpen(false)}
+            >
+              LinkedIn
+            </a>
+            <button type="button" style={itemStyle} onClick={() => copyLink(setIgCopied)}>
+              {igCopied ? "Link copied — paste into Instagram" : "Instagram"}
+            </button>
+            <a
+              href={`sms:?body=${encodeURIComponent(`${shareText} ${jobUrl}`)}`}
+              style={itemStyle}
+              onClick={() => setOpen(false)}
+            >
+              SMS
+            </a>
+            <button type="button" style={itemStyle} onClick={() => copyLink(setCopied)}>
+              {copied ? "Copied!" : "Copy Link"}
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ================= JOB ACTIONS MENU (single pencil icon → popup: Edit / Close / Reopen) =================
+function PencilIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+    </svg>
+  );
+}
+
+function JobActionsMenu({ job, onEdit, onToggleStatus, statusUpdating }) {
+  const [open, setOpen] = useState(false);
+
+  const itemStyle = {
+    display: "block",
+    padding: "8px 14px",
+    fontSize: 13.5,
+    color: "var(--text-primary, #1a1a1a)",
+    background: "none",
+    border: "none",
+    width: "100%",
+    textAlign: "left",
+    cursor: "pointer",
+  };
+
+  return (
+    <div style={{ position: "relative", display: "inline-block" }} onClick={(e) => e.stopPropagation()}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        title="Manage this job"
+        style={{
+          width: 34, height: 34, borderRadius: "50%", border: "1px solid var(--line, #ccc)",
+          background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+        }}
+      >
+        <PencilIcon />
+      </button>
+
+      {open && (
+        <>
+          <div style={{ position: "fixed", inset: 0, zIndex: 998 }} onClick={() => setOpen(false)} />
+          <div
+            style={{
+              position: "absolute", bottom: "calc(100% + 8px)", left: 0, zIndex: 999,
+              background: "#fff", border: "1px solid var(--line, #ccc)", borderRadius: 10,
+              boxShadow: "0 8px 24px rgba(10,25,47,0.15)", minWidth: 160, overflow: "hidden",
+            }}
+          >
+            <button type="button" style={itemStyle} onClick={() => { onEdit(job); setOpen(false); }}>
+              Edit job details
+            </button>
+            <button
+              type="button"
+              style={itemStyle}
+              disabled={statusUpdating === job.id}
+              onClick={() => { onToggleStatus(job); setOpen(false); }}
+            >
+              {statusUpdating === job.id
+                ? "Updating..."
+                : job.is_active === false
+                ? "Reopen job"
+                : "Close job"}
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -2987,14 +3093,12 @@ function RecruiterDashboard({ token }) {
               style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap", alignItems: "center" }}
             >
               <ShareJobButton job={job} />
-              <button onClick={() => setEditingJob(job)}>Edit</button>
-              <button onClick={() => handleToggleStatus(job)} disabled={statusUpdating === job.id}>
-                {statusUpdating === job.id
-                  ? "Updating..."
-                  : job.is_active === false
-                  ? "Reopen"
-                  : "Close"}
-              </button>
+              <JobActionsMenu
+                job={job}
+                onEdit={setEditingJob}
+                onToggleStatus={handleToggleStatus}
+                statusUpdating={statusUpdating}
+              />
             </div>
           </div>
         );
