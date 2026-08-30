@@ -2082,6 +2082,17 @@ function JobActionsMenu({ job, onEdit, onToggleStatus, statusUpdating }) {
   );
 }
 
+function timeAgo(dateStr) {
+  if (!dateStr) return null;
+  const diffMs = Date.now() - new Date(dateStr).getTime();
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (days <= 0) return "Posted today";
+  if (days === 1) return "Posted 1 day ago";
+  if (days < 30) return `Posted ${days} days ago`;
+  const months = Math.floor(days / 30);
+  return `Posted ${months} month${months === 1 ? "" : "s"} ago`;
+}
+
 function JobCard({ job, token, onRequireLogin }) {
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
@@ -2123,110 +2134,319 @@ function JobCard({ job, token, onRequireLogin }) {
     .filter((s) => Boolean(s) && s.toLowerCase() !== "none");
   const isApplied = status === "applied";
   const companyInitial = (job.company_name || "C").charAt(0).toUpperCase();
+  const posted = timeAgo(job.created_at);
+
+  const highlights = (job.description || "")
+    .split(/[.\n]/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .slice(0, 3);
 
   if (!expanded) {
     return (
-      <div className="card" style={{ padding: "1rem 1.25rem", cursor: "pointer" }} onClick={() => setExpanded(true)}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <div
+        style={{
+          background: "#fff",
+          border: "1px solid #E2E5EC",
+          borderRadius: 16,
+          padding: "1.1rem 1.35rem",
+          cursor: "pointer",
+          transition: "box-shadow 0.15s ease, border-color 0.15s ease",
+        }}
+        onClick={() => setExpanded(true)}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.boxShadow = "0 6px 20px rgba(10,25,47,0.08)";
+          e.currentTarget.style.borderColor = "#C3D5F0";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.boxShadow = "none";
+          e.currentTarget.style.borderColor = "#E2E5EC";
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <div
             style={{
-              width: 44, height: 44, borderRadius: "50%", flexShrink: 0,
-              background: "var(--blue-100, #E4ECFE)", color: "var(--blue-700, #123170)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontWeight: 700, fontSize: 16,
+              width: 46,
+              height: 46,
+              borderRadius: 12,
+              flexShrink: 0,
+              background: "#EEF2FF",
+              color: "#2554E8",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: 700,
+              fontSize: 17,
             }}
           >
             {companyInitial}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ margin: 0, fontWeight: 600, fontSize: 15 }}>{job.title}</p>
-            <p className="card-meta" style={{ margin: "2px 0 0" }}>
+            <p style={{ margin: 0, fontWeight: 700, fontSize: 15.5, color: "#0A1930" }}>{job.title}</p>
+            <p style={{ margin: "3px 0 0", fontSize: 13, color: "#6B7280" }}>
               {job.company_name} · {job.location} · {job.employment_type}
             </p>
           </div>
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#B7BEC9"
+            strokeWidth="2"
+            strokeLinecap="round"
+            style={{ flexShrink: 0 }}
+          >
+            <path d="M9 6l6 6-6 6" />
+          </svg>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="card" style={{ padding: "1.25rem" }}>
-      <button className="btn-link" onClick={() => setExpanded(false)} style={{ marginBottom: "0.75rem" }}>← Back</button>
-
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: 8 }}>
-        <div
+    <div style={{ background: "#fff", border: "1px solid #E2E5EC", borderRadius: 16, overflow: "hidden" }}>
+      <div style={{ padding: "1.5rem 1.75rem 1.25rem", borderBottom: "1px solid #E2E5EC" }}>
+        <button
+          onClick={() => setExpanded(false)}
           style={{
-            width: 64, height: 64, borderRadius: "50%",
-            background: "var(--blue-100, #E4ECFE)", color: "var(--blue-700, #123170)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontWeight: 700, fontSize: 22,
+            background: "none",
+            border: "none",
+            color: "#2554E8",
+            fontSize: 13.5,
+            fontWeight: 600,
+            cursor: "pointer",
+            padding: 0,
+            marginBottom: "0.85rem",
           }}
         >
-          {companyInitial}
-        </div>
-        <div>
-          <p style={{ margin: 0, fontWeight: 700, fontSize: 18 }}>{job.title}</p>
-          <p className="card-meta" style={{ margin: "4px 0 0" }}>
-            {job.company_name} · {job.location} · {job.employment_type}
-          </p>
+          ← Back
+        </button>
+        <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+          <div
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: 12,
+              flexShrink: 0,
+              background: "#EEF2FF",
+              color: "#2554E8",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: 700,
+              fontSize: 20,
+            }}
+          >
+            {companyInitial}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontSize: 19, fontWeight: 700, color: "#0A1930", margin: "0 0 4px" }}>{job.title}</p>
+            <p style={{ fontSize: 13.5, color: "#6B7280", margin: 0 }}>
+              <strong style={{ color: "#1A1A1A", fontWeight: 600 }}>{job.company_name}</strong> · {job.location}
+            </p>
+            <p style={{ fontSize: 12, color: "#9AA5B8", margin: "6px 0 0" }}>
+              {job.employment_type}
+              {posted ? ` · ${posted}` : ""}
+            </p>
+          </div>
+          <button
+            onClick={handleApply}
+            disabled={status === "applying" || isApplied}
+            style={{
+              background: isApplied ? "#EAF7EE" : "#2554E8",
+              color: isApplied ? "#16A34A" : "#fff",
+              border: "none",
+              borderRadius: 10,
+              padding: "10px 26px",
+              fontSize: 13.5,
+              fontWeight: 700,
+              cursor: isApplied ? "default" : "pointer",
+              flexShrink: 0,
+            }}
+          >
+            {status === "applying" ? "Applying..." : isApplied ? "Applied ✓" : "Apply"}
+          </button>
         </div>
       </div>
 
-      {(job.experience_required || job.salary || job.domain) && (
-        <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: "1rem", flexWrap: "wrap" }}>
+      {(job.experience_required || job.salary || job.location) && (
+        <div style={{ display: "flex", padding: "1rem 1.75rem", background: "#FBFCFE", borderBottom: "1px solid #E2E5EC" }}>
           {job.experience_required && (
-            <div style={{ textAlign: "center" }}>
-              <p className="hint" style={{ margin: 0 }}>Experience</p>
-              <p style={{ margin: "2px 0 0", fontWeight: 600, fontSize: 14 }}>{job.experience_required}</p>
+            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, paddingRight: 12 }}>
+              <div
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: 9,
+                  background: "#EEF2FF",
+                  color: "#2554E8",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M12 2 3 7v6c0 5 4 9 9 9s9-4 9-9V7l-9-5Z" />
+                </svg>
+              </div>
+              <div>
+                <p style={{ fontSize: 10.5, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.03em", margin: "0 0 2px" }}>
+                  Experience
+                </p>
+                <p style={{ fontSize: 13, fontWeight: 700, color: "#0A1930", margin: 0 }}>{job.experience_required}</p>
+              </div>
             </div>
           )}
           {job.salary && (
-            <div style={{ textAlign: "center" }}>
-              <p className="hint" style={{ margin: 0 }}>Salary</p>
-              <p style={{ margin: "2px 0 0", fontWeight: 600, fontSize: 14 }}>{job.salary}</p>
+            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, paddingLeft: 16, borderLeft: "1px solid #E2E5EC" }}>
+              <div
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: 9,
+                  background: "#EEF2FF",
+                  color: "#2554E8",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+              </div>
+              <div>
+                <p style={{ fontSize: 10.5, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.03em", margin: "0 0 2px" }}>
+                  Salary
+                </p>
+                <p style={{ fontSize: 13, fontWeight: 700, color: "#0A1930", margin: 0 }}>{job.salary}</p>
+              </div>
             </div>
           )}
-          {job.domain && (
-            <div style={{ textAlign: "center" }}>
-              <p className="hint" style={{ margin: 0 }}>Domain</p>
-              <p style={{ margin: "2px 0 0", fontWeight: 600, fontSize: 14 }}>{job.domain}</p>
+          {job.location && (
+            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, paddingLeft: 16, borderLeft: "1px solid #E2E5EC" }}>
+              <div
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: 9,
+                  background: "#EEF2FF",
+                  color: "#2554E8",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <circle cx="12" cy="10" r="3" />
+                  <path d="M12 21c-4-4-7-7.5-7-11a7 7 0 0 1 14 0c0 3.5-3 7-7 11Z" />
+                </svg>
+              </div>
+              <div>
+                <p style={{ fontSize: 10.5, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.03em", margin: "0 0 2px" }}>
+                  Location
+                </p>
+                <p style={{ fontSize: 13, fontWeight: 700, color: "#0A1930", margin: 0 }}>{job.location}</p>
+              </div>
             </div>
           )}
         </div>
       )}
 
-      {job.description && (
-        <div style={{ marginTop: "1.25rem" }}>
-          <p style={{ fontWeight: 600, fontSize: 14, margin: "0 0 6px" }}>Job description</p>
-          <p className="card-desc">{job.description}</p>
-        </div>
-      )}
+      <div style={{ padding: "1.5rem 1.75rem" }}>
+        {highlights.length > 0 && (
+          <div style={{ marginBottom: "1.5rem" }}>
+            <p style={{ fontSize: 14, fontWeight: 700, color: "#0A1930", margin: "0 0 10px" }}>Job highlights</p>
+            <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 8 }}>
+              {highlights.map((h, i) => (
+                <li key={i} style={{ fontSize: 13.5, color: "#1A1A1A", display: "flex", gap: 8, lineHeight: 1.5 }}>
+                  <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#2554E8", flexShrink: 0, marginTop: 7 }} />
+                  {h}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
-      {skills.length > 0 && (
-        <div className="tags" style={{ marginTop: "1rem", justifyContent: "center" }}>
-          {skills.map((s) => (
-            <span className="tag" key={s}>{s}</span>
-          ))}
-        </div>
-      )}
+        {job.description && (
+          <div style={{ marginBottom: "1.5rem" }}>
+            <p style={{ fontSize: 14, fontWeight: 700, color: "#0A1930", margin: "0 0 10px" }}>Job description</p>
+            <p style={{ fontSize: 13.5, color: "#4A5468", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{job.description}</p>
+          </div>
+        )}
 
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "1.5rem" }}>
-        <button
-          className={isApplied ? "btn-applied" : "btn-primary"}
-          onClick={handleApply}
-          disabled={status === "applying" || isApplied}
-        >
-          {status === "applying" ? "Applying..." : isApplied ? "Applied ✓" : "Apply"}
-        </button>
-        {message && (
-          <span className={`status-line ${status === "error" ? "msg-error" : "msg-success"}`} style={{ marginTop: "0.5rem" }}>
-            <span className={`status-dot ${status}`}></span>
-            {message}
-          </span>
+        {skills.length > 0 && (
+          <div style={{ marginBottom: "1.5rem" }}>
+            <p style={{ fontSize: 14, fontWeight: 700, color: "#0A1930", margin: "0 0 10px" }}>Key skills</p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {skills.map((s) => (
+                <span
+                  key={s}
+                  style={{
+                    background: "#EEF2FF",
+                    border: "1px solid #E1E9FE",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: "#1A3EBE",
+                    padding: "6px 13px",
+                    borderRadius: 999,
+                  }}
+                >
+                  {s}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {job.domain && (
+          <div>
+            <p style={{ fontSize: 14, fontWeight: 700, color: "#0A1930", margin: "0 0 10px" }}>Industry</p>
+            <span
+              style={{
+                display: "inline-block",
+                background: "#F5F7FB",
+                border: "1px solid #E2E5EC",
+                color: "#1A1A1A",
+                fontSize: 12,
+                fontWeight: 600,
+                padding: "5px 12px",
+                borderRadius: 999,
+              }}
+            >
+              {job.domain}
+            </span>
+          </div>
         )}
       </div>
 
-      <div style={{ display: "flex", justifyContent: "center", marginTop: "0.75rem" }}>
+      {message && (
+        <div style={{ padding: "0 1.75rem 1rem" }}>
+          <span style={{ fontSize: 13, color: status === "error" ? "#C0392B" : "#16A34A", fontWeight: 600 }}>{message}</span>
+        </div>
+      )}
+
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "1.25rem 1.75rem", borderTop: "1px solid #E2E5EC" }}>
+        <button
+          onClick={handleApply}
+          disabled={status === "applying" || isApplied}
+          style={{
+            background: isApplied ? "#EAF7EE" : "#2554E8",
+            color: isApplied ? "#16A34A" : "#fff",
+            border: "none",
+            borderRadius: 10,
+            padding: "11px 30px",
+            fontSize: 14,
+            fontWeight: 700,
+            cursor: isApplied ? "default" : "pointer",
+          }}
+        >
+          {status === "applying" ? "Applying..." : isApplied ? "Applied ✓" : "Apply now"}
+        </button>
         <ShareJobButton job={job} />
       </div>
     </div>
