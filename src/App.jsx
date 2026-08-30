@@ -6178,6 +6178,107 @@ function JobDetailPage() {
     </div>
   );
 }
+const CITY_DISPLAY_NAMES = {
+  chennai: "Chennai",
+  coimbatore: "Coimbatore",
+  madurai: "Madurai",
+  hosur: "Hosur",
+};
+
+function CityJobsPage() {
+  const { citySlug } = useParams();
+  const cityName = CITY_DISPLAY_NAMES[citySlug?.toLowerCase()] || null;
+
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const candidateToken = localStorage.getItem("candidate_token");
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(`${API_BASE}/jobs/`)
+      .then((res) => res.json())
+      .then((data) => {
+        const list = Array.isArray(data) ? data : [];
+        const filtered = cityName
+          ? list.filter((job) =>
+              (job.location || "").toLowerCase().includes(cityName.toLowerCase())
+            )
+          : [];
+        setJobs(filtered);
+      })
+      .catch(() => setJobs([]))
+      .finally(() => setLoading(false));
+  }, [cityName]);
+
+  useEffect(() => {
+    if (!cityName) return;
+
+    const previousTitle = document.title;
+    document.title = `Jobs in ${cityName} | Coretech Talents`;
+
+    let metaDesc = document.querySelector('meta[name="description"]');
+    let createdMetaDesc = false;
+    if (!metaDesc) {
+      metaDesc = document.createElement("meta");
+      metaDesc.setAttribute("name", "description");
+      document.head.appendChild(metaDesc);
+      createdMetaDesc = true;
+    }
+    const previousDesc = metaDesc.getAttribute("content");
+    metaDesc.setAttribute(
+      "content",
+      `Browse the latest job openings in ${cityName}, Tamil Nadu. Apply directly on Coretech Talents.`
+    );
+
+    return () => {
+      document.title = previousTitle;
+      if (createdMetaDesc) {
+        metaDesc.remove();
+      } else if (previousDesc !== null) {
+        metaDesc.setAttribute("content", previousDesc);
+      }
+    };
+  }, [cityName]);
+
+  if (!cityName) {
+    return (
+      <div className="container" style={{ paddingTop: "2.5rem" }}>
+        <p className="msg-error">City not found.</p>
+        <Link to="/" className="btn-link">← Back to home</Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container" style={{ paddingTop: "2.5rem", paddingBottom: "2rem" }}>
+      <Link to="/" className="btn-link">← Back to home</Link>
+
+      <div style={{ maxWidth: 700, margin: "1.5rem auto 0" }}>
+        <h1 className="page-title">Jobs in {cityName}</h1>
+        <p className="card-desc" style={{ marginBottom: "1.5rem" }}>
+          {loading
+            ? "Loading openings..."
+            : `${jobs.length} opening${jobs.length === 1 ? "" : "s"} currently listed in ${cityName}.`}
+        </p>
+
+        {!loading && jobs.length === 0 && (
+          <p className="empty-state">
+            No openings in {cityName} right now — check back soon, or{" "}
+            <Link to="/">browse all jobs</Link>.
+          </p>
+        )}
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          {jobs.map((job) => (
+            <JobCard key={job.id} job={job} token={candidateToken} onRequireLogin={() => {}} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const CHATBOT_FAQS = [
   {
     keywords: ["hi", "hello", "hey"],
@@ -6581,13 +6682,13 @@ function App() {
     <Routes>
      <Route path="/" element={<MainApp />} />
      <Route path="/jobs/:id" element={<JobDetailPage />} />
+     <Route path="/jobs-in/:citySlug" element={<CityJobsPage />} />
      <Route path="/services/resume-building" element={<ResumeServices />} />
      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
      <Route path="/terms-of-service" element={<TermsOfService />} />
     </Routes>
   );
 }
-
 
 
 export default App;
