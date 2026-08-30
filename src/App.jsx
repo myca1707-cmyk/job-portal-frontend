@@ -1911,7 +1911,7 @@ function PortalAccess({ onCandidateLogin, onRecruiterLogin, onClose, initialRole
 // ================= SHARE JOB BUTTON (single icon → popup: WhatsApp / LinkedIn / Instagram / SMS / copy) =================
 function ShareIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18, minWidth: 18, minHeight: 18, flexShrink: 0, display: "block" }}>
       <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
       <line x1="8.6" y1="10.6" x2="15.4" y2="6.4" /><line x1="8.6" y1="13.4" x2="15.4" y2="17.6" />
     </svg>
@@ -2015,7 +2015,7 @@ function ShareJobButton({ job }) {
 // ================= JOB ACTIONS MENU (single pencil icon → popup: Edit / Close / Reopen) =================
 function PencilIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16, minWidth: 16, minHeight: 16, flexShrink: 0, display: "block" }}>
       <path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
     </svg>
   );
