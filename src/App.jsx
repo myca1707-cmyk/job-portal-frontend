@@ -5562,6 +5562,7 @@ function AdminDashboard({ adminKey, onBack }) {
       <AdminAnalytics adminKey={adminKey} />
 
       <PendingRecruiters adminKey={adminKey} />
+      <AllRecruiters adminKey={adminKey} />
       <ContactQueries adminKey={adminKey} />
     </div>
   );
