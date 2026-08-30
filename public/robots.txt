@@ -1,4 +1,4 @@
-   User-agent: *
-   Allow: /
+User-agent: *
+Allow: /
 
-   Sitemap: https://coretechtalents.com/sitemap.xml
+Sitemap: https://www.coretechtalents.com/sitemap.xml
