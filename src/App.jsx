@@ -5131,14 +5131,84 @@ function RecruiterProfile({ token }) {
 
 function RecruiterShell({ token, onLogout }) {
   const [view, setView] = useState("dashboard");
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    function handleResize() {
+      setIsMobile(window.innerWidth <= 768);
+    }
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const tabs = [
-    { key: "profile", label: "My Profile" },
-    { key: "dashboard", label: "My Dashboard" },
-    { key: "searchCandidates", label: "Search Candidates" },
-    { key: "postJob", label: "Post a Job" },
-    { key: "campusExploration", label: "Campus Exploration" },
+    { key: "profile", label: "Profile", icon: "M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5Zm0 2c-4 0-8 2-8 5v2h16v-2c0-3-4-5-8-5Z" },
+    { key: "dashboard", label: "Dashboard", icon: "M4 4h7v7H4V4Zm9 0h7v4h-7V4Zm0 6h7v10h-7V10ZM4 13h7v7H4v-7Z" },
+    { key: "searchCandidates", label: "Search", icon: "M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm10 17-5.6-5.6" },
+    { key: "postJob", label: "Post Job", icon: "M12 5v14M5 12h14" },
+    { key: "campusExploration", label: "Campus", icon: "M12 3 2 8l10 5 10-5-10-5Zm0 10L2 8v8l10 5 10-5V8l-10 5Z" },
   ];
+
+  if (isMobile) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#F5F7FB" }}>
+        <div
+          style={{
+            display: "flex", alignItems: "center", gap: 10, padding: "0.9rem 1rem",
+            background: "#0A1930", position: "sticky", top: 0, zIndex: 50,
+          }}
+        >
+          <img src={logo} alt="Coretech Talents" style={{ width: 28, height: 28 }} />
+          <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Coretech Talents</span>
+          <button
+            onClick={onLogout}
+            style={{
+              marginLeft: "auto", background: "none", border: "1px solid rgba(255,255,255,0.3)",
+              color: "#fff", borderRadius: 8, padding: "6px 12px", fontSize: 12.5, cursor: "pointer",
+            }}
+          >
+            Log out
+          </button>
+        </div>
+
+        <div style={{ flex: 1, padding: "1rem", paddingBottom: "5.5rem", overflowY: "auto" }}>
+          {view === "profile" && <RecruiterProfile token={token} />}
+          {view === "dashboard" && <RecruiterDashboard token={token} />}
+          {view === "searchCandidates" && <CandidateSearch token={token} />}
+          {view === "postJob" && <PostJobPage token={token} />}
+          {view === "campusExploration" && <CampusExplorationPage />}
+        </div>
+
+        <div
+          style={{
+            position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 60,
+            background: "#fff", borderTop: "1px solid #E2E5EC",
+            display: "flex", paddingBottom: "env(safe-area-inset-bottom, 0px)",
+          }}
+        >
+          {tabs.map((tab) => {
+            const active = view === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setView(tab.key)}
+                style={{
+                  flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
+                  padding: "8px 2px 7px", background: "none", border: "none", cursor: "pointer",
+                  color: active ? "#2554E8" : "#9AA5B8",
+                }}
+              >
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d={tab.icon} />
+                </svg>
+                <span style={{ fontSize: 10, fontWeight: active ? 700 : 500 }}>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="recruiter-shell" style={{ display: "flex", minHeight: "100vh" }}>
@@ -5170,13 +5240,82 @@ function RecruiterShell({ token, onLogout }) {
 
 function CandidateShell({ token, onLogout }) {
   const [view, setView] = useState("profile");
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    function handleResize() {
+      setIsMobile(window.innerWidth <= 768);
+    }
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const tabs = [
-    { key: "profile", label: "My Profile" },
-    { key: "browseJobs", label: "Browse Jobs" },
-    { key: "myApplications", label: "My Applications" },
-    { key: "myResume", label: "My Resume" },
+    { key: "profile", label: "Profile", icon: "M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5Zm0 2c-4 0-8 2-8 5v2h16v-2c0-3-4-5-8-5Z" },
+    { key: "browseJobs", label: "Jobs", icon: "M4 4h7v7H4V4Zm9 0h7v4h-7V4Zm0 6h7v10h-7V10ZM4 13h7v7H4v-7Z" },
+    { key: "myApplications", label: "Applications", icon: "M9 12l2 2 4-4M7 3h10a2 2 0 0 1 2 2v14l-7-3-7 3V5a2 2 0 0 1 2-2Z" },
+    { key: "myResume", label: "Resume", icon: "M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Zm8 8H8m8 4H8m4-8H8" },
   ];
+
+  if (isMobile) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#F5F7FB" }}>
+        <div
+          style={{
+            display: "flex", alignItems: "center", gap: 10, padding: "0.9rem 1rem",
+            background: "#0A1930", position: "sticky", top: 0, zIndex: 50,
+          }}
+        >
+          <img src={logo} alt="Coretech Talents" style={{ width: 28, height: 28 }} />
+          <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Coretech Talents</span>
+          <button
+            onClick={onLogout}
+            style={{
+              marginLeft: "auto", background: "none", border: "1px solid rgba(255,255,255,0.3)",
+              color: "#fff", borderRadius: 8, padding: "6px 12px", fontSize: 12.5, cursor: "pointer",
+            }}
+          >
+            Log out
+          </button>
+        </div>
+
+        <div style={{ flex: 1, padding: "1rem", paddingBottom: "5.5rem", overflowY: "auto" }}>
+          {view === "profile" && <CandidateProfile token={token} />}
+          {view === "browseJobs" && <CandidateJobBrowser token={token} />}
+          {view === "myApplications" && <MyApplications token={token} onBack={() => setView("profile")} />}
+          {view === "myResume" && <MyResume token={token} onBack={() => setView("profile")} />}
+        </div>
+
+        <div
+          style={{
+            position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 60,
+            background: "#fff", borderTop: "1px solid #E2E5EC",
+            display: "flex", paddingBottom: "env(safe-area-inset-bottom, 0px)",
+          }}
+        >
+          {tabs.map((tab) => {
+            const active = view === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setView(tab.key)}
+                style={{
+                  flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
+                  padding: "8px 2px 7px", background: "none", border: "none", cursor: "pointer",
+                  color: active ? "#2554E8" : "#9AA5B8",
+                }}
+              >
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d={tab.icon} />
+                </svg>
+                <span style={{ fontSize: 10, fontWeight: active ? 700 : 500 }}>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="candidate-shell" style={{ display: "flex", minHeight: "100vh" }}>
