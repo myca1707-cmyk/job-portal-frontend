@@ -2720,35 +2720,108 @@ function PostJobForm({ token, onPosted }) {
       <div style={{ position: "sticky", top: "1.5rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: "0.85rem" }}>
           <span style={{ background: "#EAF7EE", color: "#16A34A", fontSize: 11.5, fontWeight: 700, padding: "3px 9px", borderRadius: 999 }}>LIVE PREVIEW</span>
-          <span style={{ fontSize: 13, color: "#6B7280" }}>What candidates see on Browse Jobs</span>
+          <span style={{ fontSize: 13, color: "#6B7280" }}>What candidates see when they open this job</span>
         </div>
-        <div className="card" style={{ padding: "1.5rem" }}>
-          <div style={{ width: 44, height: 44, borderRadius: 10, background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: "var(--blue-600, #2554E8)", fontSize: 16, marginBottom: "0.9rem" }}>
-            {(companyName || "C").charAt(0).toUpperCase()}
+
+        <div style={{ background: "#fff", border: "1px solid #E2E5EC", borderRadius: 16, overflow: "hidden" }}>
+          <div style={{ padding: "1.5rem 1.75rem 1.25rem", borderBottom: "1px solid #E2E5EC" }}>
+            <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+              <div style={{ width: 56, height: 56, borderRadius: 12, flexShrink: 0, background: "#EEF2FF", color: "#2554E8", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 20 }}>
+                {(companyName || "C").charAt(0).toUpperCase()}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: 19, fontWeight: 700, color: "var(--navy, #0A1930)", margin: "0 0 4px" }}>{title || "Job title"}</p>
+                <p style={{ fontSize: 13.5, color: "#6B7280", margin: 0 }}>
+                  <strong style={{ color: "#1A1A1A", fontWeight: 600 }}>{companyName || "Company"}</strong> · {location || "Location"}
+                </p>
+                <p style={{ fontSize: 12, color: "#9AA5B8", margin: "6px 0 0" }}>
+                  {employmentType} · Posted today
+                </p>
+              </div>
+              <button
+                type="button"
+                style={{
+                  background: "#2554E8", color: "#fff", border: "none", borderRadius: 10,
+                  padding: "10px 26px", fontSize: 13.5, fontWeight: 700, flexShrink: 0,
+                }}
+              >
+                Apply
+              </button>
+            </div>
           </div>
-          <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--navy, #0A1930)", margin: 0 }}>{title || "Job title"}</h3>
-          <p style={{ fontSize: 13, color: "#6B7280", margin: "2px 0 1rem" }}>
-            {companyName || "Company"} · {location || "Location"} · {employmentType}
-          </p>
-          {(experienceRequired || domain) && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: "1rem" }}>
-              {experienceRequired && <span className="tag">{experienceRequired}</span>}
-              {domain && <span className="tag" style={{ background: "#EEF2FF", color: "#1A3EBE" }}>{domain}</span>}
+
+          {(experienceRequired || salary || location) && (
+            <div style={{ display: "flex", padding: "1rem 1.75rem", background: "#FBFCFE", borderBottom: "1px solid #E2E5EC" }}>
+              {experienceRequired && (
+                <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, paddingRight: 12 }}>
+                  <div style={{ width: 34, height: 34, borderRadius: 9, background: "#EEF2FF", color: "#2554E8", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 2 3 7v6c0 5 4 9 9 9s9-4 9-9V7l-9-5Z" /></svg>
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 10.5, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.03em", margin: "0 0 2px" }}>Experience</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "var(--navy, #0A1930)", margin: 0 }}>{experienceRequired}</p>
+                  </div>
+                </div>
+              )}
+              {salary && (
+                <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, paddingLeft: 16, borderLeft: "1px solid #E2E5EC" }}>
+                  <div style={{ width: 34, height: 34, borderRadius: 9, background: "#EEF2FF", color: "#2554E8", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 10.5, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.03em", margin: "0 0 2px" }}>Salary</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "var(--navy, #0A1930)", margin: 0 }}>{salary}</p>
+                  </div>
+                </div>
+              )}
+              {location && (
+                <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, paddingLeft: 16, borderLeft: "1px solid #E2E5EC" }}>
+                  <div style={{ width: 34, height: 34, borderRadius: 9, background: "#EEF2FF", color: "#2554E8", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="10" r="3" /><path d="M12 21c-4-4-7-7.5-7-11a7 7 0 0 1 14 0c0 3.5-3 7-7 11Z" /></svg>
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 10.5, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.03em", margin: "0 0 2px" }}>Location</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "var(--navy, #0A1930)", margin: 0 }}>{location}</p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
-          <p style={{ fontSize: 13.5, color: description ? "#1A1A1A" : "#B7BEC9", lineHeight: 1.6, marginBottom: "1rem", whiteSpace: "pre-wrap" }}>
-            {description || "Description will appear here as you write it..."}
-          </p>
-          {skillList.length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: "1.1rem" }}>
-              {skillList.map((s, i) => (
-                <span key={i} style={{ background: "#fff", border: "1px solid #E2E5EC", fontSize: 11.5, fontWeight: 600, color: "var(--navy, #0A1930)", padding: "4px 9px", borderRadius: 8 }}>{s}</span>
-              ))}
+
+          <div style={{ padding: "1.5rem 1.75rem" }}>
+            <div style={{ marginBottom: "1.5rem" }}>
+              <p style={{ fontSize: 14, fontWeight: 700, color: "var(--navy, #0A1930)", margin: "0 0 10px" }}>Job description</p>
+              <p style={{ fontSize: 13.5, color: description ? "#4A5468" : "#B7BEC9", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>
+                {description || "Description will appear here as you write it..."}
+              </p>
             </div>
-          )}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "1rem", borderTop: "1px solid #E2E5EC" }}>
-            <span style={{ fontSize: 14, fontWeight: 700, color: salary ? "var(--navy, #0A1930)" : "#B7BEC9" }}>{salary || "Salary not specified"}</span>
-            <button type="button" className="btn-primary" style={{ padding: "9px 18px", fontSize: 13.5 }}>Apply now</button>
+
+            {skillList.length > 0 && (
+              <div style={{ marginBottom: "1.5rem" }}>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "var(--navy, #0A1930)", margin: "0 0 10px" }}>Key skills</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {skillList.map((s, i) => (
+                    <span key={i} style={{ background: "#EEF2FF", border: "1px solid #E1E9FE", fontSize: 12, fontWeight: 600, color: "#1A3EBE", padding: "6px 13px", borderRadius: 999 }}>{s}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {domain && (
+              <div>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "var(--navy, #0A1930)", margin: "0 0 10px" }}>Industry</p>
+                <span style={{ display: "inline-block", background: "#F5F7FB", border: "1px solid #E2E5EC", color: "#1A1A1A", fontSize: 12, fontWeight: 600, padding: "5px 12px", borderRadius: 999 }}>{domain}</span>
+              </div>
+            )}
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "1.25rem 1.75rem", borderTop: "1px solid #E2E5EC" }}>
+            <button
+              type="button"
+              style={{ background: "#2554E8", color: "#fff", border: "none", borderRadius: 10, padding: "11px 30px", fontSize: 14, fontWeight: 700 }}
+            >
+              Apply now
+            </button>
           </div>
         </div>
       </div>
