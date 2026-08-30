@@ -43,7 +43,7 @@ function AboutSection() {
       body: "PLACEHOLDER — tell me what to put here (years in business, placements made, clients served, notable partnerships, etc.) and I'll fill it in.",
     },
     founder: {
-      title: "Meet the Founder",
+      title: "Meet the Founder - Mr.VimalRaja",
       paragraphs: [
         "The founder has spent a decade learning exactly what makes hiring work — and what holds businesses and candidates back. That depth of experience isn't just a resume line; it's the foundation this entire platform is built on.",
         "A constant drive to evolve and do better is what led him to build CoreTech Talents' own recruitment portal — a platform designed to ease the job search for candidates and simplify hiring for recruiters. Where traditional recruitment often felt slow and disconnected, he saw an opportunity to make it faster, fairer, and more human.",
