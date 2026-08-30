@@ -495,6 +495,22 @@ function SplashScreen() {
 }
 
 function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter, onHome }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
+
+  useEffect(() => {
+    function handleResize() {
+      setIsMobile(window.innerWidth <= 640);
+    }
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  function go(fn) {
+    setMenuOpen(false);
+    fn();
+  }
+
   return (
     <div className="hero">
       <svg className="hero-bg" viewBox="0 0 800 240" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
@@ -523,14 +539,65 @@ function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter, 
             <div className="brand-name">Coretech Talents</div>
           </div>
 
-          <div className="hero-nav" style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-            <button onClick={onHome}>Home</button>
-            <button onClick={onAbout}>About</button>
-            <button onClick={onServices}>Services</button>
-            <button onClick={onNewsletter}>Career Advancement</button>
-            <button onClick={onOpenPortal}>Login / Sign Up</button>
-          </div>
+          {isMobile ? (
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-label="Menu"
+              style={{
+                width: 40, height: 40, borderRadius: 10, border: "1px solid rgba(255,255,255,0.25)",
+                background: "rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "center",
+              }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round">
+                {menuOpen ? <path d="M6 6l12 12M6 18 18 6" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+              </svg>
+            </button>
+          ) : (
+            <div className="hero-nav" style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+              <button onClick={onHome}>Home</button>
+              <button onClick={onAbout}>About</button>
+              <button onClick={onServices}>Services</button>
+              <button onClick={onNewsletter}>Career Advancement</button>
+              <button onClick={onOpenPortal}>Login / Sign Up</button>
+            </div>
+          )}
         </div>
+
+        {isMobile && menuOpen && (
+          <div
+            style={{
+              marginTop: "0.85rem", background: "rgba(10,25,47,0.97)", borderRadius: 14,
+              border: "1px solid rgba(255,255,255,0.12)", padding: "0.5rem", display: "flex", flexDirection: "column", gap: "0.25rem",
+            }}
+          >
+            {[
+              ["Home", onHome],
+              ["About", onAbout],
+              ["Services", onServices],
+              ["Career Advancement", onNewsletter],
+            ].map(([label, fn]) => (
+              <button
+                key={label}
+                onClick={() => go(fn)}
+                style={{
+                  background: "none", border: "none", color: "#fff", textAlign: "left",
+                  padding: "0.85rem 1rem", fontSize: 15, fontWeight: 500, borderRadius: 8,
+                }}
+              >
+                {label}
+              </button>
+            ))}
+            <button
+              onClick={() => go(onOpenPortal)}
+              style={{
+                background: "#2554E8", border: "none", color: "#fff", textAlign: "center",
+                padding: "0.85rem 1rem", fontSize: 15, fontWeight: 700, borderRadius: 8, marginTop: "0.35rem",
+              }}
+            >
+              Login / Sign Up
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1020,142 +1087,178 @@ function CoretechMinis() {
     { title: "Reading a Job Description Like a Pro", tag: "Job Market", videoUrl: null },
   ];
 
-  const VISIBLE = 3;
-  const DEFAULT_DURATION_MS = 15000; // matches the "Quick 15-second videos" copy below
-  const TRANSITION_MS = 260;
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [playingId, setPlayingId] = useState(null);
+  const containerRef = useState(null)[0];
+  const scrollRef = { current: null };
+  const [containerEl, setContainerEl] = useState(null);
+  const playerRef = useState({ current: null })[0];
 
-  const [order, setOrder] = useState(minis.map((_, i) => i));
-  const [leaving, setLeaving] = useState(false);
-  const [openMini, setOpenMini] = useState(null);
+  function handleScroll(e) {
+    const el = e.target;
+    const itemHeight = el.clientHeight;
+    const idx = Math.round(el.scrollTop / itemHeight);
+    if (idx !== activeIndex) setActiveIndex(idx);
+  }
 
-  function advance() {
-    setLeaving(true);
-    setTimeout(() => {
-      setOrder((prev) => {
-        const next = [...prev];
-        next.push(next.shift());
-        return next;
-      });
-      setLeaving(false);
-    }, TRANSITION_MS);
+  function openInline(idx) {
+    if (!minis[idx].videoUrl) return;
+    setPlayingId(idx);
   }
 
   useEffect(() => {
-    if (openMini) return; // paused while a video is open — the stack shouldn't move underneath it
-    const currentDuration = minis[order[0]].durationMs || DEFAULT_DURATION_MS;
-    const timer = setTimeout(advance, currentDuration);
-    return () => clearTimeout(timer);
+    if (playingId === null) return;
+    const mini = minis[playingId];
+    const videoId = getYouTubeEmbedId(mini.videoUrl);
+    if (!videoId) return;
+
+    const containerId = `reel-player-${playingId}`;
+    let cancelled = false;
+
+    loadYouTubeIframeAPI().then((YT) => {
+      if (cancelled) return;
+      playerRef.current = new YT.Player(containerId, {
+        videoId,
+        playerVars: { autoplay: 1, playsinline: 1, controls: 1 },
+        events: {
+          onStateChange: (event) => {
+            if (event.data === YT.PlayerState.ENDED) {
+              setPlayingId(null);
+            }
+          },
+        },
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      if (playerRef.current && playerRef.current.destroy) {
+        playerRef.current.destroy();
+        playerRef.current = null;
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [order, openMini]);
+  }, [playingId]);
 
   return (
     <div>
-      <p className="card-desc" style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-        Quick 15-second videos on job market trends, resume tips, and interview advice.
+      <p className="card-desc" style={{ textAlign: "center", marginBottom: "1.25rem" }}>
+        Swipe up or down to browse — tap a video to watch.
       </p>
 
-      <div className="rs-stage">
-        {order.slice(0, VISIBLE).map((idx, depth) => {
-          const m = minis[idx];
-          const isFront = depth === 0;
-          const transform = isFront && leaving
-            ? "translateX(260px) translateY(-10px) rotate(10deg) scale(0.9)"
-            : `translateX(${depth * 10}px) translateY(${depth * 8}px) scale(${1 - depth * 0.06})`;
-          const opacity = isFront && leaving ? 0 : depth === 0 ? 1 : depth === 1 ? 0.85 : 0.6;
-
-          return (
-            <div
-              key={idx}
-              className="rs-card"
-              style={{ zIndex: VISIBLE - depth, transform, opacity }}
-              onClick={isFront ? advance : undefined}
-            >
-              <span className="rs-tag">{m.tag}</span>
-
-              {isFront && m.videoUrl && (
+      <div
+        onScroll={handleScroll}
+        style={{
+          maxWidth: 360,
+          height: "min(70vh, 640px)",
+          margin: "0 auto",
+          borderRadius: 20,
+          overflow: "hidden",
+          background: "#000",
+          position: "relative",
+          scrollSnapType: "y mandatory",
+          overflowY: "auto",
+          WebkitOverflowScrolling: "touch",
+        }}
+      >
+        {minis.map((m, i) => (
+          <div
+            key={i}
+            style={{
+              height: "100%",
+              width: "100%",
+              scrollSnapAlign: "start",
+              position: "relative",
+              background: "linear-gradient(155deg, #0A192F 0%, #123170 100%)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            {playingId === i ? (
+              <div style={{ width: "100%", height: "100%" }}>
+                <div id={`reel-player-${i}`} style={{ width: "100%", height: "100%" }} />
+              </div>
+            ) : (
+              <div
+                onClick={() => openInline(i)}
+                style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", cursor: m.videoUrl ? "pointer" : "default", position: "relative" }}
+              >
                 <span
-                  className="rs-watch"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setOpenMini(m);
+                  style={{
+                    position: "absolute", top: 14, left: 14, fontSize: 11, fontWeight: 700, color: "#64FFDA",
+                    background: "rgba(0,0,0,0.35)", padding: "4px 10px", borderRadius: 6, letterSpacing: "0.02em",
                   }}
                 >
-                  ▶ Watch
+                  {m.tag}
                 </span>
-              )}
 
-              <div className="rs-play">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
+                {m.videoUrl ? (
+                  <div
+                    style={{
+                      width: 64, height: 64, borderRadius: "50%", background: "rgba(255,255,255,0.18)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                    }}
+                  >
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
+                ) : (
+                  <span
+                    style={{
+                      fontSize: 11, fontWeight: 700, color: "#fff",
+                      background: "rgba(255,255,255,0.18)", padding: "6px 14px", borderRadius: 999,
+                    }}
+                  >
+                    Coming soon
+                  </span>
+                )}
+
+                <div
+                  style={{
+                    position: "absolute", bottom: 0, left: 0, right: 0, padding: "1.5rem 1.25rem 1.75rem",
+                    fontSize: 16, fontWeight: 700, color: "#fff", textAlign: "left",
+                    background: "linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)",
+                  }}
+                >
+                  {m.title}
+                </div>
+
+                <div
+                  style={{
+                    position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)",
+                    display: "flex", flexDirection: "column", gap: 8, alignItems: "center",
+                  }}
+                >
+                  {i > 0 && (
+                    <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 18 }}>▲</span>
+                  )}
+                  {i < minis.length - 1 && (
+                    <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 18 }}>▼</span>
+                  )}
+                </div>
               </div>
-
-              {!m.videoUrl && <span className="rs-soon">Coming soon</span>}
-
-              <div className="rs-title">{m.title}</div>
-            </div>
-          );
-        })}
+            )}
+          </div>
+        ))}
       </div>
 
-      <p className="hint" style={{ textAlign: "center", marginTop: "0.75rem" }}>
-        Each one plays for a bit, then moves on · tap to skip ahead
-      </p>
-
-      <div className="rs-dots">
+      <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: "1rem" }}>
         {minis.map((_, i) => (
-          <span key={i} className={`rs-dot ${order[0] === i ? "active" : ""}`} />
+          <span
+            key={i}
+            style={{
+              width: activeIndex === i ? 16 : 6, height: 6, borderRadius: 3,
+              background: activeIndex === i ? "#2554E8" : "#DCE6F5",
+              transition: "all 0.25s ease",
+            }}
+          />
         ))}
       </div>
 
       <p className="hint" style={{ textAlign: "center", marginTop: "1rem" }}>More Coretech Minis dropping soon.</p>
-
-      {openMini && (
-        <MiniVideoModal
-          mini={openMini}
-          onClose={() => {
-            setOpenMini(null);
-            advance();
-          }}
-        />
-      )}
-
-      <style>{`
-        .rs-stage { position: relative; width: 220px; height: 390px; margin: 0 auto 1.25rem; }
-
-        .rs-card {
-          position: absolute; inset: 0; border-radius: 16px; overflow: hidden; cursor: pointer;
-          background: linear-gradient(155deg, #0A192F 0%, #123170 100%);
-          transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.45s ease;
-          display: flex; align-items: center; justify-content: center;
-        }
-
-        .rs-tag {
-          position: absolute; top: 10px; left: 10px; font-size: 10px; font-weight: 700; color: #64FFDA;
-          background: rgba(0,0,0,0.35); padding: 3px 8px; border-radius: 5px; letter-spacing: 0.02em;
-        }
-        .rs-soon {
-          position: absolute; bottom: 40px; right: 10px; font-size: 9px; font-weight: 700; color: #fff;
-          background: rgba(255,255,255,0.18); padding: 3px 7px; border-radius: 5px;
-        }
-        .rs-play {
-          width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.18);
-          display: flex; align-items: center; justify-content: center; z-index: 2;
-        }
-        .rs-title {
-          position: absolute; bottom: 0; left: 0; right: 0; padding: 0.75rem 0.85rem;
-          font-size: 12.5px; font-weight: 700; color: #fff; text-align: left;
-          background: linear-gradient(0deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 100%);
-        }
-        .rs-watch {
-          position: absolute; top: 10px; right: 10px; font-size: 10px; font-weight: 700; color: #0A192F;
-          background: #64FFDA; padding: 4px 9px; border-radius: 6px; z-index: 3; cursor: pointer;
-        }
-
-        .rs-dots { display: flex; justify-content: center; gap: 6px; }
-        .rs-dot { width: 6px; height: 6px; border-radius: 50%; background: #DCE6F5; transition: background 0.3s ease, width 0.3s ease; }
-        .rs-dot.active { background: #2554E8; width: 16px; border-radius: 3px; }
-      `}</style>
     </div>
   );
 }
