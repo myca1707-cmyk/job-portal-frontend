@@ -2471,6 +2471,15 @@ function PostJobForm({ token, onPosted }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [touched, setTouched] = useState({});
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    function handleResize() {
+      setIsMobile(window.innerWidth <= 768);
+    }
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   function markTouched(field) {
     setTouched((t) => ({ ...t, [field]: true }));
@@ -2571,7 +2580,7 @@ function PostJobForm({ token, onPosted }) {
   const errStyle = { fontSize: 12, color: "#C0392B", marginTop: 4 };
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: "1.75rem", alignItems: "start" }}>
+    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.1fr 0.9fr", gap: isMobile ? "1.25rem" : "1.75rem", alignItems: "start" }}>
       <div className="form-card">
         <div style={{ display: "flex", marginBottom: "1.5rem" }}>
           {steps.map((s, i) => (
@@ -2592,7 +2601,7 @@ function PostJobForm({ token, onPosted }) {
               }}>
                 {i < step ? "✓" : i + 1}
               </div>
-              <label style={{ fontSize: 12, fontWeight: i === step ? 600 : 500, color: i === step ? "var(--navy, #0A1930)" : "#6B7280" }}>
+              <label style={{ fontSize: isMobile ? 10.5 : 12, fontWeight: i === step ? 600 : 500, color: i === step ? "var(--navy, #0A1930)" : "#6B7280" }}>
                 {s}
               </label>
             </div>
@@ -2606,7 +2615,7 @@ function PostJobForm({ token, onPosted }) {
               <input style={fieldStyle} value={title} onChange={(e) => setTitle(e.target.value)} onBlur={() => markTouched("title")} placeholder="e.g. Backend Developer" />
               {touched.title && !title.trim() && <p style={errStyle}>Enter a job title.</p>}
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "1rem" }}>
               <div className="field">
                 <label style={labelStyle}>Company name</label>
                 <input style={fieldStyle} value={companyName} onChange={(e) => setCompanyName(e.target.value)} onBlur={() => markTouched("companyName")} placeholder="e.g. Coretech Talents" />
@@ -2618,7 +2627,7 @@ function PostJobForm({ token, onPosted }) {
                 {touched.location && !location.trim() && <p style={errStyle}>Enter a location.</p>}
               </div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "1rem" }}>
               <div className="field">
                 <label style={labelStyle}>Employment type</label>
                 <select style={fieldStyle} value={employmentType} onChange={(e) => setEmploymentType(e.target.value)}>
@@ -2651,7 +2660,7 @@ function PostJobForm({ token, onPosted }) {
 
         {step === 2 && (
           <div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "1rem" }}>
               <div className="field">
                 <label style={labelStyle}>Experience required</label>
                 <input style={fieldStyle} value={experienceRequired} onChange={(e) => setExperienceRequired(e.target.value)} placeholder="e.g. 2-4 years" />
@@ -2717,7 +2726,7 @@ function PostJobForm({ token, onPosted }) {
         </div>
       </div>
 
-      <div style={{ position: "sticky", top: "1.5rem" }}>
+      <div style={{ position: isMobile ? "static" : "sticky", top: "1.5rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: "0.85rem" }}>
           <span style={{ background: "#EAF7EE", color: "#16A34A", fontSize: 11.5, fontWeight: 700, padding: "3px 9px", borderRadius: 999 }}>LIVE PREVIEW</span>
           <span style={{ fontSize: 13, color: "#6B7280" }}>What candidates see when they open this job</span>
@@ -2725,7 +2734,7 @@ function PostJobForm({ token, onPosted }) {
 
         <div style={{ background: "#fff", border: "1px solid #E2E5EC", borderRadius: 16, overflow: "hidden" }}>
           <div style={{ padding: "1.5rem 1.75rem 1.25rem", borderBottom: "1px solid #E2E5EC" }}>
-            <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+            <div style={{ display: "flex", gap: 14, alignItems: "flex-start", flexWrap: isMobile ? "wrap" : "nowrap" }}>
               <div style={{ width: 56, height: 56, borderRadius: 12, flexShrink: 0, background: "#EEF2FF", color: "#2554E8", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 20 }}>
                 {(companyName || "C").charAt(0).toUpperCase()}
               </div>
@@ -2743,6 +2752,7 @@ function PostJobForm({ token, onPosted }) {
                 style={{
                   background: "#2554E8", color: "#fff", border: "none", borderRadius: 10,
                   padding: "10px 26px", fontSize: 13.5, fontWeight: 700, flexShrink: 0,
+                  width: isMobile ? "100%" : "auto",
                 }}
               >
                 Apply
@@ -2751,9 +2761,9 @@ function PostJobForm({ token, onPosted }) {
           </div>
 
           {(experienceRequired || salary || location) && (
-            <div style={{ display: "flex", padding: "1rem 1.75rem", background: "#FBFCFE", borderBottom: "1px solid #E2E5EC" }}>
+            <div style={{ display: "flex", flexWrap: isMobile ? "wrap" : "nowrap", padding: "1rem 1.75rem", background: "#FBFCFE", borderBottom: "1px solid #E2E5EC", gap: isMobile ? "12px" : 0 }}>
               {experienceRequired && (
-                <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, paddingRight: 12 }}>
+                <div style={{ flex: isMobile ? "1 1 45%" : 1, display: "flex", alignItems: "center", gap: 10, paddingRight: 12 }}>
                   <div style={{ width: 34, height: 34, borderRadius: 9, background: "#EEF2FF", color: "#2554E8", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 2 3 7v6c0 5 4 9 9 9s9-4 9-9V7l-9-5Z" /></svg>
                   </div>
@@ -2764,7 +2774,7 @@ function PostJobForm({ token, onPosted }) {
                 </div>
               )}
               {salary && (
-                <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, paddingLeft: 16, borderLeft: "1px solid #E2E5EC" }}>
+                <div style={{ flex: isMobile ? "1 1 45%" : 1, display: "flex", alignItems: "center", gap: 10, paddingLeft: isMobile ? 0 : 16, borderLeft: isMobile ? "none" : "1px solid #E2E5EC" }}>
                   <div style={{ width: 34, height: 34, borderRadius: 9, background: "#EEF2FF", color: "#2554E8", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
                   </div>
@@ -2775,7 +2785,7 @@ function PostJobForm({ token, onPosted }) {
                 </div>
               )}
               {location && (
-                <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, paddingLeft: 16, borderLeft: "1px solid #E2E5EC" }}>
+                <div style={{ flex: isMobile ? "1 1 45%" : 1, display: "flex", alignItems: "center", gap: 10, paddingLeft: isMobile ? 0 : 16, borderLeft: isMobile ? "none" : "1px solid #E2E5EC" }}>
                   <div style={{ width: 34, height: 34, borderRadius: 9, background: "#EEF2FF", color: "#2554E8", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="10" r="3" /><path d="M12 21c-4-4-7-7.5-7-11a7 7 0 0 1 14 0c0 3.5-3 7-7 11Z" /></svg>
                   </div>
@@ -2818,7 +2828,7 @@ function PostJobForm({ token, onPosted }) {
           <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "1.25rem 1.75rem", borderTop: "1px solid #E2E5EC" }}>
             <button
               type="button"
-              style={{ background: "#2554E8", color: "#fff", border: "none", borderRadius: 10, padding: "11px 30px", fontSize: 14, fontWeight: 700 }}
+              style={{ background: "#2554E8", color: "#fff", border: "none", borderRadius: 10, padding: "11px 30px", fontSize: 14, fontWeight: 700, width: isMobile ? "100%" : "auto" }}
             >
               Apply now
             </button>
