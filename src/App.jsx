@@ -9,6 +9,7 @@ import CampusExploration from "./CampusExploration";
 import PrivacyPolicy from "./PrivacyPolicy";
 import TermsOfService from "./TermsOfService";
 import AudienceSplit from "./AudienceSplit";
+import ReferFriend from './ReferFriend';
 
 const API_BASE = "https://job-portal-backend-production-6d9d.up.railway.app";
 
@@ -811,6 +812,9 @@ function HomeSection({ onLogin }) {
           {" · "}
           <Link to="/terms-of-service">Terms of Service</Link>
         </p>
+        <div style={{ marginTop: "0.75rem", display: "flex", justifyContent: "center" }}></div>
+          <ReferFriend />
+        <div></div>
       </div>
 
       <style>{`
@@ -1079,9 +1083,9 @@ function MiniVideoModal({ mini, onClose }) {
 
 function CoretechMinis() {
   const minis = [
-    { title: "Job Add for chemistry graduates", tag: "Resume Tips", videoUrl: "https://youtube.com/shorts/lXxusAKZnsw?si=wNxstYNMLrv9ksLH" },
-    { title: "Coretech Minis Logo", tag: "Interview Tips", videoUrl: "https://youtu.be/-fFeC7GI9ec?si=RdXTqqhJEonl91Da"},
-    { title: "Manufacturing Jobs: What's Hot Right Now", tag: "Job Market", videoUrl: "https://youtube.com/shorts/NVFCnJiRXHY?si=s5mg1bWypplnfYfT"},
+    { title: "Job Add for chemistry graduates", tag: "Job Add", videoUrl: "https://youtube.com/shorts/lXxusAKZnsw?si=wNxstYNMLrv9ksLH" },
+    { title: "Coretech Minis Logo", tag: "Logo", videoUrl: "https://youtu.be/-fFeC7GI9ec?si=RdXTqqhJEonl91Da"},
+    { title: "Interview Expectations from Job Seekers", tag: "Tips to imrpove", videoUrl: "https://youtube.com/shorts/NVFCnJiRXHY?si=s5mg1bWypplnfYfT"},
     { title: "How to Negotiate Your Offer", tag: "Career Advice", videoUrl: null },
     { title: "Campus to Career: First Job Tips", tag: "Freshers", videoUrl: null },
     { title: "Reading a Job Description Like a Pro", tag: "Job Market", videoUrl: null },
