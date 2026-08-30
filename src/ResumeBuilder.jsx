@@ -99,8 +99,9 @@ export default function ResumeBuilder() {
   }
 
   function handleGoToLogin() {
-    window.location.href = "/?login=candidate";
+  window.location.href = "/?login=candidate&mode=signup";
   }
+  
 
   function handleDismissPrompt() {
     setShowLoginPrompt(false);
@@ -318,7 +319,6 @@ export default function ResumeBuilder() {
       )}
     </div>
   );
-}
 
 function ResumePreview({ personal, experience, education, skills }) {
   return (
