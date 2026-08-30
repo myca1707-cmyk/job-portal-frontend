@@ -1079,9 +1079,9 @@ function MiniVideoModal({ mini, onClose }) {
 
 function CoretechMinis() {
   const minis = [
-    { title: "5 Resume Mistakes to Avoid", tag: "Resume Tips", videoUrl: "https://youtube.com/shorts/lXxusAKZnsw?si=wNxstYNMLrv9ksLH" },
-    { title: "What Recruiters Look For in 30 Seconds", tag: "Interview Tips", videoUrl: null },
-    { title: "Manufacturing Jobs: What's Hot Right Now", tag: "Job Market", videoUrl: null },
+    { title: "Job Add for chemistry graduates", tag: "Resume Tips", videoUrl: "https://youtube.com/shorts/lXxusAKZnsw?si=wNxstYNMLrv9ksLH" },
+    { title: "Coretech Minis Logo", tag: "Interview Tips", videoUrl: "https://youtu.be/-fFeC7GI9ec?si=RdXTqqhJEonl91Da"},
+    { title: "Manufacturing Jobs: What's Hot Right Now", tag: "Job Market", videoUrl: "https://youtube.com/shorts/NVFCnJiRXHY?si=s5mg1bWypplnfYfT"},
     { title: "How to Negotiate Your Offer", tag: "Career Advice", videoUrl: null },
     { title: "Campus to Career: First Job Tips", tag: "Freshers", videoUrl: null },
     { title: "Reading a Job Description Like a Pro", tag: "Job Market", videoUrl: null },
