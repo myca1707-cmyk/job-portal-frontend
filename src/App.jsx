@@ -2234,23 +2234,76 @@ function JobCard({ job, token, onRequireLogin }) {
 }
 
 function PostJobForm({ token, onPosted }) {
+  const [step, setStep] = useState(0);
+  const steps = ["Basics", "Description", "Compensation", "Review"];
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [location, setLocation] = useState("");
   const [employmentType, setEmploymentType] = useState("Full-time");
   const [skillsRequired, setSkillsRequired] = useState("");
+  const [skillList, setSkillList] = useState([]);
+  const [skillInput, setSkillInput] = useState("");
   const [experienceRequired, setExperienceRequired] = useState("");
   const [salary, setSalary] = useState("");
   const [domain, setDomain] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [touched, setTouched] = useState({});
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  function markTouched(field) {
+    setTouched((t) => ({ ...t, [field]: true }));
+  }
+
+  function addSkill(e) {
+    if (e.key === "Enter" && skillInput.trim()) {
+      e.preventDefault();
+      const next = [...skillList, skillInput.trim()];
+      setSkillList(next);
+      setSkillsRequired(next.join(", "));
+      setSkillInput("");
+    }
+  }
+
+  function removeSkill(i) {
+    const next = skillList.filter((_, idx) => idx !== i);
+    setSkillList(next);
+    setSkillsRequired(next.join(", "));
+  }
+
+  function validateStep() {
+    if (step === 0) {
+      const ok = title.trim() && companyName.trim() && location.trim();
+      if (!ok) setTouched((t) => ({ ...t, title: true, companyName: true, location: true }));
+      return ok;
+    }
+    if (step === 1) {
+      const ok = description.trim();
+      if (!ok) setTouched((t) => ({ ...t, description: true }));
+      return ok;
+    }
+    if (step === 2) {
+      const ok = skillList.length > 0;
+      if (!ok) setTouched((t) => ({ ...t, skills: true }));
+      return ok;
+    }
+    return true;
+  }
+
+  function goNext() {
+    if (!validateStep()) return;
+    if (step < steps.length - 1) setStep(step + 1);
+    else handleSubmit();
+  }
+
+  function goBack() {
+    if (step > 0) setStep(step - 1);
+  }
+
+  async function handleSubmit() {
     setError("");
     setLoading(true);
-
     try {
       const res = await fetch(`${API_BASE}/jobs/`, {
         method: "POST",
@@ -2276,9 +2329,12 @@ function PostJobForm({ token, onPosted }) {
       setCompanyName("");
       setLocation("");
       setSkillsRequired("");
+      setSkillList([]);
       setExperienceRequired("");
       setSalary("");
       setDomain("");
+      setTouched({});
+      setStep(0);
       onPosted();
     } catch (err) {
       setError(err.message);
@@ -2287,57 +2343,195 @@ function PostJobForm({ token, onPosted }) {
     }
   }
 
+  const fieldStyle = {
+    width: "100%", padding: "10px 12px", border: "1px solid var(--line, #E2E5EC)",
+    borderRadius: 10, fontSize: 14, background: "#FBFCFE",
+  };
+  const labelStyle = { display: "block", fontSize: 13, fontWeight: 600, color: "var(--navy, #0A1930)", marginBottom: 6 };
+  const errStyle = { fontSize: 12, color: "#C0392B", marginTop: 4 };
+
   return (
-    <div className="form-card">
-      <h2>Post a Job</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="field">
-          <label>Title</label>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} required />
-        </div>
-        <div className="field">
-          <label>Description</label>
-          <textarea value={description} onChange={(e) => setDescription(e.target.value)} required rows={3} />
-        </div>
-        <div className="field">
-          <label>Company name (optional — defaults to your profile's company)</label>
-          <input value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
-        </div>
-        <div className="field">
-          <label>Location</label>
-          <input value={location} onChange={(e) => setLocation(e.target.value)} required />
-        </div>
-        <div className="field">
-          <label>Employment type</label>
-          <select value={employmentType} onChange={(e) => setEmploymentType(e.target.value)}>
-            <option>Full-time</option>
-            <option>Part-time</option>
-            <option>Contract</option>
-            <option>Internship</option>
-          </select>
-        </div>
-        <div className="field">
-          <label>Skills required (comma-separated)</label>
-          <input value={skillsRequired} onChange={(e) => setSkillsRequired(e.target.value)} placeholder="python, fastapi, postgresql" required />
-        </div>
-        <div className="field">
-          <label>Experience required</label>
-          <input value={experienceRequired} onChange={(e) => setExperienceRequired(e.target.value)} placeholder="e.g. 2-4 years" />
-        </div>
-        <div className="field">
-          <label>Salary</label>
-          <input value={salary} onChange={(e) => setSalary(e.target.value)} placeholder="e.g. 6-8 LPA" />
-        </div>
-        <div className="field">
-          <label>Domain</label>
-          <input value={domain} onChange={(e) => setDomain(e.target.value)} placeholder="e.g. IT, Manufacturing" />
+    <div style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: "1.75rem", alignItems: "start" }}>
+      <div className="form-card">
+        <div style={{ display: "flex", marginBottom: "1.5rem" }}>
+          {steps.map((s, i) => (
+            <div key={s} style={{ flex: 1, textAlign: "center", position: "relative" }}>
+              {i < steps.length - 1 && (
+                <div style={{
+                  position: "absolute", top: 15, left: "calc(50% + 22px)", right: "calc(-50% + 22px)",
+                  height: 2, background: i < step ? "var(--blue-600, #2554E8)" : "#E2E5EC",
+                }} />
+              )}
+              <div style={{
+                width: 30, height: 30, borderRadius: "50%", margin: "0 auto 8px",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 13, fontWeight: 600, position: "relative", zIndex: 1,
+                background: i < step ? "var(--blue-600, #2554E8)" : "#fff",
+                border: `2px solid ${i <= step ? "var(--blue-600, #2554E8)" : "#E2E5EC"}`,
+                color: i < step ? "#fff" : i === step ? "var(--blue-600, #2554E8)" : "#6B7280",
+              }}>
+                {i < step ? "✓" : i + 1}
+              </div>
+              <label style={{ fontSize: 12, fontWeight: i === step ? 600 : 500, color: i === step ? "var(--navy, #0A1930)" : "#6B7280" }}>
+                {s}
+              </label>
+            </div>
+          ))}
         </div>
 
-        {error && <p className="msg-error">{error}</p>}
-        <button type="submit" className="btn-primary" disabled={loading}>
-          {loading ? "Posting..." : "Post Job"}
-        </button>
-      </form>
+        {step === 0 && (
+          <div>
+            <div className="field">
+              <label style={labelStyle}>Job title</label>
+              <input style={fieldStyle} value={title} onChange={(e) => setTitle(e.target.value)} onBlur={() => markTouched("title")} placeholder="e.g. Backend Developer" />
+              {touched.title && !title.trim() && <p style={errStyle}>Enter a job title.</p>}
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div className="field">
+                <label style={labelStyle}>Company name</label>
+                <input style={fieldStyle} value={companyName} onChange={(e) => setCompanyName(e.target.value)} onBlur={() => markTouched("companyName")} placeholder="e.g. Coretech Talents" />
+                {touched.companyName && !companyName.trim() && <p style={errStyle}>Enter a company name.</p>}
+              </div>
+              <div className="field">
+                <label style={labelStyle}>Location</label>
+                <input style={fieldStyle} value={location} onChange={(e) => setLocation(e.target.value)} onBlur={() => markTouched("location")} placeholder="e.g. Hosur" />
+                {touched.location && !location.trim() && <p style={errStyle}>Enter a location.</p>}
+              </div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div className="field">
+                <label style={labelStyle}>Employment type</label>
+                <select style={fieldStyle} value={employmentType} onChange={(e) => setEmploymentType(e.target.value)}>
+                  <option>Full-time</option>
+                  <option>Part-time</option>
+                  <option>Contract</option>
+                  <option>Internship</option>
+                </select>
+              </div>
+              <div className="field">
+                <label style={labelStyle}>Domain</label>
+                <input style={fieldStyle} value={domain} onChange={(e) => setDomain(e.target.value)} placeholder="e.g. IT, Manufacturing" />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {step === 1 && (
+          <div>
+            <div className="field">
+              <label style={labelStyle}>Job description</label>
+              <textarea style={{ ...fieldStyle, minHeight: 140, resize: "vertical" }} value={description} onChange={(e) => setDescription(e.target.value)} onBlur={() => markTouched("description")} placeholder="Describe the role, responsibilities, and what a typical day looks like..." />
+              {touched.description && !description.trim() && <p style={errStyle}>Add a short job description.</p>}
+            </div>
+            <div style={{ background: "#EEF2FF", borderRadius: 10, padding: "10px 12px", fontSize: 12.5, color: "#1A3EBE" }}>
+              Candidates read this first — lead with what the role actually involves, not just requirements.
+            </div>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div className="field">
+                <label style={labelStyle}>Experience required</label>
+                <input style={fieldStyle} value={experienceRequired} onChange={(e) => setExperienceRequired(e.target.value)} placeholder="e.g. 2-4 years" />
+              </div>
+              <div className="field">
+                <label style={labelStyle}>Salary (optional)</label>
+                <input style={fieldStyle} value={salary} onChange={(e) => setSalary(e.target.value)} placeholder="e.g. 4-6 LPA" />
+              </div>
+            </div>
+            <div className="field">
+              <label style={labelStyle}>Skills required</label>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, padding: 8, border: "1px solid #E2E5EC", borderRadius: 10, background: "#FBFCFE" }}>
+                {skillList.map((s, i) => (
+                  <span key={i} style={{ background: "#EEF2FF", color: "#1A3EBE", fontSize: 12.5, fontWeight: 600, padding: "5px 10px", borderRadius: 999, display: "flex", alignItems: "center", gap: 6 }}>
+                    {s}
+                    <button type="button" onClick={() => removeSkill(i)} style={{ background: "none", border: "none", cursor: "pointer", color: "#1A3EBE" }}>×</button>
+                  </span>
+                ))}
+                <input
+                  value={skillInput}
+                  onChange={(e) => setSkillInput(e.target.value)}
+                  onKeyDown={addSkill}
+                  onBlur={() => markTouched("skills")}
+                  placeholder="Type a skill and press Enter"
+                  style={{ border: "none", flex: 1, minWidth: 120, padding: "6px 4px", background: "transparent", outline: "none" }}
+                />
+              </div>
+              {touched.skills && skillList.length === 0 && <p style={errStyle}>Add at least one skill.</p>}
+            </div>
+          </div>
+        )}
+
+        {step === 3 && (
+          <div>
+            <h3 style={{ fontSize: 15, marginBottom: "1rem", color: "var(--navy, #0A1930)" }}>Review before posting</h3>
+            {[
+              ["Title", title || "—"],
+              ["Company", companyName || "—"],
+              ["Location", location || "—"],
+              ["Employment type", employmentType],
+              ["Domain", domain || "—"],
+              ["Experience", experienceRequired || "—"],
+              ["Salary", salary || "Not specified"],
+              ["Skills", skillList.join(", ") || "—"],
+            ].map(([k, v]) => (
+              <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid #E2E5EC", fontSize: 13.5 }}>
+                <span style={{ color: "#6B7280" }}>{k}</span>
+                <span style={{ fontWeight: 600, textAlign: "right", maxWidth: "60%" }}>{v}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {error && <p className="msg-error" style={{ marginTop: "1rem" }}>{error}</p>}
+
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: "1.5rem", paddingTop: "1.25rem", borderTop: "1px solid #E2E5EC" }}>
+          <button type="button" onClick={goBack} disabled={step === 0} className="btn-secondary" style={{ opacity: step === 0 ? 0.4 : 1 }}>
+            Back
+          </button>
+          <button type="button" onClick={goNext} className="btn-primary" disabled={loading}>
+            {loading ? "Posting..." : step === steps.length - 1 ? "Post job" : "Continue"}
+          </button>
+        </div>
+      </div>
+
+      <div style={{ position: "sticky", top: "1.5rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: "0.85rem" }}>
+          <span style={{ background: "#EAF7EE", color: "#16A34A", fontSize: 11.5, fontWeight: 700, padding: "3px 9px", borderRadius: 999 }}>LIVE PREVIEW</span>
+          <span style={{ fontSize: 13, color: "#6B7280" }}>What candidates see on Browse Jobs</span>
+        </div>
+        <div className="card" style={{ padding: "1.5rem" }}>
+          <div style={{ width: 44, height: 44, borderRadius: 10, background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: "var(--blue-600, #2554E8)", fontSize: 16, marginBottom: "0.9rem" }}>
+            {(companyName || "C").charAt(0).toUpperCase()}
+          </div>
+          <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--navy, #0A1930)", margin: 0 }}>{title || "Job title"}</h3>
+          <p style={{ fontSize: 13, color: "#6B7280", margin: "2px 0 1rem" }}>
+            {companyName || "Company"} · {location || "Location"} · {employmentType}
+          </p>
+          {(experienceRequired || domain) && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: "1rem" }}>
+              {experienceRequired && <span className="tag">{experienceRequired}</span>}
+              {domain && <span className="tag" style={{ background: "#EEF2FF", color: "#1A3EBE" }}>{domain}</span>}
+            </div>
+          )}
+          <p style={{ fontSize: 13.5, color: description ? "#1A1A1A" : "#B7BEC9", lineHeight: 1.6, marginBottom: "1rem", whiteSpace: "pre-wrap" }}>
+            {description || "Description will appear here as you write it..."}
+          </p>
+          {skillList.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: "1.1rem" }}>
+              {skillList.map((s, i) => (
+                <span key={i} style={{ background: "#fff", border: "1px solid #E2E5EC", fontSize: 11.5, fontWeight: 600, color: "var(--navy, #0A1930)", padding: "4px 9px", borderRadius: 8 }}>{s}</span>
+              ))}
+            </div>
+          )}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "1rem", borderTop: "1px solid #E2E5EC" }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: salary ? "var(--navy, #0A1930)" : "#B7BEC9" }}>{salary || "Salary not specified"}</span>
+            <button type="button" className="btn-primary" style={{ padding: "9px 18px", fontSize: 13.5 }}>Apply now</button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
