@@ -30,12 +30,13 @@ function ReferFriend() {
         onClick={() => setOpen(!open)}
         style={{
           background: 'transparent',
-          border: '1px solid #ffffff55',
-          color: '#ffffff',
+          border: '1px solid #0E2A63',
+          color: '#0E2A63',
           padding: '6px 14px',
           borderRadius: '6px',
           cursor: 'pointer',
-          fontSize: '14px'
+          fontSize: '13px',
+          fontWeight: 600
         }}
       >
         Refer a Friend
