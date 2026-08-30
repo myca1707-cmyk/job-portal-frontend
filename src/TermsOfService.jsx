@@ -70,27 +70,46 @@ function TermsOfService() {
           recruitment purposes related to job openings on this platform.
         </p>
 
-        <h3 style={{ marginTop: "1.75rem" }}>7. Fees</h3>
+        <h3 style={{ marginTop: "1.75rem" }}>7. Non-discrimination in job postings</h3>
+        <p className="card-meta">
+          Recruiters must not post job openings, or otherwise use the platform, in a manner that
+          discriminates against candidates on the basis of caste, religion, race, sex, gender
+          identity, sexual orientation, disability, marital status, pregnancy, age, place of
+          birth, or any other characteristic protected under applicable Indian law, including the
+          principles of equality under the Constitution of India and the Rights of Persons with
+          Disabilities Act, 2016.
+        </p>
+        <p className="card-meta">
+          This includes, but is not limited to, job descriptions or eligibility criteria that
+          exclude candidates based on the characteristics above, unless a specific exclusion is a
+          genuine and lawful occupational requirement for the role. Coretech Talents reserves the
+          right to edit, reject, or remove any job posting that violates this policy without
+          notice, and to suspend or terminate the account of any recruiter who repeatedly or
+          egregiously violates it. If you believe a job posting on our platform is
+          discriminatory, please report it to us using the contact details in Section 15.
+        </p>
+
+        <h3 style={{ marginTop: "1.75rem" }}>8. Fees</h3>
         <p className="card-meta">
           Coretech Talents is currently free to use for candidates. Any fees applicable to
           recruiter or employer services will be communicated separately before you are charged.
         </p>
 
-        <h3 style={{ marginTop: "1.75rem" }}>8. Intellectual property</h3>
+        <h3 style={{ marginTop: "1.75rem" }}>9. Intellectual property</h3>
         <p className="card-meta">
           All content, branding, design, and code on the Coretech Talents platform, excluding
           content submitted by users (such as resumes and job postings), is the property of
           Coretech Talents and may not be copied or reused without permission.
         </p>
 
-        <h3 style={{ marginTop: "1.75rem" }}>9. Termination</h3>
+        <h3 style={{ marginTop: "1.75rem" }}>10. Termination</h3>
         <p className="card-meta">
           We reserve the right to suspend or terminate accounts that violate these Terms, provide
           false information, or misuse the platform. You may request deletion of your account and
           associated data at any time by contacting us.
         </p>
 
-        <h3 style={{ marginTop: "1.75rem" }}>10. Disclaimer</h3>
+        <h3 style={{ marginTop: "1.75rem" }}>11. Disclaimer</h3>
         <p className="card-meta">
           Coretech Talents facilitates connections between candidates and recruiters but does not
           guarantee employment outcomes, the accuracy of job postings made by recruiters, or the
@@ -98,28 +117,28 @@ function TermsOfService() {
           agreement formed between a candidate and a recruiter or employer.
         </p>
 
-        <h3 style={{ marginTop: "1.75rem" }}>11. Limitation of liability</h3>
+        <h3 style={{ marginTop: "1.75rem" }}>12. Limitation of liability</h3>
         <p className="card-meta">
           To the maximum extent permitted by law, Coretech Talents shall not be liable for any
           indirect, incidental, or consequential damages arising from your use of the platform,
           including but not limited to loss of employment opportunities, data, or business.
         </p>
 
-        <h3 style={{ marginTop: "1.75rem" }}>12. Changes to these Terms</h3>
+        <h3 style={{ marginTop: "1.75rem" }}>13. Changes to these Terms</h3>
         <p className="card-meta">
           We may update these Terms from time to time. Continued use of the platform after changes
           are posted constitutes acceptance of the updated Terms. We will update the "Last updated"
           date at the top of this page when changes are made.
         </p>
 
-        <h3 style={{ marginTop: "1.75rem" }}>13. Governing law</h3>
+        <h3 style={{ marginTop: "1.75rem" }}>14. Governing law</h3>
         <p className="card-meta">
           These Terms are governed by the laws of India. Any disputes arising from these Terms or
           your use of the platform shall be subject to the jurisdiction of the courts in Tamil
           Nadu, India.
         </p>
 
-        <h3 style={{ marginTop: "1.75rem" }}>14. Contact us</h3>
+        <h3 style={{ marginTop: "1.75rem" }}>15. Contact us</h3>
         <p className="card-meta">
           For any questions about these Terms, contact us at{" "}
           <a href="mailto:coretechtalents@outlook.com">coretechtalents@outlook.com</a>. See also

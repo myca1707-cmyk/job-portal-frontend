@@ -2575,6 +2575,7 @@ function PostJobForm({ token, onPosted }) {
   const [experienceRequired, setExperienceRequired] = useState("");
   const [salary, setSalary] = useState("");
   const [domain, setDomain] = useState("");
+  const [nonDiscriminationAck, setNonDiscriminationAck] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [touched, setTouched] = useState({});
@@ -2624,6 +2625,11 @@ function PostJobForm({ token, onPosted }) {
       if (!ok) setTouched((t) => ({ ...t, skills: true }));
       return ok;
     }
+    if (step === 3) {
+      const ok = nonDiscriminationAck;
+      if (!ok) setTouched((t) => ({ ...t, nonDiscriminationAck: true }));
+      return ok;
+    }
     return true;
   }
 
@@ -2669,6 +2675,7 @@ function PostJobForm({ token, onPosted }) {
       setExperienceRequired("");
       setSalary("");
       setDomain("");
+      setNonDiscriminationAck(false);
       setTouched({});
       setStep(0);
       onPosted();
@@ -2818,6 +2825,29 @@ function PostJobForm({ token, onPosted }) {
                 <span style={{ fontWeight: 600, textAlign: "right", maxWidth: "60%" }}>{v}</span>
               </div>
             ))}
+
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginTop: "1rem" }}>
+              <input
+                type="checkbox"
+                id="nonDiscriminationAck"
+                checked={nonDiscriminationAck}
+                onChange={(e) => setNonDiscriminationAck(e.target.checked)}
+                style={{ marginTop: 3, flexShrink: 0 }}
+              />
+              <label htmlFor="nonDiscriminationAck" style={{ margin: 0, fontSize: 13, lineHeight: 1.55 }}>
+                I confirm this job posting does not discriminate against candidates based on
+                caste, religion, sex, gender identity, sexual orientation, disability, marital
+                status, age, or other protected characteristics, per our{" "}
+                <a href="/terms-of-service" target="_blank" rel="noopener noreferrer">
+                  Terms of Service, Section 7
+                </a>.
+              </label>
+            </div>
+            {touched.nonDiscriminationAck && !nonDiscriminationAck && (
+              <p style={{ fontSize: 12, color: "#C0392B", marginTop: 6 }}>
+                Please confirm before posting.
+              </p>
+            )}
           </div>
         )}
 
