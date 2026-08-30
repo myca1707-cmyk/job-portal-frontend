@@ -5731,6 +5731,91 @@ function IntroAnimation({ onFinish }) {
   );
 }
 
+function AllRecruiters({ adminKey }) {
+  const [recruiters, setRecruiters] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [deletingId, setDeletingId] = useState(null);
+  const [confirmId, setConfirmId] = useState(null);
+
+  function loadRecruiters() {
+    setLoading(true);
+    fetch(`${API_BASE}/admin/recruiters`, { headers: { "X-Admin-Key": adminKey } })
+      .then((res) => res.json())
+      .then((data) => setRecruiters(data))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }
+
+  useEffect(() => {
+    loadRecruiters();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [adminKey]);
+
+  async function handleDelete(recruiterId) {
+    setDeletingId(recruiterId);
+    setError("");
+    try {
+      const res = await fetch(`${API_BASE}/admin/recruiters/${recruiterId}`, {
+        method: "DELETE",
+        headers: { "X-Admin-Key": adminKey },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail || "Failed to delete recruiter");
+
+      setRecruiters((prev) => prev.filter((r) => r.id !== recruiterId));
+      setConfirmId(null);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
+  return (
+    <div className="card" style={{ marginTop: "1.5rem" }}>
+      <h3 style={{ marginBottom: "0.75rem" }}>All Recruiters</h3>
+
+      {loading && <p className="hint">Loading recruiters...</p>}
+      {error && <p className="msg-error">{error}</p>}
+      {!loading && recruiters.length === 0 && <p className="empty-state">No recruiters found.</p>}
+
+      {recruiters.map((r) => (
+        <div key={r.id} className="applicant-row">
+          <p className="name">
+            {r.full_name} {r.is_active === false && <span style={{ color: "#B3261E", fontSize: "0.8rem" }}>(inactive/pending)</span>}
+          </p>
+          <p className="meta">
+            {r.email} · {r.company_name} · {r.designation}
+          </p>
+
+          {confirmId === r.id ? (
+            <div className="applicant-actions">
+              <span style={{ fontSize: 13, color: "#B3261E", marginRight: 8 }}>Delete this recruiter permanently?</span>
+              <button
+                onClick={() => handleDelete(r.id)}
+                disabled={deletingId === r.id}
+                style={{ background: "#A32D2D", color: "#fff", border: "none" }}
+              >
+                {deletingId === r.id ? "Deleting..." : "Confirm Delete"}
+              </button>
+              <button onClick={() => setConfirmId(null)} disabled={deletingId === r.id}>
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <div className="applicant-actions">
+              <button onClick={() => setConfirmId(r.id)} style={{ color: "#B3261E" }}>
+                Delete
+              </button>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function ContactUsModal({ onClose }) {
   const [form, setForm] = useState({ name: "", email: "", mobile_number: "", query: "" });
   const [error, setError] = useState("");
