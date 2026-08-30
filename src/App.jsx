@@ -3171,10 +3171,17 @@ function RecruiterDashboard({ token }) {
     return <MatchedCandidatesPanel job={matchesJob} token={token} onBack={() => setMatchesJob(null)} />;
   }
 
-  useEffect(() => {
+    useEffect(() => {
     setLoading(true);
     fetch(`${API_BASE}/jobs/mine/list`, { headers: { Authorization: `Bearer ${token}` } })
-      .then((res) => res.json())
+      .then(async (res) => {
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          if (res.status === 401) throw new Error("Your session has expired. Please log in again.");
+          throw new Error(data.detail || "Failed to load your jobs");
+        }
+        return data;
+      })
       .then((data) => {
         setMyJobs(data);
         Promise.all(
