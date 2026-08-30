@@ -319,6 +319,7 @@ export default function ResumeBuilder() {
       )}
     </div>
   );
+}
 
 function ResumePreview({ personal, experience, education, skills }) {
   return (
