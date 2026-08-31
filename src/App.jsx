@@ -366,7 +366,7 @@ function ServicesPage({ onCampusExploration }) {
 
         .sv-tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 1.75rem; flex-wrap: wrap; }
         .sv-tab {
-          display: flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 999px; border: 1px solid #E1E8F5;
+          display: flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 999px; border: 1px solid #DADDE1;
           background: #fff; color: #56637D; font-size: 13px; font-weight: 600; cursor: pointer;
         }
         .sv-tab.active { background: #0E2A63; color: #fff; border-color: #0E2A63; }
@@ -384,13 +384,13 @@ function ServicesPage({ onCampusExploration }) {
 
         .sv-body-text { font-size: 14px; color: #4A5468; line-height: 1.65; margin: 0 0 1.5rem; }
 
-        .sv-locked-card { background: #fff; border: 1px solid #E6ECF7; border-radius: 18px; padding: 2rem; text-align: center; }
+        .sv-locked-card { background: #fff; border: 1px solid #DADDE1; border-radius: 18px; padding: 2rem; text-align: center; }
         .sv-locked-icon { width: 56px; height: 56px; border-radius: 14px; background: #FDECD8; color: #8A4B0C; font-size: 26px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
         .sv-locked-card h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 700; color: #0A192F; margin: 0 0 0.5rem; }
         .sv-locked-card p { font-size: 13.5px; color: #6B7688; max-width: 420px; margin: 0 auto 1.25rem; line-height: 1.55; }
         .sv-locked-btn { background: #0E2A63; color: #fff; border: none; border-radius: 9px; padding: 11px 22px; font-size: 13.5px; font-weight: 700; cursor: pointer; }
 
-        .hp-funnel-card { background: #fff; border: 1px solid #E6ECF7; border-radius: 18px; padding: 2rem 1.5rem 1.5rem; margin-bottom: 1.5rem; }
+        .hp-funnel-card { background: #fff; border: 1px solid #DADDE1; border-radius: 18px; padding: 2rem 1.5rem 1.5rem; margin-bottom: 1.5rem; }
         .hp-funnel { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 0 auto; max-width: 500px; }
         .hp-stage { width: 100%; height: 54px; display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 10px; color: #fff; font-weight: 700; font-size: 13.5px; position: relative; }
         .hp-stage-icon { width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; }
@@ -403,27 +403,27 @@ function ServicesPage({ onCampusExploration }) {
         .hp-desc-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 1.1rem; }
         .hp-desc-item { text-align: center; }
         .hp-desc-item p { font-size: 11px; color: #7A879C; margin: 0; line-height: 1.4; }
-        .hp-desc-item span { display: block; font-size: 11.5px; font-weight: 700; color: #14213D; margin-bottom: 2px; }
+        .hp-desc-item span { display: block; font-size: 11.5px; font-weight: 700; color: #1A1D24; margin-bottom: 2px; }
 
         .hp-roles-head { text-align: center; margin: 0 0 1rem; }
         .hp-roles-head h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 700; color: #0A192F; margin: 0 0 4px; }
         .hp-roles-head p { font-size: 12.5px; color: #7A879C; margin: 0; }
         .hp-role-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .hp-role-card { background: #fff; border: 1px solid #E6ECF7; border-radius: 14px; padding: 1.25rem 1rem; text-align: center; }
+        .hp-role-card { background: #fff; border: 1px solid #DADDE1; border-radius: 14px; padding: 1.25rem 1rem; text-align: center; }
         .hp-role-icon { width: 42px; height: 42px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 19px; margin: 0 auto 0.65rem; }
-        .hp-role-card h4 { font-size: 13px; font-weight: 700; color: #14213D; margin: 0 0 3px; }
+        .hp-role-card h4 { font-size: 13px; font-weight: 700; color: #1A1D24; margin: 0 0 3px; }
         .hp-role-card p { font-size: 11px; color: #7A879C; margin: 0; line-height: 1.4; }
 
-        .rpo-card { background: #fff; border: 1px solid #E6ECF7; border-radius: 18px; padding: 2rem 1.5rem; }
+        .rpo-card { background: #fff; border: 1px solid #DADDE1; border-radius: 18px; padding: 2rem 1.5rem; }
         .rpo-flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; position: relative; }
         .rpo-step { text-align: center; padding: 0 8px; position: relative; }
-        .rpo-step::after { content: "→"; position: absolute; top: 22px; right: -12px; color: #C3D5F0; font-size: 18px; font-weight: 700; }
+        .rpo-step::after { content: "→"; position: absolute; top: 22px; right: -12px; color: #DADDE1; font-size: 18px; font-weight: 700; }
         .rpo-step.last::after { content: ""; }
         .rpo-step-num { width: 44px; height: 44px; border-radius: 50%; background: #E4ECFE; color: #123170; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; }
-        .rpo-step h4 { font-size: 13px; font-weight: 700; color: #14213D; margin: 0 0 4px; }
+        .rpo-step h4 { font-size: 13px; font-weight: 700; color: #1A1D24; margin: 0 0 4px; }
         .rpo-step p { font-size: 11.5px; color: #7A879C; margin: 0; line-height: 1.45; }
 
-        .rb-card { background: #fff; border: 1px solid #E6ECF7; border-radius: 18px; padding: 2rem; }
+        .rb-card { background: #fff; border: 1px solid #DADDE1; border-radius: 18px; padding: 2rem; }
         .rb-features { display: flex; flex-direction: column; gap: 10px; margin: 1.25rem 0 1.5rem; }
         .rb-feature { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: #4A5468; }
         .rb-check { color: #0F6E56; font-weight: 800; }
@@ -484,7 +484,7 @@ function SplashScreen() {
         alt="Coretech Talents"
         style={{ width: 100, height: 100, marginBottom: "1rem", animation: "pulse 1.2s ease-in-out infinite" }}
       />
-      <h1 style={{ color: "#64FFDA", fontSize: "1.5rem", letterSpacing: "0.05em" }}>Coretech Talents</h1>
+      <h1 style={{ color: "#E68A9A", fontSize: "1.5rem", letterSpacing: "0.05em" }}>Coretech Talents</h1>
       <style>{`
         @keyframes pulse {
           0%, 100% { transform: scale(1); opacity: 1; }
@@ -522,15 +522,15 @@ function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter, 
             <stop offset="100%" stopColor="#0A192F" />
           </linearGradient>
           <radialGradient id="mintGlow" cx="80%" cy="20%" r="55%">
-            <stop offset="0%" stopColor="#64FFDA" stopOpacity="0.18" />
-            <stop offset="100%" stopColor="#64FFDA" stopOpacity="0" />
+            <stop offset="0%" stopColor="#E68A9A" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="#E68A9A" stopOpacity="0" />
           </radialGradient>
         </defs>
         <rect width="800" height="240" fill="url(#navyGlow)" />
         <rect width="800" height="240" fill="url(#mintGlow)" />
         <path d="M0,200 L100,175 L200,195 L300,165 L400,190 L500,160 L600,185 L700,170 L800,195 L800,240 L0,240 Z" fill="#112240" opacity="0.7" />
-        <line x1="0" y1="60" x2="800" y2="60" stroke="#64FFDA" strokeOpacity="0.06" strokeWidth="1" />
-        <line x1="0" y1="120" x2="800" y2="120" stroke="#64FFDA" strokeOpacity="0.06" strokeWidth="1" />
+        <line x1="0" y1="60" x2="800" y2="60" stroke="#E68A9A" strokeOpacity="0.06" strokeWidth="1" />
+        <line x1="0" y1="120" x2="800" y2="120" stroke="#E68A9A" strokeOpacity="0.06" strokeWidth="1" />
       </svg>
 
       <div className="hero-content">
@@ -841,20 +841,20 @@ function HomeSection({ onLogin }) {
         .ch-section-head p { font-size: 13.5px; color: #6B7688; margin: 0; line-height: 1.5; }
 
         .ch-jobs { display: flex; flex-direction: column; gap: 10px; }
-        .ch-job { background: #fff; border: 1px solid #E6ECF7; border-radius: 12px; padding: 1rem 1.15rem; display: flex; align-items: center; gap: 14px; cursor: pointer; }
-        .ch-job:hover { border-color: #C3D5F0; }
+        .ch-job { background: #fff; border: 1px solid #DADDE1; border-radius: 12px; padding: 1rem 1.15rem; display: flex; align-items: center; gap: 14px; cursor: pointer; }
+        .ch-job:hover { border-color: #DADDE1; }
         .ch-job-badge { width: 42px; height: 42px; border-radius: 10px; background: #E4ECFE; color: #123170; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; flex-shrink: 0; }
         .ch-job-info { flex: 1; min-width: 0; }
-        .ch-job-title { font-size: 14.5px; font-weight: 700; color: #14213D; margin: 0 0 2px; }
+        .ch-job-title { font-size: 14.5px; font-weight: 700; color: #1A1D24; margin: 0 0 2px; }
         .ch-job-meta { font-size: 12.5px; color: #7A879C; margin: 0; }
         .ch-job-cta { font-size: 12px; font-weight: 700; color: #2554E8; white-space: nowrap; }
         .ch-empty { text-align: center; padding: 2rem; color: #8A96AC; font-size: 13.5px; }
         .ch-jobs-footer { text-align: center; margin-top: 1rem; }
-        .ch-jobs-footer button { background: #fff; border: 1px solid #C3D5F0; color: #2554E8; border-radius: 8px; padding: 9px 18px; font-size: 13px; font-weight: 700; cursor: pointer; }
+        .ch-jobs-footer button { background: #fff; border: 1px solid #DADDE1; color: #2554E8; border-radius: 8px; padding: 9px 18px; font-size: 13px; font-weight: 700; cursor: pointer; }
 
         .ch-features { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
-        .ch-feature { background: #fff; border: 1px solid #E6ECF7; border-radius: 16px; padding: 1.5rem; cursor: pointer; display: block; }
-        .ch-feature:hover { border-color: #C3D5F0; }
+        .ch-feature { background: #fff; border: 1px solid #DADDE1; border-radius: 16px; padding: 1.5rem; cursor: pointer; display: block; }
+        .ch-feature:hover { border-color: #DADDE1; }
         .ch-feature-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.9rem; }
         .ch-feature-icon { width: 42px; height: 42px; border-radius: 11px; display: flex; align-items: center; justify-content: center; }
         .ch-feature-badge { font-size: 10.5px; font-weight: 700; color: #0F6E56; background: #E1F5EE; border-radius: 999px; padding: 3px 9px; letter-spacing: 0.03em; }
@@ -865,7 +865,7 @@ function HomeSection({ onLogin }) {
         .ch-why { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
         .ch-why-item { text-align: center; padding: 0.5rem; }
         .ch-why-icon { width: 44px; height: 44px; border-radius: 12px; background: #F3F7FD; color: #2554E8; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; }
-        .ch-why-item h4 { font-size: 13.5px; font-weight: 700; color: #14213D; margin: 0 0 0.3rem; }
+        .ch-why-item h4 { font-size: 13.5px; font-weight: 700; color: #1A1D24; margin: 0 0 0.3rem; }
         .ch-why-item p { font-size: 12px; color: #7A879C; margin: 0; line-height: 1.5; }
 
         .ch-final { background: #0E2A63; border-radius: 20px; padding: 2.5rem; text-align: center; }
@@ -873,7 +873,7 @@ function HomeSection({ onLogin }) {
         .ch-final p { font-size: 13.5px; color: #B7C8EE; margin: 0 0 1.35rem; }
         .ch-final button { background: #fff; color: #0E2A63; border: none; border-radius: 10px; padding: 12px 26px; font-size: 14px; font-weight: 700; cursor: pointer; }
 
-        .ch-footer { text-align: center; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #E1E8F5; }
+        .ch-footer { text-align: center; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #DADDE1; }
         .ch-footer p { font-size: 12.5px; color: #8A96AC; margin: 0; }
         .ch-footer-links { margin-top: 0.5rem; }
         .ch-footer-links a { color: inherit; }
@@ -1191,7 +1191,7 @@ function CoretechMinis() {
               >
                 <span
                   style={{
-                    position: "absolute", top: 14, left: 14, fontSize: 11, fontWeight: 700, color: "#64FFDA",
+                    position: "absolute", top: 14, left: 14, fontSize: 11, fontWeight: 700, color: "#E68A9A",
                     background: "rgba(0,0,0,0.35)", padding: "4px 10px", borderRadius: 6, letterSpacing: "0.02em",
                   }}
                 >
@@ -1255,7 +1255,7 @@ function CoretechMinis() {
             key={i}
             style={{
               width: activeIndex === i ? 16 : 6, height: 6, borderRadius: 3,
-              background: activeIndex === i ? "#2554E8" : "#DCE6F5",
+              background: activeIndex === i ? "#2554E8" : "#DADDE1",
               transition: "all 0.25s ease",
             }}
           />
@@ -1401,19 +1401,19 @@ function CareerAdvancementSection() {
             .nl-wrap { max-width: 700px; margin: 0 auto; }
             .nl-filters { display: flex; justify-content: center; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
             .nl-filter {
-              padding: 8px 16px; border-radius: 999px; border: 1px solid #E1E8F5; background: #fff;
+              padding: 8px 16px; border-radius: 999px; border: 1px solid #DADDE1; background: #fff;
               color: #56637D; font-size: 13px; font-weight: 600; cursor: pointer;
             }
             .nl-filter.active { background: #0E2A63; color: #fff; border-color: #0E2A63; }
             .nl-count { font-size: 12.5px; color: #8A96AC; text-align: center; margin-bottom: 1.25rem; }
             .nl-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-            .nl-card { background: #fff; border: 1px solid #E6ECF7; border-radius: 14px; padding: 1.5rem 1.75rem; transition: border-color 0.15s ease, transform 0.15s ease; }
-            .nl-card:hover { border-color: #C3D5F0; transform: translateY(-2px); }
+            .nl-card { background: #fff; border: 1px solid #DADDE1; border-radius: 14px; padding: 1.5rem 1.75rem; transition: border-color 0.15s ease, transform 0.15s ease; }
+            .nl-card:hover { border-color: #DADDE1; transform: translateY(-2px); }
             .nl-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 999px; letter-spacing: 0.03em; margin-bottom: 0.65rem; }
             .nl-badge.candidate { background: #E1F5EE; color: #0F6E56; }
             .nl-badge.recruiter { background: #E4ECFE; color: #123170; }
             .nl-badge.both { background: #FAEEDA; color: #854F0B; }
-            .nl-card h3 { font-size: 15.5px; font-weight: 700; color: #14213D; margin: 0 0 0.6rem; line-height: 1.35; }
+            .nl-card h3 { font-size: 15.5px; font-weight: 700; color: #1A1D24; margin: 0 0 0.6rem; line-height: 1.35; }
             .nl-card p { font-size: 13px; color: #6B7688; margin: 0; line-height: 1.75; }
             .nl-empty { text-align: center; padding: 2.5rem; color: #8A96AC; font-size: 13.5px; }
           `}</style>
@@ -1660,7 +1660,7 @@ function SignupConsent({ consentRequired, setConsentRequired, consentMarketing, 
         onClick={() => setInfoOpen((v) => !v)}
         style={{
           display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, color: "#56637D",
-          background: "#F3F7FD", border: "1px solid #E1E8F5", borderRadius: 8, padding: "8px 12px",
+          background: "#F3F7FD", border: "1px solid #DADDE1", borderRadius: 8, padding: "8px 12px",
           cursor: "pointer", marginBottom: "0.75rem",
         }}
       >
@@ -2254,7 +2254,7 @@ function JobCard({ job, token, onRequireLogin }) {
       <div
         style={{
           background: "#fff",
-          border: "1px solid #E2E5EC",
+          border: "1px solid #DADDE1",
           borderRadius: 16,
           padding: "1.1rem 1.35rem",
           cursor: "pointer",
@@ -2263,11 +2263,11 @@ function JobCard({ job, token, onRequireLogin }) {
         onClick={() => setExpanded(true)}
         onMouseEnter={(e) => {
           e.currentTarget.style.boxShadow = "0 6px 20px rgba(10,25,47,0.08)";
-          e.currentTarget.style.borderColor = "#C3D5F0";
+          e.currentTarget.style.borderColor = "#DADDE1";
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.boxShadow = "none";
-          e.currentTarget.style.borderColor = "#E2E5EC";
+          e.currentTarget.style.borderColor = "#DADDE1";
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
@@ -2289,7 +2289,7 @@ function JobCard({ job, token, onRequireLogin }) {
             {companyInitial}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ margin: 0, fontWeight: 700, fontSize: 15.5, color: "#0A1930" }}>{job.title}</p>
+            <p style={{ margin: 0, fontWeight: 700, fontSize: 15.5, color: "#1A1D24" }}>{job.title}</p>
             <p style={{ margin: "3px 0 0", fontSize: 13, color: "#6B7280" }}>
               {job.company_name} · {job.location} · {job.employment_type}
             </p>
@@ -2312,8 +2312,8 @@ function JobCard({ job, token, onRequireLogin }) {
   }
 
   return (
-    <div style={{ background: "#fff", border: "1px solid #E2E5EC", borderRadius: 16, overflow: "hidden" }}>
-      <div style={{ padding: "1.5rem 1.75rem 1.25rem", borderBottom: "1px solid #E2E5EC" }}>
+    <div style={{ background: "#fff", border: "1px solid #DADDE1", borderRadius: 16, overflow: "hidden" }}>
+      <div style={{ padding: "1.5rem 1.75rem 1.25rem", borderBottom: "1px solid #DADDE1" }}>
         <button
           onClick={() => setExpanded(false)}
           style={{
@@ -2348,7 +2348,7 @@ function JobCard({ job, token, onRequireLogin }) {
             {companyInitial}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontSize: 19, fontWeight: 700, color: "#0A1930", margin: "0 0 4px" }}>{job.title}</p>
+            <p style={{ fontSize: 19, fontWeight: 700, color: "#1A1D24", margin: "0 0 4px" }}>{job.title}</p>
             <p style={{ fontSize: 13.5, color: "#6B7280", margin: 0 }}>
               <strong style={{ color: "#1A1A1A", fontWeight: 600 }}>{job.company_name}</strong> · {job.location}
             </p>
@@ -2378,7 +2378,7 @@ function JobCard({ job, token, onRequireLogin }) {
       </div>
 
       {(job.experience_required || job.salary || job.location) && (
-        <div style={{ display: "flex", padding: "1rem 1.75rem", background: "#FBFCFE", borderBottom: "1px solid #E2E5EC" }}>
+        <div style={{ display: "flex", padding: "1rem 1.75rem", background: "#FBFCFE", borderBottom: "1px solid #DADDE1" }}>
           {job.experience_required && (
             <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, paddingRight: 12 }}>
               <div
@@ -2402,12 +2402,12 @@ function JobCard({ job, token, onRequireLogin }) {
                 <p style={{ fontSize: 10.5, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.03em", margin: "0 0 2px" }}>
                   Experience
                 </p>
-                <p style={{ fontSize: 13, fontWeight: 700, color: "#0A1930", margin: 0 }}>{job.experience_required}</p>
+                <p style={{ fontSize: 13, fontWeight: 700, color: "#1A1D24", margin: 0 }}>{job.experience_required}</p>
               </div>
             </div>
           )}
           {job.salary && (
-            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, paddingLeft: 16, borderLeft: "1px solid #E2E5EC" }}>
+            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, paddingLeft: 16, borderLeft: "1px solid #DADDE1" }}>
               <div
                 style={{
                   width: 34,
@@ -2429,12 +2429,12 @@ function JobCard({ job, token, onRequireLogin }) {
                 <p style={{ fontSize: 10.5, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.03em", margin: "0 0 2px" }}>
                   Salary
                 </p>
-                <p style={{ fontSize: 13, fontWeight: 700, color: "#0A1930", margin: 0 }}>{job.salary}</p>
+                <p style={{ fontSize: 13, fontWeight: 700, color: "#1A1D24", margin: 0 }}>{job.salary}</p>
               </div>
             </div>
           )}
           {job.location && (
-            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, paddingLeft: 16, borderLeft: "1px solid #E2E5EC" }}>
+            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, paddingLeft: 16, borderLeft: "1px solid #DADDE1" }}>
               <div
                 style={{
                   width: 34,
@@ -2457,7 +2457,7 @@ function JobCard({ job, token, onRequireLogin }) {
                 <p style={{ fontSize: 10.5, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.03em", margin: "0 0 2px" }}>
                   Location
                 </p>
-                <p style={{ fontSize: 13, fontWeight: 700, color: "#0A1930", margin: 0 }}>{job.location}</p>
+                <p style={{ fontSize: 13, fontWeight: 700, color: "#1A1D24", margin: 0 }}>{job.location}</p>
               </div>
             </div>
           )}
@@ -2467,7 +2467,7 @@ function JobCard({ job, token, onRequireLogin }) {
       <div style={{ padding: "1.5rem 1.75rem" }}>
         {highlights.length > 0 && (
           <div style={{ marginBottom: "1.5rem" }}>
-            <p style={{ fontSize: 14, fontWeight: 700, color: "#0A1930", margin: "0 0 10px" }}>Job highlights</p>
+            <p style={{ fontSize: 14, fontWeight: 700, color: "#1A1D24", margin: "0 0 10px" }}>Job highlights</p>
             <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 8 }}>
               {highlights.map((h, i) => (
                 <li key={i} style={{ fontSize: 13.5, color: "#1A1A1A", display: "flex", gap: 8, lineHeight: 1.5 }}>
@@ -2481,14 +2481,14 @@ function JobCard({ job, token, onRequireLogin }) {
 
         {job.description && (
           <div style={{ marginBottom: "1.5rem" }}>
-            <p style={{ fontSize: 14, fontWeight: 700, color: "#0A1930", margin: "0 0 10px" }}>Job description</p>
+            <p style={{ fontSize: 14, fontWeight: 700, color: "#1A1D24", margin: "0 0 10px" }}>Job description</p>
             <p style={{ fontSize: 13.5, color: "#4A5468", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{job.description}</p>
           </div>
         )}
 
         {skills.length > 0 && (
           <div style={{ marginBottom: "1.5rem" }}>
-            <p style={{ fontSize: 14, fontWeight: 700, color: "#0A1930", margin: "0 0 10px" }}>Key skills</p>
+            <p style={{ fontSize: 14, fontWeight: 700, color: "#1A1D24", margin: "0 0 10px" }}>Key skills</p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {skills.map((s) => (
                 <span
@@ -2498,7 +2498,7 @@ function JobCard({ job, token, onRequireLogin }) {
                     border: "1px solid #E1E9FE",
                     fontSize: 12,
                     fontWeight: 600,
-                    color: "#1A3EBE",
+                    color: "#8A1526",
                     padding: "6px 13px",
                     borderRadius: 999,
                   }}
@@ -2512,12 +2512,12 @@ function JobCard({ job, token, onRequireLogin }) {
 
         {job.domain && (
           <div>
-            <p style={{ fontSize: 14, fontWeight: 700, color: "#0A1930", margin: "0 0 10px" }}>Industry</p>
+            <p style={{ fontSize: 14, fontWeight: 700, color: "#1A1D24", margin: "0 0 10px" }}>Industry</p>
             <span
               style={{
                 display: "inline-block",
                 background: "#F5F7FB",
-                border: "1px solid #E2E5EC",
+                border: "1px solid #DADDE1",
                 color: "#1A1A1A",
                 fontSize: 12,
                 fontWeight: 600,
@@ -2537,7 +2537,7 @@ function JobCard({ job, token, onRequireLogin }) {
         </div>
       )}
 
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "1.25rem 1.75rem", borderTop: "1px solid #E2E5EC" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "1.25rem 1.75rem", borderTop: "1px solid #DADDE1" }}>
         <button
           onClick={handleApply}
           disabled={status === "applying" || isApplied}
@@ -2687,10 +2687,10 @@ function PostJobForm({ token, onPosted }) {
   }
 
   const fieldStyle = {
-    width: "100%", padding: "10px 12px", border: "1px solid var(--line, #E2E5EC)",
+    width: "100%", padding: "10px 12px", border: "1px solid var(--line, #DADDE1)",
     borderRadius: 10, fontSize: 14, background: "#FBFCFE",
   };
-  const labelStyle = { display: "block", fontSize: 13, fontWeight: 600, color: "var(--navy, #0A1930)", marginBottom: 6 };
+  const labelStyle = { display: "block", fontSize: 13, fontWeight: 600, color: "var(--navy, #1A1D24)", marginBottom: 6 };
   const errStyle = { fontSize: 12, color: "#C0392B", marginTop: 4 };
 
   return (
@@ -2702,7 +2702,7 @@ function PostJobForm({ token, onPosted }) {
               {i < steps.length - 1 && (
                 <div style={{
                   position: "absolute", top: 15, left: "calc(50% + 22px)", right: "calc(-50% + 22px)",
-                  height: 2, background: i < step ? "var(--blue-600, #2554E8)" : "#E2E5EC",
+                  height: 2, background: i < step ? "var(--blue-600, #2554E8)" : "#DADDE1",
                 }} />
               )}
               <div style={{
@@ -2710,12 +2710,12 @@ function PostJobForm({ token, onPosted }) {
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 13, fontWeight: 600, position: "relative", zIndex: 1,
                 background: i < step ? "var(--blue-600, #2554E8)" : "#fff",
-                border: `2px solid ${i <= step ? "var(--blue-600, #2554E8)" : "#E2E5EC"}`,
+                border: `2px solid ${i <= step ? "var(--blue-600, #2554E8)" : "#DADDE1"}`,
                 color: i < step ? "#fff" : i === step ? "var(--blue-600, #2554E8)" : "#6B7280",
               }}>
                 {i < step ? "✓" : i + 1}
               </div>
-              <label style={{ fontSize: isMobile ? 10.5 : 12, fontWeight: i === step ? 600 : 500, color: i === step ? "var(--navy, #0A1930)" : "#6B7280" }}>
+              <label style={{ fontSize: isMobile ? 10.5 : 12, fontWeight: i === step ? 600 : 500, color: i === step ? "var(--navy, #1A1D24)" : "#6B7280" }}>
                 {s}
               </label>
             </div>
@@ -2766,7 +2766,7 @@ function PostJobForm({ token, onPosted }) {
               <textarea style={{ ...fieldStyle, minHeight: 140, resize: "vertical" }} value={description} onChange={(e) => setDescription(e.target.value)} onBlur={() => markTouched("description")} placeholder="Describe the role, responsibilities, and what a typical day looks like..." />
               {touched.description && !description.trim() && <p style={errStyle}>Add a short job description.</p>}
             </div>
-            <div style={{ background: "#EEF2FF", borderRadius: 10, padding: "10px 12px", fontSize: 12.5, color: "#1A3EBE" }}>
+            <div style={{ background: "#EEF2FF", borderRadius: 10, padding: "10px 12px", fontSize: 12.5, color: "#8A1526" }}>
               Candidates read this first — lead with what the role actually involves, not just requirements.
             </div>
           </div>
@@ -2786,11 +2786,11 @@ function PostJobForm({ token, onPosted }) {
             </div>
             <div className="field">
               <label style={labelStyle}>Skills required</label>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, padding: 8, border: "1px solid #E2E5EC", borderRadius: 10, background: "#FBFCFE" }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, padding: 8, border: "1px solid #DADDE1", borderRadius: 10, background: "#FBFCFE" }}>
                 {skillList.map((s, i) => (
-                  <span key={i} style={{ background: "#EEF2FF", color: "#1A3EBE", fontSize: 12.5, fontWeight: 600, padding: "5px 10px", borderRadius: 999, display: "flex", alignItems: "center", gap: 6 }}>
+                  <span key={i} style={{ background: "#EEF2FF", color: "#8A1526", fontSize: 12.5, fontWeight: 600, padding: "5px 10px", borderRadius: 999, display: "flex", alignItems: "center", gap: 6 }}>
                     {s}
-                    <button type="button" onClick={() => removeSkill(i)} style={{ background: "none", border: "none", cursor: "pointer", color: "#1A3EBE" }}>×</button>
+                    <button type="button" onClick={() => removeSkill(i)} style={{ background: "none", border: "none", cursor: "pointer", color: "#8A1526" }}>×</button>
                   </span>
                 ))}
                 <input
@@ -2809,7 +2809,7 @@ function PostJobForm({ token, onPosted }) {
 
         {step === 3 && (
           <div>
-            <h3 style={{ fontSize: 15, marginBottom: "1rem", color: "var(--navy, #0A1930)" }}>Review before posting</h3>
+            <h3 style={{ fontSize: 15, marginBottom: "1rem", color: "var(--navy, #1A1D24)" }}>Review before posting</h3>
             {[
               ["Title", title || "—"],
               ["Company", companyName || "—"],
@@ -2820,7 +2820,7 @@ function PostJobForm({ token, onPosted }) {
               ["Salary", salary || "Not specified"],
               ["Skills", skillList.join(", ") || "—"],
             ].map(([k, v]) => (
-              <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid #E2E5EC", fontSize: 13.5 }}>
+              <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid #DADDE1", fontSize: 13.5 }}>
                 <span style={{ color: "#6B7280" }}>{k}</span>
                 <span style={{ fontWeight: 600, textAlign: "right", maxWidth: "60%" }}>{v}</span>
               </div>
@@ -2853,7 +2853,7 @@ function PostJobForm({ token, onPosted }) {
 
         {error && <p className="msg-error" style={{ marginTop: "1rem" }}>{error}</p>}
 
-        <div style={{ display: "flex", justifyContent: "space-between", marginTop: "1.5rem", paddingTop: "1.25rem", borderTop: "1px solid #E2E5EC" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: "1.5rem", paddingTop: "1.25rem", borderTop: "1px solid #DADDE1" }}>
           <button type="button" onClick={goBack} disabled={step === 0} className="btn-secondary" style={{ opacity: step === 0 ? 0.4 : 1 }}>
             Back
           </button>
@@ -2869,14 +2869,14 @@ function PostJobForm({ token, onPosted }) {
           <span style={{ fontSize: 13, color: "#6B7280" }}>What candidates see when they open this job</span>
         </div>
 
-        <div style={{ background: "#fff", border: "1px solid #E2E5EC", borderRadius: 16, overflow: "hidden" }}>
-          <div style={{ padding: "1.5rem 1.75rem 1.25rem", borderBottom: "1px solid #E2E5EC" }}>
+        <div style={{ background: "#fff", border: "1px solid #DADDE1", borderRadius: 16, overflow: "hidden" }}>
+          <div style={{ padding: "1.5rem 1.75rem 1.25rem", borderBottom: "1px solid #DADDE1" }}>
             <div style={{ display: "flex", gap: 14, alignItems: "flex-start", flexWrap: isMobile ? "wrap" : "nowrap" }}>
               <div style={{ width: 56, height: 56, borderRadius: 12, flexShrink: 0, background: "#EEF2FF", color: "#2554E8", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 20 }}>
                 {(companyName || "C").charAt(0).toUpperCase()}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: 19, fontWeight: 700, color: "var(--navy, #0A1930)", margin: "0 0 4px" }}>{title || "Job title"}</p>
+                <p style={{ fontSize: 19, fontWeight: 700, color: "var(--navy, #1A1D24)", margin: "0 0 4px" }}>{title || "Job title"}</p>
                 <p style={{ fontSize: 13.5, color: "#6B7280", margin: 0 }}>
                   <strong style={{ color: "#1A1A1A", fontWeight: 600 }}>{companyName || "Company"}</strong> · {location || "Location"}
                 </p>
@@ -2898,7 +2898,7 @@ function PostJobForm({ token, onPosted }) {
           </div>
 
           {(experienceRequired || salary || location) && (
-            <div style={{ display: "flex", flexWrap: isMobile ? "wrap" : "nowrap", padding: "1rem 1.75rem", background: "#FBFCFE", borderBottom: "1px solid #E2E5EC", gap: isMobile ? "12px" : 0 }}>
+            <div style={{ display: "flex", flexWrap: isMobile ? "wrap" : "nowrap", padding: "1rem 1.75rem", background: "#FBFCFE", borderBottom: "1px solid #DADDE1", gap: isMobile ? "12px" : 0 }}>
               {experienceRequired && (
                 <div style={{ flex: isMobile ? "1 1 45%" : 1, display: "flex", alignItems: "center", gap: 10, paddingRight: 12 }}>
                   <div style={{ width: 34, height: 34, borderRadius: 9, background: "#EEF2FF", color: "#2554E8", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -2906,29 +2906,29 @@ function PostJobForm({ token, onPosted }) {
                   </div>
                   <div>
                     <p style={{ fontSize: 10.5, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.03em", margin: "0 0 2px" }}>Experience</p>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "var(--navy, #0A1930)", margin: 0 }}>{experienceRequired}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "var(--navy, #1A1D24)", margin: 0 }}>{experienceRequired}</p>
                   </div>
                 </div>
               )}
               {salary && (
-                <div style={{ flex: isMobile ? "1 1 45%" : 1, display: "flex", alignItems: "center", gap: 10, paddingLeft: isMobile ? 0 : 16, borderLeft: isMobile ? "none" : "1px solid #E2E5EC" }}>
+                <div style={{ flex: isMobile ? "1 1 45%" : 1, display: "flex", alignItems: "center", gap: 10, paddingLeft: isMobile ? 0 : 16, borderLeft: isMobile ? "none" : "1px solid #DADDE1" }}>
                   <div style={{ width: 34, height: 34, borderRadius: 9, background: "#EEF2FF", color: "#2554E8", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
                   </div>
                   <div>
                     <p style={{ fontSize: 10.5, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.03em", margin: "0 0 2px" }}>Salary</p>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "var(--navy, #0A1930)", margin: 0 }}>{salary}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "var(--navy, #1A1D24)", margin: 0 }}>{salary}</p>
                   </div>
                 </div>
               )}
               {location && (
-                <div style={{ flex: isMobile ? "1 1 45%" : 1, display: "flex", alignItems: "center", gap: 10, paddingLeft: isMobile ? 0 : 16, borderLeft: isMobile ? "none" : "1px solid #E2E5EC" }}>
+                <div style={{ flex: isMobile ? "1 1 45%" : 1, display: "flex", alignItems: "center", gap: 10, paddingLeft: isMobile ? 0 : 16, borderLeft: isMobile ? "none" : "1px solid #DADDE1" }}>
                   <div style={{ width: 34, height: 34, borderRadius: 9, background: "#EEF2FF", color: "#2554E8", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="10" r="3" /><path d="M12 21c-4-4-7-7.5-7-11a7 7 0 0 1 14 0c0 3.5-3 7-7 11Z" /></svg>
                   </div>
                   <div>
                     <p style={{ fontSize: 10.5, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.03em", margin: "0 0 2px" }}>Location</p>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "var(--navy, #0A1930)", margin: 0 }}>{location}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "var(--navy, #1A1D24)", margin: 0 }}>{location}</p>
                   </div>
                 </div>
               )}
@@ -2937,7 +2937,7 @@ function PostJobForm({ token, onPosted }) {
 
           <div style={{ padding: "1.5rem 1.75rem" }}>
             <div style={{ marginBottom: "1.5rem" }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "var(--navy, #0A1930)", margin: "0 0 10px" }}>Job description</p>
+              <p style={{ fontSize: 14, fontWeight: 700, color: "var(--navy, #1A1D24)", margin: "0 0 10px" }}>Job description</p>
               <p style={{ fontSize: 13.5, color: description ? "#4A5468" : "#B7BEC9", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>
                 {description || "Description will appear here as you write it..."}
               </p>
@@ -2945,10 +2945,10 @@ function PostJobForm({ token, onPosted }) {
 
             {skillList.length > 0 && (
               <div style={{ marginBottom: "1.5rem" }}>
-                <p style={{ fontSize: 14, fontWeight: 700, color: "var(--navy, #0A1930)", margin: "0 0 10px" }}>Key skills</p>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "var(--navy, #1A1D24)", margin: "0 0 10px" }}>Key skills</p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                   {skillList.map((s, i) => (
-                    <span key={i} style={{ background: "#EEF2FF", border: "1px solid #E1E9FE", fontSize: 12, fontWeight: 600, color: "#1A3EBE", padding: "6px 13px", borderRadius: 999 }}>{s}</span>
+                    <span key={i} style={{ background: "#EEF2FF", border: "1px solid #E1E9FE", fontSize: 12, fontWeight: 600, color: "#8A1526", padding: "6px 13px", borderRadius: 999 }}>{s}</span>
                   ))}
                 </div>
               </div>
@@ -2956,13 +2956,13 @@ function PostJobForm({ token, onPosted }) {
 
             {domain && (
               <div>
-                <p style={{ fontSize: 14, fontWeight: 700, color: "var(--navy, #0A1930)", margin: "0 0 10px" }}>Industry</p>
-                <span style={{ display: "inline-block", background: "#F5F7FB", border: "1px solid #E2E5EC", color: "#1A1A1A", fontSize: 12, fontWeight: 600, padding: "5px 12px", borderRadius: 999 }}>{domain}</span>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "var(--navy, #1A1D24)", margin: "0 0 10px" }}>Industry</p>
+                <span style={{ display: "inline-block", background: "#F5F7FB", border: "1px solid #DADDE1", color: "#1A1A1A", fontSize: 12, fontWeight: 600, padding: "5px 12px", borderRadius: 999 }}>{domain}</span>
               </div>
             )}
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "1.25rem 1.75rem", borderTop: "1px solid #E2E5EC" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "1.25rem 1.75rem", borderTop: "1px solid #DADDE1" }}>
             <button
               type="button"
               style={{ background: "#2554E8", color: "#fff", border: "none", borderRadius: 10, padding: "11px 30px", fontSize: 14, fontWeight: 700, width: isMobile ? "100%" : "auto" }}
@@ -4995,7 +4995,7 @@ function CandidateSearch({ token }) {
 
       <style>{`
         .cs-wrap { --cs-bg:#FFFFFF; --cs-surface:#F3F7FD; --cs-ink:#0B1B33; --cs-ink-soft:#56637D; --cs-ink-faint:#8A96AC;
-          --cs-line:#DCE6F5; --cs-line-strong:#C3D5F0; --cs-navy:#0E2A63; --cs-navy-800:#123170;
+          --cs-line:#DADDE1; --cs-line-strong:#DADDE1; --cs-navy:#0E2A63; --cs-navy-800:#123170;
           --cs-blue:#2454E0; --cs-blue-hover:#1A45C4; --cs-blue-100:#E4ECFE; --cs-blue-050:#F3F7FD;
           --cs-radius-sm:8px; --cs-radius-md:12px; --cs-radius-lg:16px;
           --cs-shadow-card:0 1px 2px rgba(14,42,99,0.06), 0 8px 24px rgba(14,42,99,0.05);
@@ -5302,7 +5302,7 @@ function RecruiterShell({ token, onLogout }) {
         <div
           style={{
             display: "flex", alignItems: "center", gap: 10, padding: "0.9rem 1rem",
-            background: "#0A1930", position: "sticky", top: 0, zIndex: 50,
+            background: "#1A1D24", position: "sticky", top: 0, zIndex: 50,
           }}
         >
           <img src={logo} alt="Coretech Talents" style={{ width: 28, height: 28 }} />
@@ -5329,7 +5329,7 @@ function RecruiterShell({ token, onLogout }) {
         <div
           style={{
             position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 60,
-            background: "#fff", borderTop: "1px solid #E2E5EC",
+            background: "#fff", borderTop: "1px solid #DADDE1",
             display: "flex", paddingBottom: "env(safe-area-inset-bottom, 0px)",
           }}
         >
@@ -5410,7 +5410,7 @@ function CandidateShell({ token, onLogout }) {
         <div
           style={{
             display: "flex", alignItems: "center", gap: 10, padding: "0.9rem 1rem",
-            background: "#0A1930", position: "sticky", top: 0, zIndex: 50,
+            background: "#1A1D24", position: "sticky", top: 0, zIndex: 50,
           }}
         >
           <img src={logo} alt="Coretech Talents" style={{ width: 28, height: 28 }} />
@@ -5436,7 +5436,7 @@ function CandidateShell({ token, onLogout }) {
         <div
           style={{
             position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 60,
-            background: "#fff", borderTop: "1px solid #E2E5EC",
+            background: "#fff", borderTop: "1px solid #DADDE1",
             display: "flex", paddingBottom: "env(safe-area-inset-bottom, 0px)",
           }}
         >
