@@ -43,7 +43,7 @@ function AboutSection() {
       body: "Developement of this career portal.",
     },
     founder: {
-      title: "Meet the Founder - Mr.VimalRaja",
+      title: "Meet the Founder ",
       paragraphs: [
         "The founder learned exactly what makes hiring work — and what holds businesses and candidates back. That depth of experience isn't just a resume line; it's the foundation this entire platform is built on.",
         "A constant drive to evolve and do better is what led him to build CoreTech Talents' own recruitment portal — a platform designed to ease the job search for candidates and simplify hiring for recruiters. Where traditional recruitment often felt slow and disconnected, he saw an opportunity to make it faster, fairer, and more human.",
@@ -173,7 +173,7 @@ function ServicesPage({ onCampusExploration }) {
   }
 
   const roles = [
-    { icon: "💻", label: "IT", desc: "Software, infrastructure & IT services", bg: "#E4ECFE", fg: "#123170" },
+    { icon: "💻", label: "IT", desc: "Software, infrastructure & IT services", bg: "#FBDCE1", fg: "#3A3D42" },
     { icon: "🎧", label: "ITES", desc: "Support, BPO & IT-enabled services", bg: "#E1F5EE", fg: "#0F6E56" },
     { icon: "🏭", label: "Manufacturing", desc: "Production, plant & shop-floor roles", bg: "#FDECD8", fg: "#8A4B0C" },
     { icon: "✈️", label: "Aerospace", desc: "Aviation & aerospace engineering", bg: "#EEEDFE", fg: "#3C3489" },
@@ -247,7 +247,7 @@ function ServicesPage({ onCampusExploration }) {
       {activeTab === "tech" && (
         <div className="sv-panel">
           <div className="sv-panel-head">
-            <div className="sv-panel-badge" style={{ background: "#E4ECFE" }}>💼</div>
+            <div className="sv-panel-badge" style={{ background: "#FBDCE1" }}>💼</div>
             <div>
               <h2>Tech and Non Tech Hiring</h2>
               <p>Permanent placement solutions across technical and non-technical roles</p>
@@ -360,8 +360,8 @@ function ServicesPage({ onCampusExploration }) {
         .sv-wrap { font-family: 'Inter', sans-serif; }
 
         .sv-head { text-align: center; max-width: 560px; margin: 0 auto 2rem; }
-        .sv-eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; color: #2554E8; text-transform: uppercase; margin-bottom: 0.5rem; }
-        .sv-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; font-weight: 800; color: #0A192F; margin: 0 0 0.6rem; }
+        .sv-eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; color: #C41E3A; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .sv-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; font-weight: 800; color: #1A1D24; margin: 0 0 0.6rem; }
         .sv-sub { font-size: 14px; color: #6B7688; margin: 0; line-height: 1.55; }
 
         .sv-tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 1.75rem; flex-wrap: wrap; }
@@ -369,14 +369,14 @@ function ServicesPage({ onCampusExploration }) {
           display: flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 999px; border: 1px solid #E1E8F5;
           background: #fff; color: #56637D; font-size: 13px; font-weight: 600; cursor: pointer;
         }
-        .sv-tab.active { background: #0E2A63; color: #fff; border-color: #0E2A63; }
+        .sv-tab.active { background: #33363E; color: #fff; border-color: #33363E; }
         .sv-tab-icon { font-size: 15px; }
 
         .sv-panel { max-width: 720px; margin: 0 auto; }
 
         .sv-panel-head { display: flex; align-items: center; gap: 12px; margin-bottom: 1.25rem; }
         .sv-panel-badge { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-        .sv-panel-head h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.2rem; font-weight: 700; color: #0A192F; margin: 0 0 2px; }
+        .sv-panel-head h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.2rem; font-weight: 700; color: #1A1D24; margin: 0 0 2px; }
         .sv-panel-head p { font-size: 13px; color: #6B7688; margin: 0; }
         .sv-access-tag { font-size: 10.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; letter-spacing: 0.03em; margin-left: 6px; vertical-align: middle; }
         .sv-access-tag.recruiters { background: #FDECD8; color: #8A4B0C; }
@@ -386,18 +386,18 @@ function ServicesPage({ onCampusExploration }) {
 
         .sv-locked-card { background: #fff; border: 1px solid #E6ECF7; border-radius: 18px; padding: 2rem; text-align: center; }
         .sv-locked-icon { width: 56px; height: 56px; border-radius: 14px; background: #FDECD8; color: #8A4B0C; font-size: 26px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
-        .sv-locked-card h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 700; color: #0A192F; margin: 0 0 0.5rem; }
+        .sv-locked-card h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 700; color: #1A1D24; margin: 0 0 0.5rem; }
         .sv-locked-card p { font-size: 13.5px; color: #6B7688; max-width: 420px; margin: 0 auto 1.25rem; line-height: 1.55; }
-        .sv-locked-btn { background: #0E2A63; color: #fff; border: none; border-radius: 9px; padding: 11px 22px; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+        .sv-locked-btn { background: #33363E; color: #fff; border: none; border-radius: 9px; padding: 11px 22px; font-size: 13.5px; font-weight: 700; cursor: pointer; }
 
         .hp-funnel-card { background: #fff; border: 1px solid #E6ECF7; border-radius: 18px; padding: 2rem 1.5rem 1.5rem; margin-bottom: 1.5rem; }
         .hp-funnel { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 0 auto; max-width: 500px; }
         .hp-stage { width: 100%; height: 54px; display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 10px; color: #fff; font-weight: 700; font-size: 13.5px; position: relative; }
         .hp-stage-icon { width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; }
         .hp-stage-num { position: absolute; left: 14px; font-size: 10.5px; font-weight: 700; opacity: 0.7; }
-        .hp-s1 { width: 100%; background: #123170; }
+        .hp-s1 { width: 100%; background: #3A3D42; }
         .hp-s2 { width: 88%; background: #1C48A3; }
-        .hp-s3 { width: 74%; background: #2554E8; }
+        .hp-s3 { width: 74%; background: #C41E3A; }
         .hp-s4 { width: 60%; background: #4A7BF0; }
         .hp-s5 { width: 46%; background: #F2A93B; color: #4A2E00; }
         .hp-desc-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 1.1rem; }
@@ -406,7 +406,7 @@ function ServicesPage({ onCampusExploration }) {
         .hp-desc-item span { display: block; font-size: 11.5px; font-weight: 700; color: #14213D; margin-bottom: 2px; }
 
         .hp-roles-head { text-align: center; margin: 0 0 1rem; }
-        .hp-roles-head h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 700; color: #0A192F; margin: 0 0 4px; }
+        .hp-roles-head h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 700; color: #1A1D24; margin: 0 0 4px; }
         .hp-roles-head p { font-size: 12.5px; color: #7A879C; margin: 0; }
         .hp-role-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .hp-role-card { background: #fff; border: 1px solid #E6ECF7; border-radius: 14px; padding: 1.25rem 1rem; text-align: center; }
@@ -419,7 +419,7 @@ function ServicesPage({ onCampusExploration }) {
         .rpo-step { text-align: center; padding: 0 8px; position: relative; }
         .rpo-step::after { content: "→"; position: absolute; top: 22px; right: -12px; color: #C3D5F0; font-size: 18px; font-weight: 700; }
         .rpo-step.last::after { content: ""; }
-        .rpo-step-num { width: 44px; height: 44px; border-radius: 50%; background: #E4ECFE; color: #123170; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; }
+        .rpo-step-num { width: 44px; height: 44px; border-radius: 50%; background: #FBDCE1; color: #3A3D42; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; }
         .rpo-step h4 { font-size: 13px; font-weight: 700; color: #14213D; margin: 0 0 4px; }
         .rpo-step p { font-size: 11.5px; color: #7A879C; margin: 0; line-height: 1.45; }
 
@@ -427,7 +427,7 @@ function ServicesPage({ onCampusExploration }) {
         .rb-features { display: flex; flex-direction: column; gap: 10px; margin: 1.25rem 0 1.5rem; }
         .rb-feature { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: #4A5468; }
         .rb-check { color: #0F6E56; font-weight: 800; }
-        .rb-btn { background: #0E2A63; color: #fff; border: none; border-radius: 9px; padding: 11px 22px; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+        .rb-btn { background: #33363E; color: #fff; border: none; border-radius: 9px; padding: 11px 22px; font-size: 13.5px; font-weight: 700; cursor: pointer; }
 
         @media (max-width: 640px) {
           .hp-desc-row { grid-template-columns: repeat(3, 1fr); row-gap: 12px; }
@@ -471,7 +471,7 @@ function SplashScreen() {
       style={{
         position: "fixed",
         inset: 0,
-        background: "#0A192F",
+        background: "#1A1D24",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -517,9 +517,9 @@ function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter, 
       <svg className="hero-bg" viewBox="0 0 800 240" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="navyGlow" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#0A192F" />
+            <stop offset="0%" stopColor="#1A1D24" />
             <stop offset="60%" stopColor="#0D2141" />
-            <stop offset="100%" stopColor="#0A192F" />
+            <stop offset="100%" stopColor="#1A1D24" />
           </linearGradient>
           <radialGradient id="mintGlow" cx="80%" cy="20%" r="55%">
             <stop offset="0%" stopColor="#64FFDA" stopOpacity="0.18" />
@@ -591,7 +591,7 @@ function Hero({ onOpenPortal, onAdminAccess, onAbout, onServices, onNewsletter, 
             <button
               onClick={() => go(onOpenPortal)}
               style={{
-                background: "#2554E8", border: "none", color: "#fff", textAlign: "center",
+                background: "#C41E3A", border: "none", color: "#fff", textAlign: "center",
                 padding: "0.85rem 1rem", fontSize: 15, fontWeight: 700, borderRadius: 8, marginTop: "0.35rem",
               }}
             >
@@ -714,7 +714,7 @@ function HomeSection({ onLogin }) {
         <div className="ch-features">
           <div className="ch-feature" onClick={onLogin}>
             <div className="ch-feature-top">
-              <div className="ch-feature-icon" style={{ background: "#E4ECFE", color: "#123170" }}>
+              <div className="ch-feature-icon" style={{ background: "#FBDCE1", color: "#3A3D42" }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                   <circle cx="12" cy="8" r="4" /><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
                 </svg>
@@ -820,37 +820,37 @@ function HomeSection({ onLogin }) {
       <style>{`
         .ch-wrap { max-width: 1000px; margin: 0 auto; font-family: 'Inter', sans-serif; }
 
-        .ch-hero { background: linear-gradient(160deg, #0E2A63 0%, #123170 100%); padding: 3.25rem 2rem 4.5rem; border-radius: 20px; }
+        .ch-hero { background: linear-gradient(160deg, #33363E 0%, #3A3D42 100%); padding: 3.25rem 2rem 4.5rem; border-radius: 20px; }
         .ch-hero-inner { max-width: 560px; margin: 0 auto; text-align: center; }
         .ch-eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: #8FB4FF; text-transform: uppercase; margin-bottom: 0.75rem; }
         .ch-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: clamp(1.9rem, 3.4vw, 2.5rem); color: #fff; margin: 0 0 0.85rem; line-height: 1.22; }
         .ch-sub { font-size: 15px; color: #B7C8EE; margin: 0 auto 1.75rem; max-width: 480px; line-height: 1.6; }
-        .ch-hero-btn { background: #fff; color: #0E2A63; border: none; border-radius: 10px; padding: 13px 26px; font-size: 14.5px; font-weight: 700; cursor: pointer; }
+        .ch-hero-btn { background: #fff; color: #33363E; border: none; border-radius: 10px; padding: 13px 26px; font-size: 14.5px; font-weight: 700; cursor: pointer; }
         .ch-hero-note { font-size: 12px; color: #8FB4FF; margin-top: 0.75rem; }
 
         .ch-stats { background: #fff; border-radius: 14px; box-shadow: 0 8px 24px rgba(14,42,99,0.08); display: flex; margin: -2.75rem auto 3rem; max-width: 500px; overflow: hidden; }
         .ch-stat { flex: 1; text-align: center; padding: 1.1rem 0.5rem; }
         .ch-stat + .ch-stat { border-left: 1px solid #EEF2F9; }
-        .ch-stat-num { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 1.5rem; color: #0E2A63; }
+        .ch-stat-num { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 1.5rem; color: #33363E; }
         .ch-stat-label { font-size: 11.5px; color: #6B7688; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
 
         .ch-section { margin-bottom: 3rem; padding: 0 0.5rem; }
         .ch-section-head { text-align: center; max-width: 520px; margin: 0 auto 1.5rem; }
-        .ch-section-eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; color: #2554E8; text-transform: uppercase; margin-bottom: 0.5rem; }
-        .ch-section-head h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.35rem; font-weight: 800; color: #0A192F; margin: 0 0 0.5rem; }
+        .ch-section-eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; color: #C41E3A; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .ch-section-head h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.35rem; font-weight: 800; color: #1A1D24; margin: 0 0 0.5rem; }
         .ch-section-head p { font-size: 13.5px; color: #6B7688; margin: 0; line-height: 1.5; }
 
         .ch-jobs { display: flex; flex-direction: column; gap: 10px; }
         .ch-job { background: #fff; border: 1px solid #E6ECF7; border-radius: 12px; padding: 1rem 1.15rem; display: flex; align-items: center; gap: 14px; cursor: pointer; }
         .ch-job:hover { border-color: #C3D5F0; }
-        .ch-job-badge { width: 42px; height: 42px; border-radius: 10px; background: #E4ECFE; color: #123170; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; flex-shrink: 0; }
+        .ch-job-badge { width: 42px; height: 42px; border-radius: 10px; background: #FBDCE1; color: #3A3D42; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; flex-shrink: 0; }
         .ch-job-info { flex: 1; min-width: 0; }
         .ch-job-title { font-size: 14.5px; font-weight: 700; color: #14213D; margin: 0 0 2px; }
         .ch-job-meta { font-size: 12.5px; color: #7A879C; margin: 0; }
-        .ch-job-cta { font-size: 12px; font-weight: 700; color: #2554E8; white-space: nowrap; }
+        .ch-job-cta { font-size: 12px; font-weight: 700; color: #C41E3A; white-space: nowrap; }
         .ch-empty { text-align: center; padding: 2rem; color: #8A96AC; font-size: 13.5px; }
         .ch-jobs-footer { text-align: center; margin-top: 1rem; }
-        .ch-jobs-footer button { background: #fff; border: 1px solid #C3D5F0; color: #2554E8; border-radius: 8px; padding: 9px 18px; font-size: 13px; font-weight: 700; cursor: pointer; }
+        .ch-jobs-footer button { background: #fff; border: 1px solid #C3D5F0; color: #C41E3A; border-radius: 8px; padding: 9px 18px; font-size: 13px; font-weight: 700; cursor: pointer; }
 
         .ch-features { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
         .ch-feature { background: #fff; border: 1px solid #E6ECF7; border-radius: 16px; padding: 1.5rem; cursor: pointer; display: block; }
@@ -858,20 +858,20 @@ function HomeSection({ onLogin }) {
         .ch-feature-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.9rem; }
         .ch-feature-icon { width: 42px; height: 42px; border-radius: 11px; display: flex; align-items: center; justify-content: center; }
         .ch-feature-badge { font-size: 10.5px; font-weight: 700; color: #0F6E56; background: #E1F5EE; border-radius: 999px; padding: 3px 9px; letter-spacing: 0.03em; }
-        .ch-feature h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.02rem; font-weight: 700; color: #0A192F; margin: 0 0 0.4rem; }
+        .ch-feature h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.02rem; font-weight: 700; color: #1A1D24; margin: 0 0 0.4rem; }
         .ch-feature p { font-size: 13px; color: #6B7688; margin: 0 0 0.9rem; line-height: 1.55; }
-        .ch-feature-link { font-size: 12.5px; font-weight: 700; color: #2554E8; }
+        .ch-feature-link { font-size: 12.5px; font-weight: 700; color: #C41E3A; }
 
         .ch-why { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
         .ch-why-item { text-align: center; padding: 0.5rem; }
-        .ch-why-icon { width: 44px; height: 44px; border-radius: 12px; background: #F3F7FD; color: #2554E8; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; }
+        .ch-why-icon { width: 44px; height: 44px; border-radius: 12px; background: #F3F7FD; color: #C41E3A; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; }
         .ch-why-item h4 { font-size: 13.5px; font-weight: 700; color: #14213D; margin: 0 0 0.3rem; }
         .ch-why-item p { font-size: 12px; color: #7A879C; margin: 0; line-height: 1.5; }
 
-        .ch-final { background: #0E2A63; border-radius: 20px; padding: 2.5rem; text-align: center; }
+        .ch-final { background: #33363E; border-radius: 20px; padding: 2.5rem; text-align: center; }
         .ch-final h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.35rem; font-weight: 800; color: #fff; margin: 0 0 0.6rem; }
         .ch-final p { font-size: 13.5px; color: #B7C8EE; margin: 0 0 1.35rem; }
-        .ch-final button { background: #fff; color: #0E2A63; border: none; border-radius: 10px; padding: 12px 26px; font-size: 14px; font-weight: 700; cursor: pointer; }
+        .ch-final button { background: #fff; color: #33363E; border: none; border-radius: 10px; padding: 12px 26px; font-size: 14px; font-weight: 700; cursor: pointer; }
 
         .ch-footer { text-align: center; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #E1E8F5; }
         .ch-footer p { font-size: 12.5px; color: #8A96AC; margin: 0; }
@@ -1173,7 +1173,7 @@ function CoretechMinis() {
               width: "100%",
               scrollSnapAlign: "start",
               position: "relative",
-              background: "linear-gradient(155deg, #0A192F 0%, #123170 100%)",
+              background: "linear-gradient(155deg, #1A1D24 0%, #3A3D42 100%)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -1255,7 +1255,7 @@ function CoretechMinis() {
             key={i}
             style={{
               width: activeIndex === i ? 16 : 6, height: 6, borderRadius: 3,
-              background: activeIndex === i ? "#2554E8" : "#DCE6F5",
+              background: activeIndex === i ? "#C41E3A" : "#DCE6F5",
               transition: "all 0.25s ease",
             }}
           />
@@ -1404,14 +1404,14 @@ function CareerAdvancementSection() {
               padding: 8px 16px; border-radius: 999px; border: 1px solid #E1E8F5; background: #fff;
               color: #56637D; font-size: 13px; font-weight: 600; cursor: pointer;
             }
-            .nl-filter.active { background: #0E2A63; color: #fff; border-color: #0E2A63; }
+            .nl-filter.active { background: #33363E; color: #fff; border-color: #33363E; }
             .nl-count { font-size: 12.5px; color: #8A96AC; text-align: center; margin-bottom: 1.25rem; }
             .nl-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
             .nl-card { background: #fff; border: 1px solid #E6ECF7; border-radius: 14px; padding: 1.5rem 1.75rem; transition: border-color 0.15s ease, transform 0.15s ease; }
             .nl-card:hover { border-color: #C3D5F0; transform: translateY(-2px); }
             .nl-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 999px; letter-spacing: 0.03em; margin-bottom: 0.65rem; }
             .nl-badge.candidate { background: #E1F5EE; color: #0F6E56; }
-            .nl-badge.recruiter { background: #E4ECFE; color: #123170; }
+            .nl-badge.recruiter { background: #E4ECFE; color: #3A3D42; }
             .nl-badge.both { background: #FAEEDA; color: #854F0B; }
             .nl-card h3 { font-size: 15.5px; font-weight: 700; color: #14213D; margin: 0 0 0.6rem; line-height: 1.35; }
             .nl-card p { font-size: 13px; color: #6B7688; margin: 0; line-height: 1.75; }
@@ -1652,7 +1652,7 @@ function SignupConsent({ consentRequired, setConsentRequired, consentMarketing, 
 
   return (
     <div style={{ marginTop: "0.5rem", marginBottom: "1rem" }}>
-      <p style={{ fontSize: 12, fontWeight: 700, color: "var(--blue-600, #2554E8)", textTransform: "uppercase", letterSpacing: "0.04em", margin: "0 0 0.75rem" }}>
+      <p style={{ fontSize: 12, fontWeight: 700, color: "var(--blue-600, #C41E3A)", textTransform: "uppercase", letterSpacing: "0.04em", margin: "0 0 0.75rem" }}>
         Your consent
       </p>
 
@@ -2278,7 +2278,7 @@ function JobCard({ job, token, onRequireLogin }) {
               borderRadius: 12,
               flexShrink: 0,
               background: "#EEF2FF",
-              color: "#2554E8",
+              color: "#C41E3A",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -2319,7 +2319,7 @@ function JobCard({ job, token, onRequireLogin }) {
           style={{
             background: "none",
             border: "none",
-            color: "#2554E8",
+            color: "#C41E3A",
             fontSize: 13.5,
             fontWeight: 600,
             cursor: "pointer",
@@ -2337,7 +2337,7 @@ function JobCard({ job, token, onRequireLogin }) {
               borderRadius: 12,
               flexShrink: 0,
               background: "#EEF2FF",
-              color: "#2554E8",
+              color: "#C41E3A",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -2361,7 +2361,7 @@ function JobCard({ job, token, onRequireLogin }) {
             onClick={handleApply}
             disabled={status === "applying" || isApplied}
             style={{
-              background: isApplied ? "#EAF7EE" : "#2554E8",
+              background: isApplied ? "#EAF7EE" : "#C41E3A",
               color: isApplied ? "#16A34A" : "#fff",
               border: "none",
               borderRadius: 10,
@@ -2387,7 +2387,7 @@ function JobCard({ job, token, onRequireLogin }) {
                   height: 34,
                   borderRadius: 9,
                   background: "#EEF2FF",
-                  color: "#2554E8",
+                  color: "#C41E3A",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -2414,7 +2414,7 @@ function JobCard({ job, token, onRequireLogin }) {
                   height: 34,
                   borderRadius: 9,
                   background: "#EEF2FF",
-                  color: "#2554E8",
+                  color: "#C41E3A",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -2441,7 +2441,7 @@ function JobCard({ job, token, onRequireLogin }) {
                   height: 34,
                   borderRadius: 9,
                   background: "#EEF2FF",
-                  color: "#2554E8",
+                  color: "#C41E3A",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -2471,7 +2471,7 @@ function JobCard({ job, token, onRequireLogin }) {
             <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 8 }}>
               {highlights.map((h, i) => (
                 <li key={i} style={{ fontSize: 13.5, color: "#1A1A1A", display: "flex", gap: 8, lineHeight: 1.5 }}>
-                  <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#2554E8", flexShrink: 0, marginTop: 7 }} />
+                  <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#C41E3A", flexShrink: 0, marginTop: 7 }} />
                   {h}
                 </li>
               ))}
@@ -2542,7 +2542,7 @@ function JobCard({ job, token, onRequireLogin }) {
           onClick={handleApply}
           disabled={status === "applying" || isApplied}
           style={{
-            background: isApplied ? "#EAF7EE" : "#2554E8",
+            background: isApplied ? "#EAF7EE" : "#C41E3A",
             color: isApplied ? "#16A34A" : "#fff",
             border: "none",
             borderRadius: 10,
@@ -2702,16 +2702,16 @@ function PostJobForm({ token, onPosted }) {
               {i < steps.length - 1 && (
                 <div style={{
                   position: "absolute", top: 15, left: "calc(50% + 22px)", right: "calc(-50% + 22px)",
-                  height: 2, background: i < step ? "var(--blue-600, #2554E8)" : "#E2E5EC",
+                  height: 2, background: i < step ? "var(--blue-600, #C41E3A)" : "#E2E5EC",
                 }} />
               )}
               <div style={{
                 width: 30, height: 30, borderRadius: "50%", margin: "0 auto 8px",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 13, fontWeight: 600, position: "relative", zIndex: 1,
-                background: i < step ? "var(--blue-600, #2554E8)" : "#fff",
-                border: `2px solid ${i <= step ? "var(--blue-600, #2554E8)" : "#E2E5EC"}`,
-                color: i < step ? "#fff" : i === step ? "var(--blue-600, #2554E8)" : "#6B7280",
+                background: i < step ? "var(--blue-600, #C41E3A)" : "#fff",
+                border: `2px solid ${i <= step ? "var(--blue-600, #C41E3A)" : "#E2E5EC"}`,
+                color: i < step ? "#fff" : i === step ? "var(--blue-600, #C41E3A)" : "#6B7280",
               }}>
                 {i < step ? "✓" : i + 1}
               </div>
@@ -2872,7 +2872,7 @@ function PostJobForm({ token, onPosted }) {
         <div style={{ background: "#fff", border: "1px solid #E2E5EC", borderRadius: 16, overflow: "hidden" }}>
           <div style={{ padding: "1.5rem 1.75rem 1.25rem", borderBottom: "1px solid #E2E5EC" }}>
             <div style={{ display: "flex", gap: 14, alignItems: "flex-start", flexWrap: isMobile ? "wrap" : "nowrap" }}>
-              <div style={{ width: 56, height: 56, borderRadius: 12, flexShrink: 0, background: "#EEF2FF", color: "#2554E8", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 20 }}>
+              <div style={{ width: 56, height: 56, borderRadius: 12, flexShrink: 0, background: "#EEF2FF", color: "#C41E3A", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 20 }}>
                 {(companyName || "C").charAt(0).toUpperCase()}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -2887,7 +2887,7 @@ function PostJobForm({ token, onPosted }) {
               <button
                 type="button"
                 style={{
-                  background: "#2554E8", color: "#fff", border: "none", borderRadius: 10,
+                  background: "#C41E3A", color: "#fff", border: "none", borderRadius: 10,
                   padding: "10px 26px", fontSize: 13.5, fontWeight: 700, flexShrink: 0,
                   width: isMobile ? "100%" : "auto",
                 }}
@@ -2901,7 +2901,7 @@ function PostJobForm({ token, onPosted }) {
             <div style={{ display: "flex", flexWrap: isMobile ? "wrap" : "nowrap", padding: "1rem 1.75rem", background: "#FBFCFE", borderBottom: "1px solid #E2E5EC", gap: isMobile ? "12px" : 0 }}>
               {experienceRequired && (
                 <div style={{ flex: isMobile ? "1 1 45%" : 1, display: "flex", alignItems: "center", gap: 10, paddingRight: 12 }}>
-                  <div style={{ width: 34, height: 34, borderRadius: 9, background: "#EEF2FF", color: "#2554E8", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <div style={{ width: 34, height: 34, borderRadius: 9, background: "#EEF2FF", color: "#C41E3A", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 2 3 7v6c0 5 4 9 9 9s9-4 9-9V7l-9-5Z" /></svg>
                   </div>
                   <div>
@@ -2912,7 +2912,7 @@ function PostJobForm({ token, onPosted }) {
               )}
               {salary && (
                 <div style={{ flex: isMobile ? "1 1 45%" : 1, display: "flex", alignItems: "center", gap: 10, paddingLeft: isMobile ? 0 : 16, borderLeft: isMobile ? "none" : "1px solid #E2E5EC" }}>
-                  <div style={{ width: 34, height: 34, borderRadius: 9, background: "#EEF2FF", color: "#2554E8", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <div style={{ width: 34, height: 34, borderRadius: 9, background: "#EEF2FF", color: "#C41E3A", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
                   </div>
                   <div>
@@ -2923,7 +2923,7 @@ function PostJobForm({ token, onPosted }) {
               )}
               {location && (
                 <div style={{ flex: isMobile ? "1 1 45%" : 1, display: "flex", alignItems: "center", gap: 10, paddingLeft: isMobile ? 0 : 16, borderLeft: isMobile ? "none" : "1px solid #E2E5EC" }}>
-                  <div style={{ width: 34, height: 34, borderRadius: 9, background: "#EEF2FF", color: "#2554E8", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <div style={{ width: 34, height: 34, borderRadius: 9, background: "#EEF2FF", color: "#C41E3A", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="10" r="3" /><path d="M12 21c-4-4-7-7.5-7-11a7 7 0 0 1 14 0c0 3.5-3 7-7 11Z" /></svg>
                   </div>
                   <div>
@@ -2965,7 +2965,7 @@ function PostJobForm({ token, onPosted }) {
           <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "1.25rem 1.75rem", borderTop: "1px solid #E2E5EC" }}>
             <button
               type="button"
-              style={{ background: "#2554E8", color: "#fff", border: "none", borderRadius: 10, padding: "11px 30px", fontSize: 14, fontWeight: 700, width: isMobile ? "100%" : "auto" }}
+              style={{ background: "#C41E3A", color: "#fff", border: "none", borderRadius: 10, padding: "11px 30px", fontSize: 14, fontWeight: 700, width: isMobile ? "100%" : "auto" }}
             >
               Apply now
             </button>
@@ -3720,7 +3720,7 @@ function RecruiterDashboard({ token }) {
                       maxWidth: 34,
                       height: Math.round((stages[i] / max) * 32) + 4,
                       borderRadius: "4px 4px 0 0",
-                      background: "var(--blue-600, #2554E8)",
+                      background: "var(--blue-600, #C41E3A)",
                       opacity: 0.4 + (i / PIPELINE_STAGES.length) * 0.6,
                     }}
                   />
@@ -4378,7 +4378,7 @@ function CandidateJobBrowser({ token }) {
 
   return (
     <div>
-      <div style={{ background: "#0E2A63", borderRadius: 16, padding: "24px 24px 40px", marginBottom: "-24px" }}>
+      <div style={{ background: "#33363E", borderRadius: 16, padding: "24px 24px 40px", marginBottom: "-24px" }}>
         <p style={{ margin: "0 0 4px", fontSize: 13, color: "#AFC2F0" }}>Welcome back</p>
         <h1 style={{ margin: 0, fontSize: 22, fontWeight: 600, color: "#fff" }}>Find your next role</h1>
         <div style={{ marginTop: 16, background: "#fff", borderRadius: 12, padding: 6, display: "flex", gap: 6, alignItems: "center" }}>
@@ -4445,7 +4445,7 @@ function MatchedJobsStrip({ token }) {
           <div key={job.job_id} className="card" style={{ minWidth: 220, flexShrink: 0 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px" }}>
               <p style={{ margin: 0, fontWeight: 600, fontSize: 13.5 }}>{job.title}</p>
-              <span style={{ fontSize: 11, fontWeight: 700, color: "var(--blue-600, #2554E8)", whiteSpace: "nowrap" }}>{job.match_score}% match</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: "var(--blue-600, #C41E3A)", whiteSpace: "nowrap" }}>{job.match_score}% match</span>
             </div>
             <p className="hint" style={{ margin: "4px 0 0" }}>{job.company_name} · {job.location}</p>
           </div>
@@ -4995,8 +4995,8 @@ function CandidateSearch({ token }) {
 
       <style>{`
         .cs-wrap { --cs-bg:#FFFFFF; --cs-surface:#F3F7FD; --cs-ink:#0B1B33; --cs-ink-soft:#56637D; --cs-ink-faint:#8A96AC;
-          --cs-line:#DCE6F5; --cs-line-strong:#C3D5F0; --cs-navy:#0E2A63; --cs-navy-800:#123170;
-          --cs-blue:#2454E0; --cs-blue-hover:#1A45C4; --cs-blue-100:#E4ECFE; --cs-blue-050:#F3F7FD;
+          --cs-line:#DCE6F5; --cs-line-strong:#C3D5F0; --cs-navy:#33363E; --cs-navy-800:#3A3D42;
+          --cs-blue:#2454E0; --cs-blue-hover:#8A1526; --cs-blue-100:#FBDCE1; --cs-blue-050:#F3F7FD;
           --cs-radius-sm:8px; --cs-radius-md:12px; --cs-radius-lg:16px;
           --cs-shadow-card:0 1px 2px rgba(14,42,99,0.06), 0 8px 24px rgba(14,42,99,0.05);
           --cs-shadow-card-hover:0 4px 10px rgba(14,42,99,0.08), 0 16px 32px rgba(14,42,99,0.09);
@@ -5342,7 +5342,7 @@ function RecruiterShell({ token, onLogout }) {
                 style={{
                   flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
                   padding: "8px 2px 7px", background: "none", border: "none", cursor: "pointer",
-                  color: active ? "#2554E8" : "#9AA5B8",
+                  color: active ? "#C41E3A" : "#9AA5B8",
                 }}
               >
                 <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -5449,7 +5449,7 @@ function CandidateShell({ token, onLogout }) {
                 style={{
                   flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
                   padding: "8px 2px 7px", background: "none", border: "none", cursor: "pointer",
-                  color: active ? "#2554E8" : "#9AA5B8",
+                  color: active ? "#C41E3A" : "#9AA5B8",
                 }}
               >
                 <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -5524,7 +5524,7 @@ function AdminAnalytics({ adminKey }) {
   }
 
   const lines = [
-    { key: "candidates", color: "#2554E8", label: "Candidates" },
+    { key: "candidates", color: "#C41E3A", label: "Candidates" },
     { key: "recruiters", color: "#1E8E5A", label: "Recruiters" },
     { key: "applications", color: "#D85A30", label: "Applications" },
   ];
@@ -6402,10 +6402,10 @@ function findFaqAnswer(userText) {
 function NatashaAvatar({ size = 28 }) {
   return (
       <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden="true" style={{ width: size, height: size, minWidth: size, minHeight: size, display: "block" }}>
-      <circle cx="24" cy="24" r="24" fill="#2554E8" />
+      <circle cx="24" cy="24" r="24" fill="#C41E3A" />
       <circle cx="21" cy="17" r="7" fill="#fff" />
       <path d="M8 41c0-9 6-15 13-15s13 6 13 15" fill="#fff" />
-      <rect x="26" y="24" width="12" height="15" rx="1.5" fill="#0A192F" />
+      <rect x="26" y="24" width="12" height="15" rx="1.5" fill="#1A1D24" />
       <line x1="29" y1="29" x2="35" y2="29" stroke="#fff" strokeWidth="1.2" />
       <line x1="29" y1="32.5" x2="35" y2="32.5" stroke="#fff" strokeWidth="1.2" />
       <line x1="29" y1="36" x2="33" y2="36" stroke="#fff" strokeWidth="1.2" />
@@ -6447,7 +6447,7 @@ function ChatbotWidget() {
             overflow: "hidden",
           }}
         >
-          <div style={{ background: "#0A192F", color: "#fff", padding: "0.6rem 1rem", display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ background: "#1A1D24", color: "#fff", padding: "0.6rem 1rem", display: "flex", alignItems: "center", gap: 10 }}>
             <NatashaAvatar size={30} />
             <div style={{ flex: 1 }}>
               <p style={{ margin: 0, fontWeight: 600, fontSize: 14 }}>Natasha</p>
@@ -6462,7 +6462,7 @@ function ChatbotWidget() {
                 key={i}
                 style={{
                   alignSelf: m.from === "user" ? "flex-end" : "flex-start",
-                  background: m.from === "user" ? "var(--blue-600, #2554E8)" : "var(--bg, #f3f7fd)",
+                  background: m.from === "user" ? "var(--blue-600, #C41E3A)" : "var(--bg, #f3f7fd)",
                   color: m.from === "user" ? "#fff" : "var(--text-primary, #1a1a1a)",
                   padding: "0.5rem 0.75rem",
                   borderRadius: 10,
@@ -6494,7 +6494,7 @@ function ChatbotWidget() {
           width: 52,
           height: 52,
           borderRadius: "50%",
-          background: "var(--blue-600, #2554E8)",
+          background: "var(--blue-600, #C41E3A)",
           color: "#fff",
           border: "none",
           fontSize: 22,
