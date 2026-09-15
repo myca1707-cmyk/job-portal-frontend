@@ -1097,6 +1097,7 @@ function CoretechMinis() {
   const [playingId, setPlayingId] = useState(null);
   const [expanded, setExpanded] = useState(false);
   const playerRef = useState({ current: null })[0];
+  const ytHostRef = useState({ current: null })[0];
   const touchX = useState({ current: null })[0];
 
   function go(next) {
@@ -1115,7 +1116,7 @@ function CoretechMinis() {
     touchX.current = null;
   }
 
-  useEffect(() => {
+    useEffect(() => {
     if (playingId === null) return;
     const url = minis[playingId].videoUrl;
     if (isFileVideo(url)) return;
@@ -1123,16 +1124,27 @@ function CoretechMinis() {
     const videoId = getYouTubeEmbedId(url);
     if (!videoId) return;
 
+    const host = ytHostRef.current;
+    if (!host) return;
+
     let cancelled = false;
+
+    // React must not own this node — YT replaces it with an iframe
+    const mount = document.createElement("div");
+    mount.style.width = "100%";
+    mount.style.height = "100%";
+    host.appendChild(mount);
 
     loadYouTubeIframeAPI().then((YT) => {
       if (cancelled) return;
-      playerRef.current = new YT.Player("ctm-yt-dock", {
+      playerRef.current = new YT.Player(mount, {
         videoId,
         playerVars: { autoplay: 1, playsinline: 1, controls: 1 },
         events: {
           onStateChange: (event) => {
-            if (event.data === YT.PlayerState.ENDED) setPlayingId(null);
+            if (event.data === YT.PlayerState.ENDED) {
+              setTimeout(() => setPlayingId(null), 0);
+            }
           },
         },
       });
@@ -1140,23 +1152,18 @@ function CoretechMinis() {
 
     return () => {
       cancelled = true;
-      if (playerRef.current && playerRef.current.destroy) {
-        playerRef.current.destroy();
-        playerRef.current = null;
+      try {
+        if (playerRef.current && playerRef.current.destroy) playerRef.current.destroy();
+      } catch (err) {
+        console.warn("YT destroy:", err);
+      }
+      playerRef.current = null;
+      try {
+        host.innerHTML = "";
+      } catch (err) {
+        console.warn("YT cleanup:", err);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playingId]);
-
-  useEffect(() => {
-    if (playingId === null || !("mediaSession" in navigator)) return;
-    const m = minis[playingId];
-    if (!isFileVideo(m.videoUrl)) return;
-    navigator.mediaSession.metadata = new window.MediaMetadata({
-      title: m.title,
-      artist: "CoreTech Minis",
-      album: "CoreTech Talents",
-    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playingId]);
 
