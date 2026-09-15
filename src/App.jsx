@@ -1095,15 +1095,13 @@ function CoretechMinis() {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [playingId, setPlayingId] = useState(null);
+  const [expanded, setExpanded] = useState(false);
   const playerRef = useState({ current: null })[0];
   const touchX = useState({ current: null })[0];
 
   function go(next) {
     const clamped = Math.max(0, Math.min(minis.length - 1, next));
-    if (clamped !== activeIndex) {
-      setActiveIndex(clamped);
-      setPlayingId(null);
-    }
+    if (clamped !== activeIndex) setActiveIndex(clamped);
   }
 
   function onTouchStart(e) {
@@ -1125,12 +1123,11 @@ function CoretechMinis() {
     const videoId = getYouTubeEmbedId(url);
     if (!videoId) return;
 
-    const containerId = `reel-player-${playingId}`;
     let cancelled = false;
 
     loadYouTubeIframeAPI().then((YT) => {
       if (cancelled) return;
-      playerRef.current = new YT.Player(containerId, {
+      playerRef.current = new YT.Player("ctm-yt-dock", {
         videoId,
         playerVars: { autoplay: 1, playsinline: 1, controls: 1 },
         events: {
@@ -1151,12 +1148,40 @@ function CoretechMinis() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playingId]);
 
+  useEffect(() => {
+    if (playingId === null || !("mediaSession" in navigator)) return;
+    const m = minis[playingId];
+    if (!isFileVideo(m.videoUrl)) return;
+    navigator.mediaSession.metadata = new window.MediaMetadata({
+      title: m.title,
+      artist: "CoreTech Minis",
+      album: "CoreTech Talents",
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playingId]);
+
   const CARD_W = "min(58vw, 240px)";
+  const dockW = expanded ? "min(80vw, 280px)" : "min(42vw, 150px)";
+  const navBtn = {
+    width: 42, height: 42, minWidth: 42, minHeight: 42, flexShrink: 0,
+    borderRadius: "50%", border: "1px solid rgba(10,25,48,0.15)",
+    background: "#fff", color: "#0A1930", cursor: "pointer",
+    display: "flex", alignItems: "center", justifyContent: "center",
+  };
+  const dockBtn = {
+    height: 26, minHeight: 26, flexShrink: 0, padding: "0 10px",
+    borderRadius: 13, border: 0, background: "rgba(255,255,255,0.16)",
+    color: "#fff", cursor: "pointer", fontSize: 11, fontWeight: 700,
+    display: "flex", alignItems: "center",
+  };
+
+  const playing = playingId !== null ? minis[playingId] : null;
+  const playingIsFile = playing ? isFileVideo(playing.videoUrl) : false;
 
   return (
     <div>
       <p className="card-desc" style={{ textAlign: "center", marginBottom: "1.25rem" }}>
-        Swipe sideways to browse — tap a video to watch.
+        Swipe sideways to browse — tap a video and it keeps playing while you look around.
       </p>
 
       <div
@@ -1174,11 +1199,16 @@ function CoretechMinis() {
           const far = Math.abs(offset) > 1;
           const isActive = offset === 0;
           const isFile = isFileVideo(m.videoUrl);
+          const isNowPlaying = playingId === i;
 
           return (
             <div
               key={i}
-              onClick={() => (isActive ? (m.videoUrl && setPlayingId(i)) : go(i))}
+              onClick={() => {
+                if (isActive) {
+                  if (m.videoUrl) { setPlayingId(i); setExpanded(false); }
+                } else go(i);
+              }}
               style={{
                 position: "absolute",
                 top: 0,
@@ -1205,105 +1235,162 @@ function CoretechMinis() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  outline: isNowPlaying ? "2px solid #C41E3A" : "none",
+                  outlineOffset: -2,
                 }}
               >
-                {playingId === i ? (
-                  isFile ? (
-                    <video
-                      src={m.videoUrl}
-                      controls
-                      autoPlay
-                      playsInline
-                      onEnded={() => setPlayingId(null)}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                    />
-                  ) : (
-                    <div id={`reel-player-${i}`} style={{ width: "100%", height: "100%" }} />
-                  )
-                ) : (
-                  <>
-                    {isFile && (
-                      <video
-                        src={`${m.videoUrl}#t=0.1`}
-                        preload="metadata"
-                        muted
-                        playsInline
-                        style={{
-                          position: "absolute", inset: 0, width: "100%", height: "100%",
-                          objectFit: "cover", display: "block",
-                        }}
-                      />
-                    )}
+                {isFile && (
+                  <video
+                    src={`${m.videoUrl}#t=0.1`}
+                    preload="metadata"
+                    muted
+                    playsInline
+                    style={{
+                      position: "absolute", inset: 0, width: "100%", height: "100%",
+                      objectFit: "cover", display: "block",
+                    }}
+                  />
+                )}
 
-                    <span
-                      style={{
-                        position: "absolute", top: 14, left: 14, fontSize: 11, fontWeight: 700,
-                        color: "#64FFDA", background: "rgba(0,0,0,0.35)", padding: "4px 10px",
-                        borderRadius: 6, letterSpacing: "0.02em",
-                      }}
-                    >
-                      {m.tag}
-                    </span>
+                <span
+                  style={{
+                    position: "absolute", top: 14, left: 14, fontSize: 11, fontWeight: 700,
+                    color: "#64FFDA", background: "rgba(0,0,0,0.35)", padding: "4px 10px",
+                    borderRadius: 6, letterSpacing: "0.02em",
+                  }}
+                >
+                  {m.tag}
+                </span>
 
-                    {m.videoUrl ? (
-                      isActive && (
-                        <div
-                          style={{
-                            position: "relative",
-                            width: 64, height: 64, minWidth: 64, minHeight: 64, flexShrink: 0,
-                            borderRadius: "50%", background: "rgba(0,0,0,0.45)",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                          }}
-                        >
-                          <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff" style={{ display: "block", marginLeft: 3 }}>
-                            <path d="M8 5v14l11-7z" />
-                          </svg>
-                        </div>
-                      )
-                    ) : (
-                      <span
-                        style={{
-                          fontSize: 11, fontWeight: 700, color: "#fff",
-                          background: "rgba(255,255,255,0.18)", padding: "6px 14px", borderRadius: 999,
-                        }}
-                      >
-                        Coming soon
-                      </span>
-                    )}
-
+                {m.videoUrl ? (
+                  isActive && (
                     <div
                       style={{
-                        position: "absolute", bottom: 0, left: 0, right: 0,
-                        padding: "1.5rem 1rem 1.25rem", fontSize: 14, fontWeight: 700,
-                        color: "#fff", textAlign: "left",
-                        background: "linear-gradient(0deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 100%)",
+                        position: "relative",
+                        width: 64, height: 64, minWidth: 64, minHeight: 64, flexShrink: 0,
+                        borderRadius: "50%", background: "rgba(0,0,0,0.45)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
                       }}
                     >
-                      {m.title}
+                      {isNowPlaying ? (
+                        <span style={{ color: "#fff", fontSize: 11, fontWeight: 700 }}>Playing</span>
+                      ) : (
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff" style={{ display: "block", marginLeft: 3 }}>
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      )}
                     </div>
-                  </>
+                  )
+                ) : (
+                  <span
+                    style={{
+                      fontSize: 11, fontWeight: 700, color: "#fff",
+                      background: "rgba(255,255,255,0.18)", padding: "6px 14px", borderRadius: 999,
+                    }}
+                  >
+                    Coming soon
+                  </span>
                 )}
+
+                <div
+                  style={{
+                    position: "absolute", bottom: 0, left: 0, right: 0,
+                    padding: "1.5rem 1rem 1.25rem", fontSize: 14, fontWeight: 700,
+                    color: "#fff", textAlign: "left",
+                    background: "linear-gradient(0deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 100%)",
+                  }}
+                >
+                  {m.title}
+                </div>
               </div>
             </div>
           );
         })}
       </div>
 
-      <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: "1.25rem" }}>
-        {minis.map((_, i) => (
-          <span
-            key={i}
-            onClick={() => go(i)}
-            style={{
-              width: activeIndex === i ? 16 : 6, height: 6, borderRadius: 3,
-              background: activeIndex === i ? "#C41E3A" : "#DCE6F5",
-              transition: "all 0.25s ease", cursor: "pointer",
-            }}
-          />
-        ))}
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 14, marginTop: "1.25rem" }}>
+        <button type="button" style={navBtn} onClick={() => go(activeIndex - 1)} aria-label="Previous video">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" style={{ display: "block" }}>
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+
+        <div style={{ display: "flex", gap: 6 }}>
+          {minis.map((_, i) => (
+            <span
+              key={i}
+              onClick={() => go(i)}
+              style={{
+                width: activeIndex === i ? 16 : 6, height: 6, borderRadius: 3,
+                background: activeIndex === i ? "#C41E3A" : "#DCE6F5",
+                transition: "all 0.25s ease", cursor: "pointer",
+              }}
+            />
+          ))}
+        </div>
+
+        <button type="button" style={navBtn} onClick={() => go(activeIndex + 1)} aria-label="Next video">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" style={{ display: "block" }}>
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
       </div>
 
       <p className="hint" style={{ textAlign: "center", marginTop: "1rem" }}>More Coretech Minis dropping soon.</p>
+
+      {playing && (
+        <div
+          style={{
+            position: "fixed",
+            left: 16,
+            bottom: 16,
+            width: dockW,
+            zIndex: 9000,
+            borderRadius: 14,
+            overflow: "hidden",
+            background: "#0A1930",
+            boxShadow: "0 14px 40px rgba(0,0,0,0.45)",
+            transition: "width .25s ease",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 8px" }}>
+            <span
+              style={{
+                flex: 1, minWidth: 0, color: "#fff", fontSize: 11, fontWeight: 600,
+                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+              }}
+            >
+              {playing.title}
+            </span>
+            <button type="button" style={dockBtn} onClick={() => setExpanded(!expanded)}>
+              {expanded ? "Shrink" : "Expand"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setPlayingId(null)}
+              aria-label="Close video"
+              style={{ ...dockBtn, width: 26, minWidth: 26, padding: 0, justifyContent: "center", borderRadius: "50%" }}
+            >
+              ✕
+            </button>
+          </div>
+
+          <div style={{ width: "100%", aspectRatio: "9 / 16", background: "#000" }}>
+            {playingIsFile ? (
+              <video
+                src={playing.videoUrl}
+                controls
+                autoPlay
+                playsInline
+                onEnded={() => setPlayingId(null)}
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              />
+            ) : (
+              <div id="ctm-yt-dock" style={{ width: "100%", height: "100%" }} />
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
