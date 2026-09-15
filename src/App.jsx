@@ -10,7 +10,6 @@ import PrivacyPolicy from "./PrivacyPolicy";
 import TermsOfService from "./TermsOfService";
 import AudienceSplit from "./AudienceSplit";
 import ReferFriend from './ReferFriend';
-import CoretechMinis from "./CoretechMinis";
 
 const API_BASE = "https://job-portal-backend-production-6d9d.up.railway.app";
 
@@ -1085,36 +1084,45 @@ function MiniVideoModal({ mini, onClose }) {
 function CoretechMinis() {
   const minis = [
     { title: "Job Add for chemistry graduates", tag: "Job Add", videoUrl: "https://youtube.com/shorts/lXxusAKZnsw?si=wNxstYNMLrv9ksLH" },
-    { title: "Coretech Minis Logo", tag: "Logo", videoUrl: "https://youtu.be/-fFeC7GI9ec?si=RdXTqqhJEonl91Da"},
-    { title: "Interview Expectations from Job Seekers", tag: "Tips to imrpove", videoUrl: "https://youtube.com/shorts/NVFCnJiRXHY?si=s5mg1bWypplnfYfT"},
+    { title: "Coretech Minis Logo", tag: "Logo", videoUrl: "https://youtu.be/-fFeC7GI9ec?si=RdXTqqhJEonl91Da" },
+    { title: "Interview Expectations from Job Seekers", tag: "Tips to improve", videoUrl: "https://youtube.com/shorts/NVFCnJiRXHY?si=s5mg1bWypplnfYfT" },
     { title: "How to Negotiate Your Offer", tag: "Career Advice", videoUrl: null },
     { title: "Campus to Career: First Job Tips", tag: "Freshers", videoUrl: null },
     { title: "Reading a Job Description Like a Pro", tag: "Job Market", videoUrl: null },
   ];
 
+  const isFileVideo = (url) => !!url && /\.(mp4|webm|ogv|ogg|m4v)(\?.*)?$/i.test(url);
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [playingId, setPlayingId] = useState(null);
-  const containerRef = useState(null)[0];
-  const scrollRef = { current: null };
-  const [containerEl, setContainerEl] = useState(null);
   const playerRef = useState({ current: null })[0];
+  const touchX = useState({ current: null })[0];
 
-  function handleScroll(e) {
-    const el = e.target;
-    const itemHeight = el.clientHeight;
-    const idx = Math.round(el.scrollTop / itemHeight);
-    if (idx !== activeIndex) setActiveIndex(idx);
+  function go(next) {
+    const clamped = Math.max(0, Math.min(minis.length - 1, next));
+    if (clamped !== activeIndex) {
+      setActiveIndex(clamped);
+      setPlayingId(null);
+    }
   }
 
-  function openInline(idx) {
-    if (!minis[idx].videoUrl) return;
-    setPlayingId(idx);
+  function onTouchStart(e) {
+    touchX.current = e.touches[0].clientX;
+  }
+
+  function onTouchEnd(e) {
+    if (touchX.current === null) return;
+    const delta = e.changedTouches[0].clientX - touchX.current;
+    if (Math.abs(delta) > 45) go(activeIndex + (delta < 0 ? 1 : -1));
+    touchX.current = null;
   }
 
   useEffect(() => {
     if (playingId === null) return;
-    const mini = minis[playingId];
-    const videoId = getYouTubeEmbedId(mini.videoUrl);
+    const url = minis[playingId].videoUrl;
+    if (isFileVideo(url)) return;
+
+    const videoId = getYouTubeEmbedId(url);
     if (!videoId) return;
 
     const containerId = `reel-player-${playingId}`;
@@ -1127,9 +1135,7 @@ function CoretechMinis() {
         playerVars: { autoplay: 1, playsinline: 1, controls: 1 },
         events: {
           onStateChange: (event) => {
-            if (event.data === YT.PlayerState.ENDED) {
-              setPlayingId(null);
-            }
+            if (event.data === YT.PlayerState.ENDED) setPlayingId(null);
           },
         },
       });
@@ -1145,119 +1151,153 @@ function CoretechMinis() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playingId]);
 
+  const CARD_W = "min(58vw, 240px)";
+
   return (
     <div>
       <p className="card-desc" style={{ textAlign: "center", marginBottom: "1.25rem" }}>
-        Swipe up or down to browse — tap a video to watch.
+        Swipe sideways to browse — tap a video to watch.
       </p>
 
       <div
-        onScroll={handleScroll}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
         style={{
-          maxWidth: 360,
-          height: "min(70vh, 640px)",
-          margin: "0 auto",
-          borderRadius: 20,
-          overflow: "hidden",
-          background: "#000",
           position: "relative",
-          scrollSnapType: "y mandatory",
-          overflowY: "auto",
-          WebkitOverflowScrolling: "touch",
+          height: `calc(${CARD_W} * 16 / 9)`,
+          overflow: "hidden",
+          touchAction: "pan-y",
         }}
       >
-        {minis.map((m, i) => (
-          <div
-            key={i}
-            style={{
-              height: "100%",
-              width: "100%",
-              scrollSnapAlign: "start",
-              position: "relative",
-              background: "linear-gradient(155deg, #1A1D24 0%, #3A3D42 100%)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            {playingId === i ? (
-              <div style={{ width: "100%", height: "100%" }}>
-                <div id={`reel-player-${i}`} style={{ width: "100%", height: "100%" }} />
-              </div>
-            ) : (
+        {minis.map((m, i) => {
+          const offset = i - activeIndex;
+          const far = Math.abs(offset) > 1;
+          const isActive = offset === 0;
+          const isFile = isFileVideo(m.videoUrl);
+
+          return (
+            <div
+              key={i}
+              onClick={() => (isActive ? (m.videoUrl && setPlayingId(i)) : go(i))}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: "50%",
+                width: CARD_W,
+                transform: `translateX(calc(-50% + ${offset * 62}%)) scale(${isActive ? 1 : 0.82})`,
+                opacity: far ? 0 : isActive ? 1 : 0.45,
+                filter: isActive ? "none" : "blur(1px)",
+                zIndex: 10 - Math.abs(offset),
+                pointerEvents: far ? "none" : "auto",
+                cursor: isActive ? (m.videoUrl ? "pointer" : "default") : "pointer",
+                transition: "transform .38s cubic-bezier(.22,.61,.36,1), opacity .38s ease, filter .38s ease",
+              }}
+            >
               <div
-                onClick={() => openInline(i)}
-                style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", cursor: m.videoUrl ? "pointer" : "default", position: "relative" }}
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  aspectRatio: "9 / 16",
+                  borderRadius: 20,
+                  overflow: "hidden",
+                  background: "linear-gradient(155deg, #1A1D24 0%, #3A3D42 100%)",
+                  boxShadow: isActive ? "0 12px 32px rgba(10,25,48,0.3)" : "0 6px 16px rgba(10,25,48,0.18)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
-                <span
-                  style={{
-                    position: "absolute", top: 14, left: 14, fontSize: 11, fontWeight: 700, color: "#64FFDA",
-                    background: "rgba(0,0,0,0.35)", padding: "4px 10px", borderRadius: 6, letterSpacing: "0.02em",
-                  }}
-                >
-                  {m.tag}
-                </span>
-
-                {m.videoUrl ? (
-                  <div
-                    style={{
-                      width: 64, height: 64, borderRadius: "50%", background: "rgba(255,255,255,0.18)",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                    }}
-                  >
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </div>
+                {playingId === i ? (
+                  isFile ? (
+                    <video
+                      src={m.videoUrl}
+                      controls
+                      autoPlay
+                      playsInline
+                      onEnded={() => setPlayingId(null)}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                    />
+                  ) : (
+                    <div id={`reel-player-${i}`} style={{ width: "100%", height: "100%" }} />
+                  )
                 ) : (
-                  <span
-                    style={{
-                      fontSize: 11, fontWeight: 700, color: "#fff",
-                      background: "rgba(255,255,255,0.18)", padding: "6px 14px", borderRadius: 999,
-                    }}
-                  >
-                    Coming soon
-                  </span>
+                  <>
+                    {isFile && (
+                      <video
+                        src={`${m.videoUrl}#t=0.1`}
+                        preload="metadata"
+                        muted
+                        playsInline
+                        style={{
+                          position: "absolute", inset: 0, width: "100%", height: "100%",
+                          objectFit: "cover", display: "block",
+                        }}
+                      />
+                    )}
+
+                    <span
+                      style={{
+                        position: "absolute", top: 14, left: 14, fontSize: 11, fontWeight: 700,
+                        color: "#64FFDA", background: "rgba(0,0,0,0.35)", padding: "4px 10px",
+                        borderRadius: 6, letterSpacing: "0.02em",
+                      }}
+                    >
+                      {m.tag}
+                    </span>
+
+                    {m.videoUrl ? (
+                      isActive && (
+                        <div
+                          style={{
+                            position: "relative",
+                            width: 64, height: 64, minWidth: 64, minHeight: 64, flexShrink: 0,
+                            borderRadius: "50%", background: "rgba(0,0,0,0.45)",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                          }}
+                        >
+                          <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff" style={{ display: "block", marginLeft: 3 }}>
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
+                      )
+                    ) : (
+                      <span
+                        style={{
+                          fontSize: 11, fontWeight: 700, color: "#fff",
+                          background: "rgba(255,255,255,0.18)", padding: "6px 14px", borderRadius: 999,
+                        }}
+                      >
+                        Coming soon
+                      </span>
+                    )}
+
+                    <div
+                      style={{
+                        position: "absolute", bottom: 0, left: 0, right: 0,
+                        padding: "1.5rem 1rem 1.25rem", fontSize: 14, fontWeight: 700,
+                        color: "#fff", textAlign: "left",
+                        background: "linear-gradient(0deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 100%)",
+                      }}
+                    >
+                      {m.title}
+                    </div>
+                  </>
                 )}
-
-                <div
-                  style={{
-                    position: "absolute", bottom: 0, left: 0, right: 0, padding: "1.5rem 1.25rem 1.75rem",
-                    fontSize: 16, fontWeight: 700, color: "#fff", textAlign: "left",
-                    background: "linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)",
-                  }}
-                >
-                  {m.title}
-                </div>
-
-                <div
-                  style={{
-                    position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)",
-                    display: "flex", flexDirection: "column", gap: 8, alignItems: "center",
-                  }}
-                >
-                  {i > 0 && (
-                    <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 18 }}>▲</span>
-                  )}
-                  {i < minis.length - 1 && (
-                    <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 18 }}>▼</span>
-                  )}
-                </div>
               </div>
-            )}
-          </div>
-        ))}
+            </div>
+          );
+        })}
       </div>
 
-      <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: "1rem" }}>
+      <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: "1.25rem" }}>
         {minis.map((_, i) => (
           <span
             key={i}
+            onClick={() => go(i)}
             style={{
               width: activeIndex === i ? 16 : 6, height: 6, borderRadius: 3,
               background: activeIndex === i ? "#C41E3A" : "#DCE6F5",
-              transition: "all 0.25s ease",
+              transition: "all 0.25s ease", cursor: "pointer",
             }}
           />
         ))}
