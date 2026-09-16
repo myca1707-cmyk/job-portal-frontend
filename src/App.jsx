@@ -1012,75 +1012,6 @@ function loadYouTubeIframeAPI() {
   return ytApiPromise;
 }
 
-function MiniVideoModal({ mini, onClose }) {
-  const videoId = getYouTubeEmbedId(mini.videoUrl);
-  const [containerId] = useState(() => `yt-player-${Math.random().toString(36).slice(2)}`);
-  const playerRef = useState({ current: null })[0];
-
-  useEffect(() => {
-    if (!videoId) return;
-    let cancelled = false;
-
-    loadYouTubeIframeAPI().then((YT) => {
-      if (cancelled) return;
-      playerRef.current = new YT.Player(containerId, {
-        videoId,
-        playerVars: { autoplay: 1, playsinline: 1 },
-        events: {
-          onStateChange: (event) => {
-            if (event.data === YT.PlayerState.ENDED) {
-              onClose();
-            }
-          },
-        },
-      });
-    });
-
-    return () => {
-      cancelled = true;
-      if (playerRef.current && playerRef.current.destroy) {
-        playerRef.current.destroy();
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [videoId]);
-
-  return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.85)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1000,
-      }}
-      onClick={onClose}
-    >
-      <div style={{ position: "relative", width: "min(360px, 90vw)" }} onClick={(e) => e.stopPropagation()}>
-        <button
-          className="btn-link"
-          onClick={onClose}
-          style={{ position: "absolute", top: -40, right: 0, color: "#fff", fontSize: 20 }}
-        >
-          ✕
-        </button>
-        {videoId ? (
-          <div style={{ aspectRatio: "9/16", borderRadius: 12, overflow: "hidden" }}>
-            <div id={containerId} style={{ width: "100%", height: "100%" }} />
-          </div>
-        ) : (
-          <div className="card" style={{ textAlign: "center" }}>
-            <p className="card-meta">This video is coming soon.</p>
-          </div>
-        )}
-        <p style={{ color: "#fff", textAlign: "center", marginTop: "0.75rem", fontSize: 14, fontWeight: 600 }}>{mini.title}</p>
-      </div>
-    </div>
-  );
-}
-
 function CoretechMinis() {
   const minis = [
     { title: "Job Add for chemistry graduates", tag: "Job Add", videoUrl: "https://youtube.com/shorts/lXxusAKZnsw?si=wNxstYNMLrv9ksLH" },
@@ -1096,8 +1027,6 @@ function CoretechMinis() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [playingId, setPlayingId] = useState(null);
   const [expanded, setExpanded] = useState(false);
-  const playerRef = useState({ current: null })[0];
-  const ytHostRef = useState({ current: null })[0];
   const touchX = useState({ current: null })[0];
 
   function go(next) {
@@ -1115,57 +1044,6 @@ function CoretechMinis() {
     if (Math.abs(delta) > 45) go(activeIndex + (delta < 0 ? 1 : -1));
     touchX.current = null;
   }
-
-    useEffect(() => {
-    if (playingId === null) return;
-    const url = minis[playingId].videoUrl;
-    if (isFileVideo(url)) return;
-
-    const videoId = getYouTubeEmbedId(url);
-    if (!videoId) return;
-
-    const host = ytHostRef.current;
-    if (!host) return;
-
-    let cancelled = false;
-
-    // React must not own this node — YT replaces it with an iframe
-    const mount = document.createElement("div");
-    mount.style.width = "100%";
-    mount.style.height = "100%";
-    host.appendChild(mount);
-
-    loadYouTubeIframeAPI().then((YT) => {
-      if (cancelled) return;
-      playerRef.current = new YT.Player(mount, {
-        videoId,
-        playerVars: { autoplay: 1, playsinline: 1, controls: 1 },
-        events: {
-          onStateChange: (event) => {
-            if (event.data === YT.PlayerState.ENDED) {
-              setTimeout(() => setPlayingId(null), 0);
-            }
-          },
-        },
-      });
-    });
-
-    return () => {
-      cancelled = true;
-      try {
-        if (playerRef.current && playerRef.current.destroy) playerRef.current.destroy();
-      } catch (err) {
-        console.warn("YT destroy:", err);
-      }
-      playerRef.current = null;
-      try {
-        host.innerHTML = "";
-      } catch (err) {
-        console.warn("YT cleanup:", err);
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playingId]);
 
   const CARD_W = "min(58vw, 240px)";
   const dockW = expanded ? "min(80vw, 280px)" : "min(42vw, 150px)";
@@ -1393,7 +1271,14 @@ function CoretechMinis() {
                 style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
               />
             ) : (
-              <div id="ctm-yt-dock" style={{ width: "100%", height: "100%" }} />
+              <iframe
+                key={playingId}
+                src={`https://www.youtube.com/embed/${getYouTubeEmbedId(playing.videoUrl)}?autoplay=1&playsinline=1&rel=0`}
+                title={playing.title}
+                allow="autoplay; encrypted-media; picture-in-picture"
+                allowFullScreen
+                style={{ width: "100%", height: "100%", border: 0, display: "block" }}
+              />
             )}
           </div>
         </div>
