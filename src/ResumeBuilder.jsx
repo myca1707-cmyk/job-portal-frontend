@@ -1,6 +1,10 @@
+// ResumeBuilder.jsx
+// CoreTech Talents resume builder - with machine-shop role suggestions.
+// Needs only one other file in src/: MachiningSuggestions.jsx
+// The 4 resume designs (Modern, Classic, Minimal, Executive) are built into this file.
+// Styles are built in too (class prefixes "rbm-" and "rt-"), so no separate CSS file is needed.
 
 import { useEffect, useMemo, useState } from "react";
-import { TemplateSelector, ResumePreview, KeywordAssistant } from "./ResumeTemplateStyles";
 import { MachiningTitleInput, MachiningSuggestionPanel } from "./MachiningSuggestions";
 
 const STEPS = ["Personal", "Experience", "Education", "Skills", "Preview & Download"];
@@ -75,6 +79,171 @@ const CSS = `
 }
 `;
 
+// ---------- Resume designs ----------
+const TEMPLATE_OPTIONS = [
+  { id: "modern", name: "Modern", note: "Blue sidebar, photo" },
+  { id: "classic", name: "Classic", note: "Simple, ATS-safe" },
+  { id: "minimal", name: "Minimal", note: "Clean and light" },
+  { id: "executive", name: "Executive", note: "Bold header" },
+];
+
+const RT_CSS = `
+.rt-picker { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 6px; }
+.rt-pick { border: 2px solid #dbe5f6; border-radius: 10px; padding: 10px; background: #fff; cursor: pointer; text-align: center; font-family: inherit; }
+.rt-pick.active { border-color: #1d4ed8; background: #f2f7ff; }
+.rt-pick strong { display: block; font-size: 13.5px; color: #0b2a5b; }
+.rt-pick span { font-size: 11.5px; color: #5b6b86; }
+.rt-thumb { height: 46px; border-radius: 5px; margin-bottom: 6px; border: 1px solid #dbe5f6; }
+.rt-thumb.modern { background: linear-gradient(90deg, #0b2a5b 0 32%, #fff 32%); }
+.rt-thumb.classic { background: repeating-linear-gradient(#fff 0 8px, #e5e7eb 8px 9px); }
+.rt-thumb.minimal { background: linear-gradient(#fff 0 10px, #0f766e 10px 12px, #fff 12px); }
+.rt-thumb.executive { background: linear-gradient(#1f2937 0 30%, #fff 30%); }
+@media (max-width: 640px) { .rt-picker { grid-template-columns: 1fr 1fr; } }
+
+.rt-page { width: 794px; min-height: 1060px; margin: 0 auto; background: #fff; color: #1f2937; box-shadow: 0 2px 10px rgba(11,42,91,0.10); font-size: 13px; line-height: 1.5; box-sizing: border-box; }
+.rt-page h3 { font-size: 13px; letter-spacing: 0.04em; margin: 16px 0 6px; }
+.rt-desc { white-space: pre-line; margin: 3px 0 0; }
+.rt-item { margin-bottom: 10px; }
+.rt-item-top { display: flex; justify-content: space-between; gap: 10px; font-weight: 600; }
+.rt-item-sub { color: #4b5563; }
+
+.rt-modern { display: grid; grid-template-columns: 250px 1fr; }
+.rt-modern .rt-side { background: #0b2a5b; color: #fff; padding: 28px 20px; }
+.rt-modern .rt-side img { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 14px; border: 3px solid #fff; }
+.rt-modern .rt-side h3 { color: #9cc2ff; border-bottom: 1px solid rgba(255,255,255,0.25); padding-bottom: 4px; }
+.rt-modern .rt-side p { margin: 3px 0; word-break: break-word; }
+.rt-modern .rt-side ul { margin: 0; padding-left: 16px; }
+.rt-modern .rt-main { padding: 28px 26px; }
+.rt-modern .rt-name { font-size: 26px; font-weight: 800; color: #0b2a5b; margin: 0; }
+.rt-modern .rt-role { color: #1d4ed8; font-weight: 600; font-size: 15px; margin: 2px 0 0; }
+.rt-modern .rt-main h3 { color: #0b2a5b; border-bottom: 2px solid #1d4ed8; padding-bottom: 3px; }
+
+.rt-classic { padding: 40px 48px; font-family: Georgia, "Times New Roman", serif; }
+.rt-classic .rt-name { font-size: 26px; text-align: center; margin: 0; }
+.rt-classic .rt-role { text-align: center; margin: 2px 0; font-style: italic; }
+.rt-classic .rt-contact { text-align: center; color: #374151; margin-bottom: 8px; }
+.rt-classic h3 { border-bottom: 1px solid #111827; padding-bottom: 2px; }
+
+.rt-minimal { padding: 40px 48px; font-family: Inter, system-ui, sans-serif; }
+.rt-minimal .rt-name { font-size: 28px; font-weight: 300; margin: 0; }
+.rt-minimal .rt-bar { width: 60px; height: 3px; background: #0f766e; margin: 8px 0; }
+.rt-minimal .rt-role { color: #0f766e; margin: 0; font-weight: 600; }
+.rt-minimal .rt-contact { color: #6b7280; margin: 4px 0 6px; }
+.rt-minimal h3 { color: #0f766e; font-weight: 600; }
+
+.rt-executive .rt-head { background: #1f2937; color: #fff; padding: 28px 40px; }
+.rt-executive .rt-name { font-size: 28px; font-weight: 800; margin: 0; }
+.rt-executive .rt-role { color: #fbbf24; margin: 2px 0 6px; font-weight: 600; }
+.rt-executive .rt-contact { color: #d1d5db; }
+.rt-executive .rt-body { padding: 18px 40px 36px; }
+.rt-executive h3 { color: #1f2937; border-left: 4px solid #fbbf24; padding-left: 8px; }
+
+.rt-skills-inline { margin: 0; }
+@media print {
+  .rt-page { box-shadow: none; width: 100%; }
+  .rt-modern .rt-side, .rt-executive .rt-head { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+`;
+
+function TemplatePicker({ selected, onSelect }) {
+  return (
+    <div className="rt-picker">
+      {TEMPLATE_OPTIONS.map((t) => (
+        <button type="button" key={t.id} className={`rt-pick ${selected === t.id ? "active" : ""}`} onClick={() => onSelect(t.id)} aria-pressed={selected === t.id}>
+          <div className={`rt-thumb ${t.id}`} />
+          <strong>{t.name}</strong>
+          <span>{t.note}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+const contactLine = (d) => [d.phone, d.email, d.location].filter(Boolean).join("  |  ");
+
+function ExperienceList({ items }) {
+  return items.map((e, i) => (
+    <div className="rt-item" key={i}>
+      <div className="rt-item-top"><span>{e.title}</span><span>{e.duration}</span></div>
+      {e.company && <div className="rt-item-sub">{e.company}</div>}
+      {e.description && <p className="rt-desc">{e.description}</p>}
+    </div>
+  ));
+}
+
+function EducationList({ items }) {
+  return items.map((e, i) => (
+    <div className="rt-item" key={i}>
+      <div className="rt-item-top"><span>{e.degree}</span><span>{e.year}</span></div>
+      {e.institution && <div className="rt-item-sub">{e.institution}</div>}
+    </div>
+  ));
+}
+
+function MainSections({ d, skillsInline }) {
+  return (
+    <>
+      {d.summary && (<><h3>PROFILE</h3><p className="rt-desc">{d.summary}</p></>)}
+      {d.experience.length > 0 && (<><h3>WORK EXPERIENCE</h3><ExperienceList items={d.experience} /></>)}
+      {d.education.length > 0 && (<><h3>EDUCATION</h3><EducationList items={d.education} /></>)}
+      {skillsInline && d.skills.length > 0 && (<><h3>SKILLS</h3><p className="rt-skills-inline">{d.skills.join(", ")}</p></>)}
+    </>
+  );
+}
+
+function ResumePreview({ templateId, data: d }) {
+  if (templateId === "modern") {
+    return (
+      <div className="rt-page rt-modern">
+        <aside className="rt-side">
+          {d.photo && <img src={d.photo} alt="" />}
+          <h3>CONTACT</h3>
+          {d.phone && <p>{d.phone}</p>}
+          {d.email && <p>{d.email}</p>}
+          {d.location && <p>{d.location}</p>}
+          {d.skills.length > 0 && (<><h3>SKILLS</h3><ul>{d.skills.map((s) => <li key={s}>{s}</li>)}</ul></>)}
+        </aside>
+        <main className="rt-main">
+          <p className="rt-name">{d.fullName || "Your Name"}</p>
+          {d.headline && <p className="rt-role">{d.headline}</p>}
+          <MainSections d={d} />
+        </main>
+      </div>
+    );
+  }
+  if (templateId === "executive") {
+    return (
+      <div className="rt-page rt-executive">
+        <div className="rt-head">
+          <p className="rt-name">{d.fullName || "Your Name"}</p>
+          {d.headline && <p className="rt-role">{d.headline}</p>}
+          <div className="rt-contact">{contactLine(d)}</div>
+        </div>
+        <div className="rt-body"><MainSections d={d} skillsInline /></div>
+      </div>
+    );
+  }
+  if (templateId === "minimal") {
+    return (
+      <div className="rt-page rt-minimal">
+        <p className="rt-name">{d.fullName || "Your Name"}</p>
+        <div className="rt-bar" />
+        {d.headline && <p className="rt-role">{d.headline}</p>}
+        <div className="rt-contact">{contactLine(d)}</div>
+        <MainSections d={d} skillsInline />
+      </div>
+    );
+  }
+  return (
+    <div className="rt-page rt-classic">
+      <p className="rt-name">{d.fullName || "Your Name"}</p>
+      {d.headline && <p className="rt-role">{d.headline}</p>}
+      <div className="rt-contact">{contactLine(d)}</div>
+      <MainSections d={d} skillsInline />
+    </div>
+  );
+}
+
 function loadDraft() {
   try {
     const raw = localStorage.getItem(DRAFT_KEY);
@@ -96,7 +265,6 @@ export default function ResumeBuilder() {
   const [step, setStep] = useState(0);
   const [data, setData] = useState(loadDraft);
   const [template, setTemplate] = useState("modern");
-  const [targetRole, setTargetRole] = useState("");
   const [skillInput, setSkillInput] = useState("");
   const [error, setError] = useState("");
   const [showSignup, setShowSignup] = useState(false);
@@ -158,12 +326,6 @@ export default function ResumeBuilder() {
     experience: data.experience.filter((x) => x.title || x.company),
     education: data.education.filter((x) => x.degree || x.institution),
   }), [data]);
-
-  const resumeText = useMemo(() => [
-    data.headline, data.summary, data.skills.join(" "),
-    ...data.experience.map((x) => `${x.title} ${x.company} ${x.description}`),
-    ...data.education.map((x) => `${x.degree} ${x.institution}`),
-  ].join(" "), [data]);
 
   // ---------- navigation ----------
   const validate = (s) => {
@@ -376,21 +538,13 @@ export default function ResumeBuilder() {
         <p className="rbm-help" style={{ marginTop: 14 }}>Add your job title on the Personal step to see machine and skill suggestions.</p>
       )}
 
-      <div style={{ marginTop: 18 }}>
-        <KeywordAssistant
-          role={targetRole || mainRole}
-          onRoleChange={setTargetRole}
-          resumeText={resumeText}
-          onAddKeyword={addSkill}
-        />
-      </div>
     </div>
   );
 
   const renderPreview = () => (
     <div className="rbm-card">
       <h2>Choose a design and download</h2>
-      <TemplateSelector selected={template} onSelect={setTemplate} />
+      <TemplatePicker selected={template} onSelect={setTemplate} />
       <div className="rbm-preview-wrap rbm-print-area">
         <ResumePreview templateId={template} data={resumeData} />
       </div>
@@ -405,7 +559,7 @@ export default function ResumeBuilder() {
 
   return (
     <div className="rbm">
-      <style>{CSS}</style>
+      <style>{CSS + RT_CSS}</style>
       <h1>Build your resume</h1>
       <p className="rbm-lead">Made for machine shop jobs. Your details save on this device as you type.</p>
 
