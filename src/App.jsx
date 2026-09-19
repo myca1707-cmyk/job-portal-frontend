@@ -10,6 +10,7 @@ import PrivacyPolicy from "./PrivacyPolicy";
 import TermsOfService from "./TermsOfService";
 import AudienceSplit from "./AudienceSplit";
 import ReferFriend from './ReferFriend';
+import { natashaAnswer, NATASHA_RESUME_QUICK_REPLIES } from "./NatashaKnowledge";
 
 const API_BASE = "https://job-portal-backend-production-6d9d.up.railway.app";
 
@@ -6410,9 +6411,11 @@ const CHATBOT_FALLBACK =
   "I'm not sure about that one — try asking about jobs, signing up, recruiters, resumes, or campus drives. Or use the Contact Us button for anything else.";
 
 function findFaqAnswer(userText) {
-  const text = userText.toLowerCase();
+  const resumeReply = natashaAnswer(userText);
+  if (resumeReply) return resumeReply;
+  const text = " " + userText.toLowerCase().replace(/[^a-z0-9:' ]/g, " ") + " ";
   for (const faq of CHATBOT_FAQS) {
-    if (faq.keywords.some((kw) => text.includes(kw))) {
+    if (faq.keywords.some((kw) => (kw.length <= 3 ? text.includes(" " + kw + " ") : text.includes(kw)))) {
       return faq.answer;
     }
   }
@@ -6437,17 +6440,19 @@ function ChatbotWidget() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([
-    { from: "bot", text: "Hi, I'm Natasha! I know what it's like to be job hunting - ask me about jobs, signing up, or our services and I'll help however I can." },
+    { from: "bot", text: "Hi, I'm Natasha! I know what it's like to be job hunting. Ask me about jobs, signing up, or our free Resume Builder for every industry. Tap a question below to start." },
   ]);
-
-  function handleSend(e) {
-    e.preventDefault();
-    const trimmed = input.trim();
+    function sendText(raw) {
+    const trimmed = String(raw || "").trim();
     if (!trimmed) return;
-
     const reply = findFaqAnswer(trimmed);
     setMessages((prev) => [...prev, { from: "user", text: trimmed }, { from: "bot", text: reply }]);
     setInput("");
+  }
+
+  function handleSend(e) {
+    e.preventDefault();
+    sendText(input);
   }
 
   return (
@@ -6488,11 +6493,21 @@ function ChatbotWidget() {
                   borderRadius: 10,
                   fontSize: 13,
                   maxWidth: "85%",
+                  whiteSpace: "pre-line",
                 }}
               >
                 {m.text}
               </div>
-            ))}
+            ))}            
+            {messages.length === 1 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {NATASHA_RESUME_QUICK_REPLIES.map((q) => (
+                  <button key={q} type="button" onClick={() => sendText(q)} style={{ border: "1px solid var(--line, #ccc)", background: "#fff", color: "#1A1D24", borderRadius: 999, padding: "4px 10px", fontSize: 12, cursor: "pointer" }}>
+                    {q}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <form onSubmit={handleSend} style={{ display: "flex", gap: 6, padding: "0.6rem", borderTop: "1px solid var(--line, #eee)" }}>
