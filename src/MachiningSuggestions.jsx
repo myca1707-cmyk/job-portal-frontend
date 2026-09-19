@@ -1,11 +1,13 @@
 // MachiningSuggestions.jsx — role suggestions for the CoreTech Talents resume builder
-// Covers shop-floor AND office departments of a machine-shop company.
+// Covers machine-shop departments here, plus every other industry from IndustryRoles.js
+// (IT, pharma, facility management, healthcare, BFSI, retail, hospitality and more).
 // Same exports and props as before, so ResumeBuilder.jsx needs no changes:
 //   <MachiningTitleInput />      -> job title input with dropdown
 //   <MachiningSuggestionPanel /> -> skills, tools, work points and summary for the typed role
 // Plain inline styles (no Tailwind), blue-and-white theme.
 
 import { useMemo, useState } from "react";
+import { INDUSTRY_FAMILIES } from "./IndustryRoles";
 
 // ---------- Shared shop-floor lists (used unless a role sets its own) ----------
 const INSTRUMENTS = [
@@ -98,7 +100,7 @@ export const MACHINING_FAMILIES = [
   {
     id: "programmer", dept: "Machining",
     label: "CNC / CAM Programmer",
-    keys: ["programmer", "programming", "cam", "mastercam", "nxcam", "hypermill", "powermill", "esprit", "gcode", "fusion360"],
+    keys: ["cncprogrammer", "camprogrammer", "programmer", "programming", "cam", "mastercam", "nxcam", "hypermill", "powermill", "esprit", "gcode", "fusion360"],
     titles: ["CNC Programmer", "CAM Programmer", "VMC / HMC Programmer", "Turning Programmer", "Senior CAM Engineer"],
     machines: ["VMC", "HMC", "CNC turning centre", "5-axis machines"],
     controls: ["Mastercam", "Siemens NX CAM", "hyperMILL", "PowerMill", "ESPRIT", "Fusion 360", "SolidCAM", "Vericut", "AutoCAD"],
@@ -274,7 +276,7 @@ export const MACHINING_FAMILIES = [
   {
     id: "assemblyeng", dept: "Assembly",
     label: "Assembly Engineering / Supervision",
-    keys: ["assemblyengineer", "assemblysupervisor", "hydraulic", "pneumatic", "gearbox", "wiring", "panelwiring", "testing"],
+    keys: ["assemblyengineer", "assemblysupervisor", "hydraulic", "pneumatic", "gearbox", "wiring", "panelwiring", "endoflinetesting"],
     titles: ["Assembly Engineer", "Assembly Supervisor", "Hydraulic Assembly Technician", "Pneumatic Assembly Technician", "Gearbox Assembly Technician", "Electrical Wiring Technician", "Testing Engineer"],
     machines: ["Hydraulic test bench", "Torque analyser", "Leak tester", "EOL test rig", "Crimping tools"],
     machinesLabel: "Tools & equipment",
@@ -452,7 +454,7 @@ export const MACHINING_FAMILIES = [
   {
     id: "projecteng", dept: "Project Engineering",
     label: "Project / NPD / Process Engineering",
-    keys: ["project", "projects", "npd", "newproduct", "newpart", "processengineer", "process", "methods", "industrialengineer", "ie", "apqp", "fixturedesign", "designengineer", "solidworks", "catia", "capex"],
+    keys: ["mechanicalengineer", "mechanicaldesign", "graduateengineertrainee", "get", "project", "projects", "npd", "newproduct", "newpart", "processengineer", "process", "methods", "industrialengineer", "ie", "apqp", "fixturedesign", "designengineer", "solidworks", "catia", "capex"],
     titles: ["Project Engineer", "NPD Engineer", "Process Engineer (Machining)", "Methods Engineer", "Industrial Engineer", "Design Engineer (Fixtures)", "Project Manager"],
     machines: ["Process sheets", "Timing plans", "Fixture drawings", "Capacity sheets"],
     machinesLabel: "Documents you prepare",
@@ -588,7 +590,7 @@ export const MACHINING_FAMILIES = [
   office({
     id: "hr", dept: "Human Resources",
     label: "Human Resources",
-    keys: ["hr", "hrbp", "hrd", "humanresource", "humanresources", "personnel", "payroll", "ir", "industrialrelations", "welfare", "compliance", "statutory", "hrgeneralist", "training"],
+    keys: ["hr", "hrbp", "hrd", "humanresource", "humanresources", "personnel", "payroll", "ir", "industrialrelations", "welfare", "statutory", "hrgeneralist", "training"],
     titles: ["HR Executive", "HR Generalist", "Payroll Executive", "HR & IR Officer", "Personnel Officer", "Training Coordinator", "HR Business Partner", "HR Manager"],
     machines: ["EPFO portal", "ESIC portal", "Biometric attendance system"],
     controls: ["greytHR", "Darwinbox", "Keka", "SAP SuccessFactors", "Zoho People", "Excel"],
@@ -625,8 +627,8 @@ export const MACHINING_FAMILIES = [
   office({
     id: "admin", dept: "Admin",
     label: "Administration / Facilities",
-    keys: ["admin", "administration", "administrative", "facility", "facilities", "housekeeping", "security", "canteen", "frontoffice", "frontdesk", "receptionist", "guesthouse", "travel", "officeassistant"],
-    titles: ["Admin Executive", "Admin Officer", "Facility Executive", "Front Office Executive", "Office Assistant", "Admin & Facility Manager", "Security Supervisor"],
+    keys: ["admin", "administration", "administrative", "adminexecutive", "canteen", "frontoffice", "frontdesk", "receptionist", "guesthouse", "travel", "officeadmin"],
+    titles: ["Admin Executive", "Admin Officer", "Front Office Executive", "Receptionist", "Admin & Facility Manager", "Admin Manager"],
     machines: ["Access control system", "CCTV", "Visitor management system", "Travel booking portals"],
     controls: ["Excel", "SAP (PR / PO for services)", "Google Workspace / MS Office"],
     skills: ["Facility management", "Housekeeping & security vendor management", "Canteen management", "Employee transport (bus routes)", "Travel & accommodation booking", "Guest & visitor management", "Stationery & asset management", "AMC management", "Statutory license renewals (factory license, fire NOC)", "Vendor bill processing"],
@@ -639,6 +641,9 @@ export const MACHINING_FAMILIES = [
     ],
     summary: "Admin Executive experienced in facility, canteen, transport, security and vendor management for a manufacturing plant, keeping daily operations smooth and statutory renewals on time.",
   }),
+
+  // ======================= ALL OTHER INDUSTRIES =======================
+  ...INDUSTRY_FAMILIES,
 ];
 
 // ---------- Brands (typing a brand suggests "Title – Brand") ----------
@@ -689,7 +694,7 @@ function scoreFamily(f, value) {
     else if (q.length >= 3 && st.startsWith(q)) score = Math.max(score, 60);
     else if (q.length >= 4 && st.includes(q)) score = Math.max(score, 45);
   });
-  f.keys.forEach((k) => {
+  f.keys.map(squash).forEach((k) => {
     if (k.length <= 3) {
       // short keys must be a whole word: "hr executive", "qc inspector", "ndt level 2"
       if (w.includes(k)) score = Math.max(score, q === k ? 90 : 75);
@@ -713,16 +718,17 @@ export function matchFamilies(value) {
 }
 
 const POPULAR = [
-  "VMC Setter cum Operator", "CNC Turning Setter cum Operator", "Quality Inspector", "CMM Programmer",
-  "Assembly Fitter", "Tool Presetter", "Tool Crib Attendant", "NDT Level II Technician",
-  "Project Engineer", "Purchase Executive", "Storekeeper", "Dispatch Executive",
-  "Sales Engineer", "Business Development Executive", "GST Executive", "HR Executive", "Admin Executive",
-];
+  "VMC Setter cum Operator", "CNC Turning Setter cum Operator", "Quality Inspector", "Software Engineer",
+  "Data Analyst", "Customer Support Executive", "QC Chemist", "Production Officer (Pharma)",
+  "Medical Representative", "Staff Nurse", "Facility Executive", "Security Guard", "Electronics Technician",
+  "Sales Executive", "Accounts Executive", "HR Executive", "Digital Marketing Executive",
+  "Delivery Executive", "Retail Sales Associate", "Primary Teacher (PRT)",
+].filter((t) => MACHINING_FAMILIES.some((f) => f.titles.includes(t)));
 
 // Job title suggestions for the dropdown
-export function getTitleSuggestions(value, limit = 8) {
+export function getTitleSuggestions(value, limit = 10) {
   const q = squash(value);
-  if (!q) return POPULAR.slice(0, limit);
+  if (!q) return POPULAR;
   const out = new Set();
   // brand combos, e.g. "VMC Setter – Mazak"
   brandHits(value).forEach((b) => {
@@ -762,7 +768,7 @@ const s = {
 
 // ---------- 1) Job title input with dropdown ----------
 // Drop-in replacement for <input ...>. Keeps the same value / onChange / name / id props.
-export function MachiningTitleInput({ value = "", onChange, placeholder = "e.g. VMC Setter, Quality Inspector, HR Executive", ...rest }) {
+export function MachiningTitleInput({ value = "", onChange, placeholder = "e.g. VMC Setter, Software Engineer, QC Chemist, Staff Nurse", ...rest }) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const options = useMemo(() => getTitleSuggestions(value), [value]);

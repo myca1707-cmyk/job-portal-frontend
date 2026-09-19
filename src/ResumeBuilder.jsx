@@ -1,7 +1,7 @@
 // ResumeBuilder.jsx
 // CoreTech Talents resume builder - with role suggestions for every department.
 // Needs two other files in src/:
-//   MachiningSuggestions.jsx  (job titles, skills, work points for all departments)
+//   MachiningSuggestions.jsx  (job titles, skills, work points) + IndustryRoles.js (roles for every industry)
 //   EducationSuggestions.jsx  (qualification list by category)
 // The 4 resume designs (Modern, Classic, Minimal, Executive) are built into this file.
 // Styles are built in too (class prefixes "rbm-" and "rt-"), so no separate CSS file is needed.
@@ -409,7 +409,7 @@ export default function ResumeBuilder() {
         <div>
           <label htmlFor="rbm-headline">Your job title</label>
           <MachiningTitleInput id="rbm-headline" value={data.headline} onChange={(e) => setField("headline", e.target.value)} />
-          <div className="rbm-help">Type your role, e.g. VMC, QC, NDT, purchase, HR, GST, sales.</div>
+          <div className="rbm-help">Type your role, e.g. VMC setter, software engineer, QC chemist, staff nurse, driver.</div>
         </div>
         <div>
           <label htmlFor="rbm-phone">Mobile number *</label>
@@ -583,7 +583,7 @@ export default function ResumeBuilder() {
     <div className="rbm">
       <style>{CSS + RT_CSS}</style>
       <h1>Build your resume</h1>
-      <p className="rbm-lead">For shop-floor, engineering and office roles. Your details save on this device as you type.</p>
+      <p className="rbm-lead">For every job, from the shop floor to IT, pharma, healthcare, office and service roles. Your details save on this device as you type.</p>
 
       <div className="rbm-steps">
         {STEPS.map((label, i) => (
