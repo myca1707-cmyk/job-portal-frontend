@@ -1,11 +1,14 @@
 // ResumeBuilder.jsx
-// CoreTech Talents resume builder - with machine-shop role suggestions.
-// Needs only one other file in src/: MachiningSuggestions.jsx
+// CoreTech Talents resume builder - with role suggestions for every department.
+// Needs two other files in src/:
+//   MachiningSuggestions.jsx  (job titles, skills, work points for all departments)
+//   EducationSuggestions.jsx  (qualification list by category)
 // The 4 resume designs (Modern, Classic, Minimal, Executive) are built into this file.
 // Styles are built in too (class prefixes "rbm-" and "rt-"), so no separate CSS file is needed.
 
 import { useEffect, useMemo, useState } from "react";
 import { MachiningTitleInput, MachiningSuggestionPanel } from "./MachiningSuggestions";
+import { EducationInput } from "./EducationSuggestions";
 
 const STEPS = ["Personal", "Experience", "Education", "Skills", "Preview & Download"];
 const DRAFT_KEY = "ctt_resume_draft_v2";
@@ -19,8 +22,10 @@ const EMPTY = {
   photo: "",
   summary: "",
   experience: [{ title: "", company: "", duration: "", description: "" }],
-  education: [{ degree: "", institution: "", year: "" }],
+  education: [{ degree: "", institution: "", year: "", score: "" }],
   skills: [],
+  certifications: "",
+  languages: "",
 };
 
 const CSS = `
@@ -37,6 +42,7 @@ const CSS = `
 .rbm-card h2 { font-size: 18px; color: #0b2a5b; margin: 0 0 14px; }
 .rbm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .rbm-full { grid-column: 1 / -1; }
+.rbm-section { margin-top: 18px; }
 .rbm label { display: block; font-size: 13px; font-weight: 600; color: #0b2a5b; margin-bottom: 5px; }
 .rbm input, .rbm textarea, .rbm select { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #c9d7f2; border-radius: 8px; font-size: 14.5px; font-family: inherit; background: #fff; color: #1f2937; }
 .rbm input:focus, .rbm textarea:focus { outline: 2px solid #1d4ed8; outline-offset: 0; border-color: #1d4ed8; }
@@ -106,6 +112,7 @@ const RT_CSS = `
 .rt-item { margin-bottom: 10px; }
 .rt-item-top { display: flex; justify-content: space-between; gap: 10px; font-weight: 600; }
 .rt-item-sub { color: #4b5563; }
+.rt-list { margin: 0; padding-left: 18px; }
 
 .rt-modern { display: grid; grid-template-columns: 250px 1fr; }
 .rt-modern .rt-side { background: #0b2a5b; color: #fff; padding: 28px 20px; }
@@ -160,6 +167,7 @@ function TemplatePicker({ selected, onSelect }) {
 }
 
 const contactLine = (d) => [d.phone, d.email, d.location].filter(Boolean).join("  |  ");
+const lines = (text) => String(text || "").split("\n").map((x) => x.trim()).filter(Boolean);
 
 function ExperienceList({ items }) {
   return items.map((e, i) => (
@@ -175,18 +183,23 @@ function EducationList({ items }) {
   return items.map((e, i) => (
     <div className="rt-item" key={i}>
       <div className="rt-item-top"><span>{e.degree}</span><span>{e.year}</span></div>
-      {e.institution && <div className="rt-item-sub">{e.institution}</div>}
+      {(e.institution || e.score) && (
+        <div className="rt-item-sub">{[e.institution, e.score ? `Score: ${e.score}` : ""].filter(Boolean).join("  |  ")}</div>
+      )}
     </div>
   ));
 }
 
 function MainSections({ d, skillsInline }) {
+  const certs = lines(d.certifications);
   return (
     <>
       {d.summary && (<><h3>PROFILE</h3><p className="rt-desc">{d.summary}</p></>)}
       {d.experience.length > 0 && (<><h3>WORK EXPERIENCE</h3><ExperienceList items={d.experience} /></>)}
       {d.education.length > 0 && (<><h3>EDUCATION</h3><EducationList items={d.education} /></>)}
+      {certs.length > 0 && (<><h3>CERTIFICATIONS &amp; TRAINING</h3><ul className="rt-list">{certs.map((c) => <li key={c}>{c}</li>)}</ul></>)}
       {skillsInline && d.skills.length > 0 && (<><h3>SKILLS</h3><p className="rt-skills-inline">{d.skills.join(", ")}</p></>)}
+      {skillsInline && d.languages && (<><h3>LANGUAGES KNOWN</h3><p className="rt-skills-inline">{d.languages}</p></>)}
     </>
   );
 }
@@ -202,6 +215,7 @@ function ResumePreview({ templateId, data: d }) {
           {d.email && <p>{d.email}</p>}
           {d.location && <p>{d.location}</p>}
           {d.skills.length > 0 && (<><h3>SKILLS</h3><ul>{d.skills.map((s) => <li key={s}>{s}</li>)}</ul></>)}
+          {d.languages && (<><h3>LANGUAGES</h3><p>{d.languages}</p></>)}
         </aside>
         <main className="rt-main">
           <p className="rt-name">{d.fullName || "Your Name"}</p>
@@ -261,15 +275,24 @@ function loadDraft() {
   }
 }
 
+// Lets the template gallery open the builder with a design already chosen (?template=classic)
+function initialTemplate() {
+  try {
+    const t = new URLSearchParams(window.location.search).get("template");
+    if (TEMPLATE_OPTIONS.some((x) => x.id === t)) return t;
+  } catch { /* ignore */ }
+  return "modern";
+}
+
 export default function ResumeBuilder() {
   const [step, setStep] = useState(0);
   const [data, setData] = useState(loadDraft);
-  const [template, setTemplate] = useState("modern");
+  const [template, setTemplate] = useState(initialTemplate);
   const [skillInput, setSkillInput] = useState("");
   const [error, setError] = useState("");
   const [showSignup, setShowSignup] = useState(false);
 
-  // Save draft on this device so operators don't lose work if the page closes
+  // Save draft on this device so candidates don't lose work if the page closes
   useEffect(() => {
     try { localStorage.setItem(DRAFT_KEY, JSON.stringify(data)); } catch { /* storage full or blocked */ }
   }, [data]);
@@ -315,7 +338,7 @@ export default function ResumeBuilder() {
     reader.readAsDataURL(file);
   };
 
-  // Role used for machining suggestions on the Skills step
+  // Role used for suggestions on the Skills step
   const mainRole = data.headline || data.experience.find((x) => x.title)?.title || "";
 
   // Data passed to the resume templates
@@ -386,7 +409,7 @@ export default function ResumeBuilder() {
         <div>
           <label htmlFor="rbm-headline">Your job title</label>
           <MachiningTitleInput id="rbm-headline" value={data.headline} onChange={(e) => setField("headline", e.target.value)} />
-          <div className="rbm-help">Type your machine or role, e.g. VMC, CNC turning, QC, welder.</div>
+          <div className="rbm-help">Type your role, e.g. VMC, QC, NDT, purchase, HR, GST, sales.</div>
         </div>
         <div>
           <label htmlFor="rbm-phone">Mobile number *</label>
@@ -402,7 +425,7 @@ export default function ResumeBuilder() {
         </div>
         <div className="rbm-full">
           <label htmlFor="rbm-summary">Profile summary</label>
-          <textarea id="rbm-summary" value={data.summary} onChange={(e) => setField("summary", e.target.value)} placeholder="2–3 lines about your experience, machines and strengths." />
+          <textarea id="rbm-summary" value={data.summary} onChange={(e) => setField("summary", e.target.value)} placeholder="2–3 lines about your experience, tools and strengths." />
           <MachiningSuggestionPanel role={data.headline} onUseSummary={(t) => setField("summary", t)} />
         </div>
       </div>
@@ -438,7 +461,7 @@ export default function ResumeBuilder() {
             </div>
             <div className="rbm-full">
               <label htmlFor={`rbm-exp-desc-${i}`}>What you did in this job</label>
-              <textarea id={`rbm-exp-desc-${i}`} value={exp.description} onChange={(e) => updateList("experience", i, "description", e.target.value)} placeholder="Machines, parts, tolerances, setting work, targets you met..." />
+              <textarea id={`rbm-exp-desc-${i}`} value={exp.description} onChange={(e) => updateList("experience", i, "description", e.target.value)} placeholder="Machines, tools, software, targets you met..." />
               <MachiningSuggestionPanel
                 role={exp.title}
                 existingSkills={data.skills}
@@ -458,6 +481,9 @@ export default function ResumeBuilder() {
   const renderEducation = () => (
     <div className="rbm-card">
       <h2>Education</h2>
+      <p className="rbm-help" style={{ marginTop: -8, marginBottom: 14 }}>
+        Start with your highest qualification. Click the course box to browse by category, or type e.g. ITI, diploma, B.E., B.Sc, MBA, nursing.
+      </p>
       {data.education.map((ed, i) => (
         <div className="rbm-block" key={i}>
           <div className="rbm-block-head">
@@ -467,46 +493,38 @@ export default function ResumeBuilder() {
             )}
           </div>
           <div className="rbm-grid">
-            <div>
+            <div className="rbm-full">
               <label htmlFor={`rbm-ed-deg-${i}`}>Course / trade</label>
-              <input id={`rbm-ed-deg-${i}`} list="rbm-degrees" value={ed.degree} onChange={(e) => updateList("education", i, "degree", e.target.value)} placeholder="e.g. ITI Machinist, DME, B.E. Mechanical" />
+              <EducationInput id={`rbm-ed-deg-${i}`} value={ed.degree} onChange={(e) => updateList("education", i, "degree", e.target.value)} />
             </div>
-            <div>
-              <label htmlFor={`rbm-ed-inst-${i}`}>Institute</label>
-              <input id={`rbm-ed-inst-${i}`} value={ed.institution} onChange={(e) => updateList("education", i, "institution", e.target.value)} placeholder="Institute name" />
+            <div className="rbm-full">
+              <label htmlFor={`rbm-ed-inst-${i}`}>School / college / institute</label>
+              <input id={`rbm-ed-inst-${i}`} value={ed.institution} onChange={(e) => updateList("education", i, "institution", e.target.value)} placeholder="Institute name and city" />
             </div>
             <div>
               <label htmlFor={`rbm-ed-year-${i}`}>Year of passing</label>
-              <input id={`rbm-ed-year-${i}`} inputMode="numeric" value={ed.year} onChange={(e) => updateList("education", i, "year", e.target.value)} placeholder="e.g. 2020" />
+              <input id={`rbm-ed-year-${i}`} value={ed.year} onChange={(e) => updateList("education", i, "year", e.target.value)} placeholder="e.g. 2020 or Pursuing" />
+            </div>
+            <div>
+              <label htmlFor={`rbm-ed-score-${i}`}>Percentage / CGPA</label>
+              <input id={`rbm-ed-score-${i}`} value={ed.score || ""} onChange={(e) => updateList("education", i, "score", e.target.value)} placeholder="e.g. 78% or 7.8 CGPA" />
             </div>
           </div>
         </div>
       ))}
-      <datalist id="rbm-degrees">
-        <option value="ITI – Machinist" />
-        <option value="ITI – Turner" />
-        <option value="ITI – Fitter" />
-        <option value="ITI – Welder" />
-        <option value="ITI – Electrician" />
-        <option value="ITI – Tool & Die Maker" />
-        <option value="Diploma in Mechanical Engineering (DME)" />
-        <option value="Diploma in Tool & Die Making" />
-        <option value="Diploma in Mechatronics" />
-        <option value="B.E. Mechanical Engineering" />
-        <option value="B.E. Production Engineering" />
-        <option value="NAPS Apprenticeship" />
-        <option value="12th (HSC)" />
-        <option value="10th (SSLC)" />
-      </datalist>
-      <button type="button" className="rbm-btn ghost" onClick={() => addListItem("education", { degree: "", institution: "", year: "" })}>
+      <button type="button" className="rbm-btn ghost" onClick={() => addListItem("education", { degree: "", institution: "", year: "", score: "" })}>
         + Add another qualification
       </button>
+      <div className="rbm-section">
+        <label htmlFor="rbm-certs">Certifications & training (one per line)</label>
+        <textarea id="rbm-certs" value={data.certifications} onChange={(e) => setField("certifications", e.target.value)} placeholder={"e.g. CNC Programming Certificate – NTTF\nSix Sigma Green Belt"} />
+      </div>
     </div>
   );
 
   const renderSkills = () => (
     <div className="rbm-card">
-      <h2>Skills, machines and controls</h2>
+      <h2>Skills, tools and software</h2>
       <label htmlFor="rbm-skill">Add a skill</label>
       <div className="rbm-skillrow">
         <input
@@ -514,7 +532,7 @@ export default function ResumeBuilder() {
           value={skillInput}
           onChange={(e) => setSkillInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addSkill(skillInput); setSkillInput(""); } }}
-          placeholder="e.g. Fanuc 0i-MF, tool offset setting"
+          placeholder="e.g. Fanuc 0i-MF, SAP MM, GST filing, payroll"
         />
         <button type="button" className="rbm-btn primary" onClick={() => { addSkill(skillInput); setSkillInput(""); }}>Add</button>
       </div>
@@ -535,9 +553,13 @@ export default function ResumeBuilder() {
       {mainRole ? (
         <MachiningSuggestionPanel role={mainRole} existingSkills={data.skills} onAddSkill={addSkill} />
       ) : (
-        <p className="rbm-help" style={{ marginTop: 14 }}>Add your job title on the Personal step to see machine and skill suggestions.</p>
+        <p className="rbm-help" style={{ marginTop: 14 }}>Add your job title on the Personal step to see skill suggestions for your role.</p>
       )}
 
+      <div className="rbm-section">
+        <label htmlFor="rbm-lang">Languages known</label>
+        <input id="rbm-lang" value={data.languages} onChange={(e) => setField("languages", e.target.value)} placeholder="e.g. Tamil, English, Hindi" />
+      </div>
     </div>
   );
 
@@ -561,7 +583,7 @@ export default function ResumeBuilder() {
     <div className="rbm">
       <style>{CSS + RT_CSS}</style>
       <h1>Build your resume</h1>
-      <p className="rbm-lead">Made for machine shop jobs. Your details save on this device as you type.</p>
+      <p className="rbm-lead">For shop-floor, engineering and office roles. Your details save on this device as you type.</p>
 
       <div className="rbm-steps">
         {STEPS.map((label, i) => (
@@ -597,7 +619,7 @@ export default function ResumeBuilder() {
       {showSignup && (
         <div className="rbm-modal-bg" role="dialog" aria-modal="true" aria-labelledby="rbm-signup-title">
           <div className="rbm-modal">
-            <h3 id="rbm-signup-title">Resume ready. Get noticed by machine shops.</h3>
+            <h3 id="rbm-signup-title">Resume ready. Get noticed by recruiters.</h3>
             <p>Create a free CoreTech Talents account to apply for jobs and let recruiters find your profile.</p>
             <div className="rbm-modal-actions">
               <button type="button" className="rbm-btn ghost" onClick={() => setShowSignup(false)}>Not now</button>
